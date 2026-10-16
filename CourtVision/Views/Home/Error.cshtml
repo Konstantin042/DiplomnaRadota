@@ -1,0 +1,8 @@
+@* Страница при неочаквана грешка *@
+@{
+    ViewData["Title"] = "Error"; // Заглавие в раздела
+}
+<section class="view">
+    @* Съобщение за грешка и линк към началото *@
+    <div class="panel"><h2>Something went wrong</h2><p>Go back to the <a asp-controller="Home" asp-action="Index">home page</a> and try again.</p></div>
+</section>
