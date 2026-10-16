@@ -1,0 +1,1119 @@
+/* Стиловете на Court Vision: тъмна тема в синьо и червено. Всяко правило има коментар какво оформя. */
+/* Стил за целия документ (и подобните) */
+html,body{margin:0}
+/* Стил за изображенията */
+img{max-width:100%}
+/* Стил за елементите */
+[hidden]{display:none!important}
+/* Цветовете и шрифтовете на сайта като CSS променливи */
+:root{
+  color-scheme:dark; /* Браузърът рисува полетата и лентите в тъмен вариант */
+  --bg:#0A0E18; /* Цвят на фона */
+  --panel:#121827; /* Цвят на панелите */
+  --panel-2:#182033; /* По-светъл цвят на панелите */
+  --line:#26304A; /* Цвят на рамките */
+  --line-2:#323E5C; /* По-светъл цвят на рамките */
+  --ink:#F1F3F8; /* Цвят на основния текст */
+  --muted:#8C96AD; /* Цвят на вторичния текст */
+  --dim:#5A6480; /* Цвят на най-бледия текст */
+  --orange:#E11D2E; /* Основният червен акцент */
+  --orange-2:#F43F5E; /* По-светъл червен акцент */
+  --amber:#60A5FA; /* Светлосин акцент */
+  --purple:#2563EB; /* Основният син акцент */
+  --win:#22C55E; /* Цвят за победа */
+  --loss:#EF4444; /* Цвят за загуба */
+  --gA:#22C55E; /* Цвят за оценка A */
+  --gB:#84CC16; /* Цвят за оценка B */
+  --gC:#EAB308; /* Цвят за оценка C */
+  --gD:#F87171; /* Цвят за оценка D */
+  --gF:#DC2626; /* Цвят за оценка F */
+  --PG:#2563EB; /* Цвят на позиция PG */
+  --SG:#0EA5E9; /* Цвят на позиция SG */
+  --SF:#64748B; /* Цвят на позиция SF */
+  --PF:#F43F5E; /* Цвят на позиция PF */
+  --C:#B91C1C; /* Цвят на позиция C */
+  --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif; /* Шрифт за заглавията */
+  --f-body:"Fira Sans",system-ui,-apple-system,"Segoe UI",sans-serif; /* Шрифт за основния текст */
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace; /* Шрифт за числата */
+}
+/* Всички елементи: размерът включва рамката и отстъпа */
+*{box-sizing:border-box}
+/* Стил за целия документ */
+html{background:var(--bg)}
+/* Стил за тялото на страницата */
+body{background: radial-gradient(700px 380px at 15% -120px,rgba(37,99,235,.30),transparent 70%), radial-gradient(700px 380px at 85% -120px,rgba(225,29,46,.20),transparent 70%), repeating-linear-gradient(135deg,transparent 0 46px,rgba(255,255,255,.025) 46px 47px), repeating-linear-gradient(45deg,transparent 0 46px,rgba(255,255,255,.025) 46px 47px), var(--bg); background-attachment:fixed;color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;min-height:100vh}
+/* Стил за тялото на страницата, декоративен слой отгоре */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:#0A0E18}
+/* Стил за централната колона на сайта */
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+/* Стил за заглавията (и подобните) */
+h1,h2,h3,h4{margin:0;line-height:1;text-wrap:balance}
+/* Стил за абзаците */
+p{margin:0}
+/* Стил за всички бутони */
+button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
+/* Стил за всички бутони, при фокус от клавиатурата */
+button:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+/* Стил за текст с моноширинен шрифт */
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+/* Стил за текст с главни букви */
+.cap{font-family:var(--f-display);text-transform:uppercase;letter-spacing:.04em;font-weight:800}
+/* Стил за малкия етикет над заглавие */
+.label{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--orange-2);font-weight:700}
+/* Стил за горното меню */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:6;background:rgba(10,14,24,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+/* Стил за горната лента */
+.bar{display:flex;align-items:center;gap:16px;height:56px}
+/* Стил за малкото лого в менюто */
+.mini-logo{display:flex;align-items:center;gap:10px;font-weight:800;white-space:nowrap}
+/* Стил за топката в логото в малкото лого в менюто */
+.mini-logo .ball{width:30px;height:30px}
+/* Стил за линковете в менюто */
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1;justify-content:flex-end}
+/* Стил за линковете в менюто, скритата лента за превъртане */
+.tabs::-webkit-scrollbar{display:none}
+/* Стил за линк в менюто */
+.tab{padding:7px 12px;border-radius:8px;border:1px solid transparent;color:var(--muted);font-weight:600;font-size:13px;white-space:nowrap}
+/* Стил за линк в менюто, при посочване с мишката */
+.tab:hover{color:var(--ink)}
+/* Стил за линк в менюто */
+.tab[aria-current="true"]{color:var(--ink);border-color:var(--line-2);background:var(--panel)}
+/* Стил за основното съдържание */
+main{padding-block:28px 56px}
+/* Стил за секция на страница */
+.view{display:grid;gap:22px;grid-template-columns:minmax(0,1fr)}
+/* Стил за елементите в секция на страница, всеки пряк наследник на */
+.view > *{min-width:0}
+/* Стил за топката в логото */
+.ball{display:block}
+/* Стил за логото */
+.logo{display:grid;justify-items:center;gap:0}
+/* Стил за топката в логото в логото */
+.logo .ball{width:120px;height:120px;filter:drop-shadow(0 10px 30px rgba(225,29,46,.35))}
+/* Стил за лентата с надписа */
+.ribbon{margin-top:-30px;background:#1D4ED8;border:2px solid #1E3A8A;color:#fff;font-family:var(--f-display);font-weight:900;font-size:38px;letter-spacing:.04em;padding:0 18px;line-height:1.1;border-radius:4px;box-shadow:0 6px 0 #172554;position:relative}
+/* Стил за малкия текст в лентата с надписа */
+.ribbon small{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.2em;text-align:center;border-top:1px solid rgba(255,255,255,.35);line-height:1.6}
+/* Стил за горната част на началната страница */
+.home-head{display:grid;justify-items:center;text-align:center;gap:14px;padding-top:8px}
+/* Стил за абзаците в горната част на началната страница */
+.home-head p{color:var(--muted);max-width:56ch}
+/* Стил за картите на игрите */
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:880px;width:100%;margin:0 auto}
+/* Стил за карта на игра */
+.mode{position:relative;overflow:hidden;text-align:left;border-radius:14px;padding:22px;min-height:170px;display:grid;align-content:space-between;gap:16px;border:1px solid var(--tint-b);background:linear-gradient(160deg,var(--tint) 0%,var(--panel) 75%);transition:transform .15s,border-color .15s}
+/* Стил за карта на игра, при посочване с мишката */
+.mode:hover{transform:translateY(-3px);border-color:var(--tint-s)}
+/* Стил за заглавията в карта на игра */
+.mode h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:40px;letter-spacing:.03em}
+/* Стил за абзаците в карта на игра */
+.mode p{color:#C9CFDC;font-size:14px;max-width:38ch;margin-top:8px}
+/* Стил за малкия етикет */
+.chip{display:inline-block;font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:999px;border:1px solid var(--tint-s);color:var(--tint-s);background:rgba(0,0,0,.25)}
+/* Стил за надписа „Start …“ в карта на игра */
+.mode .go{font-family:var(--f-display);text-transform:uppercase;font-weight:800;letter-spacing:.08em;color:var(--tint-s);font-size:17px}
+/* Стил за ъгловата лента */
+.corner{position:absolute;top:14px;right:-34px;transform:rotate(45deg);background:var(--tint-s);color:#111;font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.12em;padding:3px 40px}
+/* Стил за червения цвят на карта */
+.t-orange{--tint:rgba(225,29,46,.30);--tint-b:rgba(225,29,46,.4);--tint-s:#FB7185}
+/* Стил за светлосиния цвят на карта */
+.t-gold{--tint:rgba(56,189,248,.24);--tint-b:rgba(56,189,248,.38);--tint-s:#7DD3FC}
+/* Стил за синия цвят на карта */
+.t-purple{--tint:rgba(37,99,235,.34);--tint-b:rgba(37,99,235,.45);--tint-s:#60A5FA}
+/* Стил за розовия цвят на карта */
+.t-red{--tint:rgba(190,18,60,.26);--tint-b:rgba(190,18,60,.4);--tint-s:#FDA4AF}
+/* Стил за четирите числа */
+.stripnums{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:880px;width:100%;margin:0 auto}
+/* Стил за карта с число */
+.num{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+/* Стил за удебеления текст в карта с число */
+.num b{display:block;font-family:var(--f-display);font-weight:900;font-size:40px;color:var(--orange);line-height:1}
+/* Стил за текстовите части в карта с число */
+.num span{font-size:12px;color:var(--muted)}
+/* Стил за панела */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+/* Стил за заглавието на секция */
+.ghead{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+/* Стил за заглавията в заглавието на секция */
+.ghead h2{font-family:var(--f-display);text-transform:uppercase;font-weight:900;font-size:clamp(34px,5vw,52px);letter-spacing:.02em}
+/* Стил за абзаците в заглавието на секция */
+.ghead p{color:var(--muted);max-width:62ch;margin-top:6px}
+/* Стил за бутона „?“ */
+.iconbtn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);display:grid;place-items:center;font-weight:800;color:var(--muted)}
+/* Стил за бутона „?“, при посочване с мишката */
+.iconbtn:hover{color:var(--ink)}
+/* Стил за основния бутон */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:9px;padding:12px 22px;font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.08em;font-size:20px;background:linear-gradient(180deg,var(--orange-2),var(--orange));color:#fff;box-shadow:0 4px 0 #8B1020;transition:transform .08s}
+/* Стил за основния бутон, при натискане */
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #8B1020}
+/* Стил за основния бутон, когато е неактивен */
+.btn:disabled{opacity:.45;cursor:not-allowed}
+/* Стил за основния бутон – вторичен */
+.btn.sec{background:var(--panel-2);border:1px solid var(--line-2);box-shadow:none;color:var(--ink);font-size:16px}
+/* Стил за основния бутон – широк */
+.btn.wide{width:100%}
+/* Стил за секцията „In the real NBA“ */
+.real{border:1px solid rgba(96,165,250,.35);background:linear-gradient(160deg,rgba(96,165,250,.08),var(--panel) 60%);border-radius:14px;padding:18px 20px;display:grid;gap:8px}
+/* Стил за заглавията в секцията „In the real NBA“ */
+.real h3{color:var(--amber);font-size:20px;font-weight:800}
+/* Стил за абзаците в секцията „In the real NBA“ (и подобните) */
+.real p,.real li{color:#D3D8E3;max-width:80ch}
+/* Стил за списъка в секцията „In the real NBA“ */
+.real ul{margin:0;padding-left:20px;display:grid;gap:4px}
+/* Стил за кръгчето със снимка */
+.ph{position:relative;aspect-ratio:1;border-radius:50%;overflow:hidden;background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--pc) 45%,#1b2235),#121827);display:grid;place-items:center;flex:none;max-width:100%;border:2px solid var(--pc)}
+/* Стил за текстовите части в кръгчето със снимка */
+.ph span{font-family:var(--f-display);font-weight:900;color:#fff;font-size:clamp(14px,38%,54px);opacity:.9}
+/* Стил за снимката от изображението в кръгчето със снимка */
+.ph .face{position:absolute;inset:0;background-repeat:no-repeat;background-color:#1b2235}
+/* Стил за кръгчето със снимка – с NBA снимка */
+.ph.nba{background:radial-gradient(circle at 50% 30%,color-mix(in srgb,var(--pc) 55%,#24304d),#121827 75%)}
+/* Стил за снимката от изображението в кръгчето със снимка (с NBA снимка) */
+.ph.nba .face{background-color:transparent}
+/* Стил за значката за позиция */
+.pbadge{font-family:var(--f-mono);font-weight:700;font-size:11px;color:#fff;background:var(--pc);border-radius:6px;padding:2px 7px;letter-spacing:.04em}
+/* Стил за барабаните */
+.reels{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+/* Стил за барабан */
+.reel{display:grid;justify-items:center;gap:6px}
+/* Стил за рамката на барабана в барабан */
+.reel .box{width:150px;border-radius:12px;padding:4px;background:var(--rc);box-shadow:0 0 24px color-mix(in srgb,var(--rc) 45%,transparent)}
+/* Стил за вътрешността на барабана в барабан */
+.reel .in{background:var(--panel);border-radius:9px;padding:10px 6px;text-align:center;min-height:86px;display:grid;align-content:center}
+/* Стил за малкия текст в барабан */
+.reel .in small{font-family:var(--f-mono);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--rc)}
+/* Стил за удебеления текст в барабан */
+.reel .in b{font-size:34px;font-weight:800;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Стил за удебеления текст в барабан (по време на въртене) */
+.reel.spin .in b{animation:blink .12s steps(2) infinite}
+/* Анимация blink */
+@keyframes blink{50%{opacity:.4}}
+/* Стил за двете колони на 82-0 */
+.g82{display:grid;grid-template-columns:1fr 1.05fr;gap:18px;align-items:start}
+/* Стил за елементите в двете колони на 82-0, всеки пряк наследник на */
+.g82 > *{min-width:0}
+/* Стил за реда с рунда */
+.roundbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
+/* Стил за удебеления текст в реда с рунда */
+.roundbar b{font-weight:800}
+/* Стил за точките за рундовете */
+.dots5{display:flex;gap:6px}
+/* Стил за малките елементи в точките за рундовете */
+.dots5 i{width:16px;height:6px;border-radius:3px;background:var(--line-2)}
+/* Стил за малките елементи (активен елемент) в точките за рундовете */
+.dots5 i.on{background:var(--orange)}
+/* Стил за подсказката */
+.hint{font-size:13px;color:var(--muted);text-align:center;margin-top:12px}
+/* Стил за игрището */
+.court{position:relative;width:100%;aspect-ratio:340/360;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#141B2C,#0C1220);border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,.45)}
+/* Стил за SVG рисунката в игрището */
+.court svg{position:absolute;inset:0;width:100%;height:100%}
+/* Линиите на игрището: без запълване, тънка сива линия */
+.court svg *{fill:none;stroke:#3A4664;stroke-width:1.4}
+/* Обръчът на коша е червен */
+.court svg .rim{stroke:#F43F5E}
+/* Стил за място на игрището */
+.slot{position:absolute;transform:translate(-50%,-50%);width:76px;display:grid;justify-items:center;gap:3px;text-align:center}
+/* Стил за празното квадратче в място на игрището */
+.slot .sq{width:58px;height:58px;border-radius:10px;border:2px dashed #4A5676;display:grid;place-items:center;font-weight:700;color:var(--muted);background:rgba(18,24,39,.6)}
+/* Стил за празното квадратче в място на игрището (попълнен) */
+.slot.full .sq{border:0;background:none;width:auto;height:auto}
+/* Стил за кръгчето със снимка в място на игрището (попълнен) */
+.slot.full .ph{width:58px}
+/* Стил за името под снимката в място на игрището */
+.slot .nm{font-size:11px;font-weight:700;line-height:1.15;text-shadow:0 1px 3px #000}
+/* Стил за празното квадратче в място на игрището (маркиран) */
+.slot.target .sq{border-color:var(--orange);color:var(--orange-2);box-shadow:0 0 16px rgba(225,29,46,.35)}
+/* Стил за празното квадратче в място на игрището, при посочване с мишката */
+button.slot:hover .sq{border-color:var(--orange);color:var(--ink)}
+/* Стил за празното квадратче в място на игрището (верен) */
+.slot.right .sq{border:2px solid var(--win);background:rgba(34,197,94,.2);color:#fff}
+/* Стил за празното квадратче в място на игрището (грешен) */
+.slot.wrong .sq{border:2px solid var(--loss);background:rgba(239,68,68,.2);color:#fff}
+/* Стил за таблото с победи и загуби */
+.scoreboard{display:flex;justify-content:center;gap:16px;align-items:center;background:#05070D;border:1px solid var(--line);border-radius:12px;padding:12px 18px}
+/* Стил за вътрешните блокове в таблото с победи и загуби */
+.scoreboard div{text-align:center}
+/* Стил за удебеления текст в таблото с победи и загуби */
+.scoreboard b{display:block;font-family:var(--f-mono);font-size:42px;line-height:1}
+/* Стил за малкия текст в таблото с победи и загуби */
+.scoreboard small{font-family:var(--f-mono);font-size:10px;letter-spacing:.16em;color:var(--muted)}
+/* Стил за удебеления текст в таблото с победи и загуби */
+.scoreboard .w b{color:var(--win)}
+/* Стил за удебеления текст в таблото с победи и загуби */
+.scoreboard .l b{color:var(--loss)}
+/* Стил за точките на сезона */
+.season{display:grid;grid-template-columns:repeat(41,1fr);gap:3px}
+/* Стил за малките елементи в точките на сезона */
+.season i{aspect-ratio:1;border-radius:2px;background:var(--line)}
+/* Стил за малките елементи (победа) в точките на сезона */
+.season i.w{background:var(--win)}
+/* Стил за малките елементи (загуба) в точките на сезона */
+.season i.l{background:var(--loss)}
+/* Стил за заглавията в текста за резултата */
+.verdict h3{font-family:var(--f-display);text-transform:uppercase;font-weight:900;font-size:34px;color:var(--orange-2)}
+/* Стил за абзаците в текста за резултата */
+.verdict p{color:var(--muted);margin-top:4px}
+/* Стил за реда с бутоните за завъртане */
+.spinrow{display:flex;justify-content:center;gap:10px;margin-top:16px;flex-wrap:wrap}
+/* Стил за бутон за място */
+.pbtn{padding:6px 12px;border-radius:7px;border:1px solid var(--line-2);background:var(--panel);font-family:var(--f-mono);font-weight:700;font-size:12px;color:var(--ink)}
+/* Стил за бутон за място, при посочване с мишката */
+.pbtn:hover{border-color:var(--orange);background:rgba(225,29,46,.15)}
+/* Стил за пейката с резервите, при посочване с мишката */
+.pbtn.bench:hover{border-color:var(--purple);background:rgba(37,99,235,.18)}
+/* Стил за пейката с резервите */
+.bench{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:8px;align-items:center;margin-top:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+/* Стил за надписа BENCH в пейката с резервите */
+.bench .bl{font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--amber);writing-mode:vertical-rl;transform:rotate(180deg)}
+/* Стил за място на пейката */
+.bslot{display:flex;align-items:center;gap:8px;min-height:60px;border-radius:10px;border:2px dashed #3A4664;padding:6px 8px;text-align:left;min-width:0}
+/* Стил за място на пейката – попълнен */
+.bslot.full{border:1px solid var(--line-2);background:var(--panel-2)}
+/* Стил за кръгчето със снимка в място на пейката */
+.bslot .ph{width:40px}
+/* Стил за удебеления текст в място на пейката */
+.bslot b{display:block;font-size:13px;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Стил за малкия текст в място на пейката */
+.bslot small{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+/* Стил за текстовите части в място на пейката */
+.bslot > span{min-width:0}
+/* Стил за празно място в място на пейката */
+.bslot .empty{font-size:12px;color:var(--dim);width:100%;text-align:center}
+/* Стил за кръгчето със снимка в място на игрището (избран) (и подобните) */
+.slot.sel .ph,.bslot.sel{box-shadow:0 0 0 3px var(--orange),0 0 18px rgba(225,29,46,.6)}
+/* Стил за празното квадратче в място на игрището (възможна цел) (и подобните) */
+.slot.elig .sq,.slot.elig.full .ph,.bslot.elig{border-color:var(--amber)!important;box-shadow:0 0 0 2px var(--amber),0 0 14px rgba(96,165,250,.5)}
+/* Стил за празното квадратче в място на игрището (възможна цел) */
+.slot.elig .sq{border-style:solid;color:#fff}
+/* Стил за кутията, която позволява хоризонтално превъртане */
+.tscroll{overflow-x:auto}
+/* Стил за таблицата с играчите */
+.ltable{width:100%;border-collapse:collapse;font-size:13px;min-width:600px}
+/* Стил за заглавните клетки в таблицата с играчите */
+.ltable th{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-align:left;padding:8px;border-bottom:1px solid var(--line-2);font-weight:700}
+/* Стил за клетките в таблицата с играчите */
+.ltable td{padding:8px;border-bottom:1px solid var(--line)}
+/* Стил за числова клетка в таблицата с играчите */
+.ltable .n{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+/* Стил за клетките (числото OVR) в таблицата с играчите */
+.ltable td.o{color:var(--orange-2);font-weight:700}
+/* Стил за името в таблицата в таблицата с играчите */
+.ltable .pn{font-weight:700}
+/* Стил за клетките в таблицата с играчите */
+.ltable tr.bn td{background:rgba(37,99,235,.05)}
+/* Стил за клетките в таблицата с играчите */
+.ltable tfoot td{font-weight:700;border-bottom:0;color:var(--amber)}
+/* Стил за чекмеджето със състава */
+.drawer{margin-top:16px;position:relative;background:linear-gradient(180deg,#121C33,#0D1426);border:1.5px solid #3B6FD8;border-radius:6px 6px 12px 12px;padding:14px 12px 10px;box-shadow:0 0 0 1px rgba(37,99,235,.15),0 16px 40px rgba(0,0,0,.4)}
+/* Стил за чекмеджето със състава, декоративен слой отгоре */
+.drawer::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:110px;height:9px;background:#121C33;border:1.5px solid #3B6FD8;border-bottom:0;border-radius:8px 8px 0 0}
+/* Стил за заглавието на чекмеджето */
+.dhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+/* Стил за удебеления текст в заглавието на чекмеджето */
+.dhead b{font-size:20px;font-weight:800;font-style:italic}
+/* Стил за текстовите части в заглавието на чекмеджето */
+.dhead span{font-size:12px;color:var(--muted)}
+/* Стил за търсачката и филтрите */
+.dtools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+/* Стил за полето за писане в търсачката и филтрите */
+.dtools input{flex:1;min-width:120px;background:#0A1020;border:1px solid var(--line-2);border-radius:7px;padding:7px 10px;color:var(--ink);font:inherit;font-size:13px}
+/* Стил за полето за писане в търсачката и филтрите, при фокус */
+.dtools input:focus{outline:2px solid #3B6FD8;outline-offset:0}
+/* Стил за бутоните за филтър */
+.fchips{display:flex;gap:4px}
+/* Стил за бутон за филтър */
+.fchip{min-width:36px;padding:6px 8px;border-radius:6px;border:1px solid var(--line-2);background:#0F1830;font-weight:800;font-size:13px;color:var(--muted)}
+/* Стил за бутон за филтър – активен */
+.fchip.on{border-color:#3B82F6;color:#fff;background:rgba(37,99,235,.35);box-shadow:inset 0 0 0 1px #3B82F6}
+/* Стил за падащото меню в търсачката и филтрите */
+.dtools select{background:#0F1830;border:1px solid var(--line-2);border-radius:6px;padding:6px 8px;color:var(--ink);font:inherit;font-size:13px;font-weight:700}
+/* Стил за списъка с играчи */
+.plist{max-height:440px;overflow-y:auto;display:grid;gap:7px;padding-right:4px;scrollbar-color:#3B4A6E transparent}
+/* Стил за ред с играч */
+.prow{border-radius:10px;border:1px solid #2A3A60;background:linear-gradient(180deg,#17223D,#121A30)}
+/* Стил за ред с играч – отворен */
+.prow.open{border-color:#3B82F6;box-shadow:0 0 0 1px #3B82F6}
+/* Стил за ред с играч – неактивен */
+.prow.off{opacity:.38}
+/* Стил за основната част на реда */
+.prow-main{width:100%;display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 12px;text-align:left}
+/* Стил за удебеления текст в основната част на реда, при посочване, ако е активен */
+.prow-main:hover:not(:disabled) b{color:#93C5FD}
+/* Стил за основната част на реда, когато е неактивен */
+.prow-main:disabled{cursor:not-allowed}
+/* Стил за кръгчето със снимка в основната част на реда */
+.prow-main > .ph{width:34px}
+/* Стил за името и позициите */
+.pinfo{min-width:0}
+/* Стил за удебеления текст в името и позициите */
+.pinfo b{display:block;font-size:14px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Стил за малкия текст в името и позициите */
+.pinfo small{font-size:11px;color:var(--muted);font-weight:600}
+/* Стил за статистиките в реда */
+.pstats{display:grid;grid-template-columns:repeat(5,40px);text-align:center}
+/* Стил за малкия текст в статистиките в реда */
+.pstats small{display:block;font-family:var(--f-mono);font-size:9px;letter-spacing:.06em;color:var(--muted)}
+/* Стил за удебеления текст в статистиките в реда */
+.pstats b{font-family:var(--f-mono);font-size:13px;font-weight:700}
+/* Стил за бутоните за място в ред с играч */
+.prow .place{padding:0 12px 10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+/* Стил за кръгчето със снимка в ред с играч */
+.prow .place .ph{width:34px}
+/* Стил за пейката с резервите в ред с играч */
+.prow .place .pbtn.bench{padding:6px 12px}
+/* Стил за бележката под списъка */
+.dnote{font-size:11px;color:var(--dim);margin-top:8px;line-height:1.4}
+/* Стил за кутийките за баланса */
+.needs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}
+/* Стил за вътрешните блокове в кутийките за баланса */
+.needs div{border-radius:9px;padding:7px 4px;text-align:center;border:1px solid var(--line)}
+/* Стил за вътрешните блокове (добър показател) в кутийките за баланса */
+.needs div.ok{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.4)}
+/* Стил за вътрешните блокове (лош показател) в кутийките за баланса */
+.needs div.bad{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.5)}
+/* Стил за текстовите части в кутийките за баланса */
+.needs span{display:block;font-size:10px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+/* Стил за удебеления текст в кутийките за баланса */
+.needs b{display:block;font-family:var(--f-mono);font-size:17px}
+/* Стил за малкия текст в кутийките за баланса */
+.needs small{font-size:10px;color:var(--muted)}
+/* Правила за по-тесни екрани (480px и по-малко) */
+@media (max-width:480px){
+  /* Стил за статистиките в реда */
+  .pstats{grid-template-columns:repeat(5,32px)}
+  /* Стил за удебеления текст в статистиките в реда */
+  .pstats b{font-size:12px}
+  /* Стил за основната част на реда */
+  .prow-main{grid-template-columns:34px 1fr}
+  /* Стил за статистиките в реда в основната част на реда */
+  .prow-main .pstats{grid-column:1 / -1}
+  /* Стил за кутийките за баланса */
+  .needs{grid-template-columns:repeat(3,1fr)}
+}
+/* Стил за менюто на Build-a-Player */
+.bpm{display:grid;justify-items:center;gap:16px;text-align:center}
+/* Стил за превключвателя Guard/Big */
+.bpm-toggle{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:14px;background:var(--panel);border:1px solid var(--line-2);width:min(340px,100%)}
+/* Стил за всички бутони в превключвателя Guard/Big */
+.bpm-toggle button{border-radius:10px;padding:8px 10px;display:grid;line-height:1.05}
+/* Стил за удебеления текст в превключвателя Guard/Big */
+.bpm-toggle b{font-family:var(--f-display);font-weight:900;font-size:30px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+/* Стил за малкия текст в превключвателя Guard/Big */
+.bpm-toggle small{font-family:var(--f-mono);font-size:10px;color:var(--dim);letter-spacing:.1em}
+/* Стил за всички бутони (активен елемент) в превключвателя Guard/Big */
+.bpm-toggle button.on{background:linear-gradient(180deg,#F8FAFC,#CBD5E1)}
+/* Стил за удебеления текст в превключвателя Guard/Big */
+.bpm-toggle button.on b{color:#0B1020}
+/* Стил за малкия текст в превключвателя Guard/Big */
+.bpm-toggle button.on small{color:#334155}
+/* Стил за силуета в менюто */
+.bpm-fig{width:min(240px,70vw);filter:drop-shadow(0 18px 40px rgba(37,99,235,.35))}
+/* Стил за SVG рисунката в силуета в менюто */
+.bpm-fig svg{width:100%;height:auto;display:block}
+/* Стил за описанието под силуета */
+.bpm-tag{font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:#F8C9D0;font-size:15px}
+/* Стил за малките елементи в описанието под силуета */
+.bpm-tag i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--win);margin-right:8px;vertical-align:middle}
+/* Стил за двете карти за режим */
+.bpm-modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(640px,100%)}
+/* Стил за карта All-Time/Current */
+.bpm-card{position:relative;overflow:hidden;text-align:left;border-radius:14px;padding:18px;min-height:170px;display:grid;align-content:space-between;gap:10px;border:1px solid var(--tint-b);background:linear-gradient(160deg,var(--tint) 0%,var(--panel) 80%);transition:transform .15s}
+/* Стил за карта All-Time/Current, при посочване с мишката */
+.bpm-card:hover{transform:translateY(-3px);border-color:var(--tint-s)}
+/* Стил за заглавията в карта All-Time/Current */
+.bpm-card h3{font-family:var(--f-display);font-weight:900;text-transform:uppercase;font-size:38px;letter-spacing:.03em}
+/* Стил за абзаците в карта All-Time/Current */
+.bpm-card p{color:#C9CFDC;font-size:13px}
+/* Стил за надписа „Start …“ в карта All-Time/Current */
+.bpm-card .go{font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--tint-s)}
+/* Стил за горната лента на билда */
+.bp-top{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+/* Стил за бутона за режима */
+.bp-mode{display:flex;align-items:baseline;gap:8px;padding:8px 14px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-weight:700}
+/* Стил за малкия текст в бутона за режима */
+.bp-mode small{font-family:var(--f-mono);font-size:10px;color:var(--orange-2)}
+/* Стил за текстовите части в бутона за режима */
+.bp-mode span{color:var(--muted);font-size:13px}
+/* Стил за табовете Skills/Physical/Mental */
+.bp-tabs{display:flex;gap:6px;margin-inline:auto}
+/* Стил за всички бутони в табовете Skills/Physical/Mental */
+.bp-tabs button{padding:9px 18px;border-radius:9px;border:1px solid var(--line-2);background:#0C111D;font-family:var(--f-display);font-weight:800;letter-spacing:.14em;text-transform:uppercase;font-size:14px;color:var(--muted)}
+/* Стил за всички бутони (активен елемент) в табовете Skills/Physical/Mental */
+.bp-tabs button.on{background:linear-gradient(180deg,#3B82F6,#1D4ED8);border-color:#3B82F6;color:#fff}
+/* Стил за бутона Reset */
+.bp-reset{padding:9px 14px;border-radius:9px;background:var(--orange);color:#fff;font-weight:800;font-size:13px}
+/* Стил за трите колони на Build-a-Player */
+.bp-grid{display:grid;grid-template-columns:270px minmax(0,1fr) 250px;gap:12px;align-items:stretch}
+/* Стил за елементите в трите колони на Build-a-Player, всеки пряк наследник на */
+.bp-grid > *{min-width:0}
+/* Стил за лявата колона (и подобните) */
+.bp-left,.bp-right{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;align-content:start}
+/* Стил за кутийката за ръст и тегло */
+.bp-htwt{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line-2);border-radius:10px;background:#0A0F1C;text-align:center}
+/* Стил за вътрешните блокове в кутийката за ръст и тегло */
+.bp-htwt div{padding:6px}
+/* Стил за вътрешните блокове в кутийката за ръст и тегло */
+.bp-htwt div+div{border-left:1px solid var(--line-2)}
+/* Стил за малкия текст в кутийката за ръст и тегло */
+.bp-htwt small{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--muted);font-weight:700}
+/* Стил за удебеления текст в кутийката за ръст и тегло */
+.bp-htwt b{font-family:var(--f-mono);font-size:18px}
+/* Стил за двата барабана */
+.bp-reels{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+/* Стил за барабан в Build-a-Player */
+.bp-reel{border-radius:10px;background:#0A0F1C;border:1px solid var(--line);overflow:hidden}
+/* Стил за заглавието на барабана */
+.bp-rh{font-family:var(--f-mono);font-size:9px;letter-spacing:.16em;color:var(--muted);text-align:center;padding:4px 0;border-bottom:1px solid var(--line)}
+/* Стил за клетка в барабана */
+.bp-cell{text-align:center;padding:4px 4px;line-height:1.15;min-height:36px;display:grid;align-content:center;color:var(--muted)}
+/* Стил за удебеления текст в клетка в барабана */
+.bp-cell b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Стил за малкия текст в клетка в барабана */
+.bp-cell small{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Стил за клетка в барабана – краен */
+.bp-cell.far{opacity:.35}
+/* Стил за клетка в барабана – среден */
+.bp-cell.mid{color:var(--ink);background:linear-gradient(90deg,rgba(225,29,46,.22),rgba(37,99,235,.18));border-block:1px solid rgba(244,63,94,.5)}
+/* Стил за малкия текст в клетка в барабана (среден) */
+.bp-cell.mid small{color:#FDA4AF}
+/* Стил за големия бутон Spin */
+.bp-spin{width:100%;padding:12px;border-radius:12px;font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:linear-gradient(180deg,#F43F5E,#BE123C);box-shadow:0 4px 0 #881337}
+/* Стил за големия бутон Spin, когато е неактивен */
+.bp-spin:disabled{opacity:.6}
+/* Стил за двата бутона за респин */
+.bp-respins{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+/* Стил за бутон за респин */
+.bp-rs{padding:10px 6px;border-radius:10px;font-family:var(--f-display);font-weight:900;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:#fff;background:linear-gradient(180deg,#3B82F6,#1D4ED8);box-shadow:0 3px 0 #1E3A8A}
+/* Стил за малките елементи в бутон за респин */
+.bp-rs i{font-style:normal;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.3);font-size:11px;margin-left:4px}
+/* Стил за бутон за респин, когато е неактивен */
+.bp-rs:disabled{opacity:.4;cursor:not-allowed}
+/* Стил за помощния текст */
+.bp-help{font-size:12px;color:var(--muted);text-align:center}
+/* Стил за картата на завъртания играч */
+.bp-card{display:flex;gap:10px;align-items:center;background:#0C111D;border:1px solid var(--line-2);border-left:3px solid var(--orange);border-radius:10px;padding:8px}
+/* Стил за кръгчето със снимка в картата на завъртания играч */
+.bp-card .ph{width:52px}
+/* Стил за вътрешните блокове в картата на завъртания играч, последния елемент */
+.bp-card > div:last-child{min-width:0;display:grid}
+/* Стил за удебеления текст в картата на завъртания играч */
+.bp-card b{font-weight:800;line-height:1.15}
+/* Стил за текстовите части в картата на завъртания играч */
+.bp-card span{font-size:12px;color:#FDA4AF}
+/* Стил за малкия текст в картата на завъртания играч */
+.bp-card small{font-size:11px;color:var(--muted)}
+/* Стил за заглавие на група атрибути */
+.bp-sec{text-align:center;font-family:var(--f-mono);font-size:10px;letter-spacing:.18em;color:var(--orange-2);font-weight:700;text-transform:uppercase;margin-top:4px}
+/* Стил за бутон с атрибут */
+.bp-attr{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 8px 6px 10px;border-radius:8px;background:#0F1422;border:1px solid var(--line);border-left:3px solid var(--gc);font-family:var(--f-display);font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:14px;text-align:left}
+/* Стил за текстовите части в бутон с атрибут, първия елемент */
+.bp-attr span:first-child{color:color-mix(in srgb,var(--gc) 70%,#fff)}
+/* Стил за бутон с атрибут, при посочване, ако е активен */
+.bp-attr:hover:not(:disabled){background:var(--panel-2);border-color:var(--gc)}
+/* Стил за бутон с атрибут, когато е неактивен */
+.bp-attr:disabled{opacity:.28;cursor:not-allowed}
+/* Стил за кръгчето с оценка */
+.gr{min-width:30px;height:30px;border-radius:50%;background:var(--gc);color:#0B1020;display:inline-grid;place-items:center;font-family:var(--f-body);font-weight:800;font-size:13px;padding:0 4px;flex:none}
+/* Стил за арената в Build-a-Player */
+.bp-arena{position:relative;border-radius:14px;overflow:hidden;min-height:520px;border:1px solid var(--line); background:radial-gradient(240px 160px at 25% 0%,rgba(190,215,255,.25),transparent 70%),radial-gradient(240px 160px at 75% 0%,rgba(190,215,255,.25),transparent 70%),radial-gradient(520px 230px at 50% 100%,rgba(37,99,235,.42),transparent 70%),linear-gradient(180deg,#0B1020 0%,#0F1730 55%,#16264A 100%)}
+/* Стил за паркета на арената */
+.bp-floor{position:absolute;left:0;right:0;bottom:0;height:32%;background:repeating-linear-gradient(90deg,rgba(0,0,0,.14) 0 2px,transparent 2px 40px);opacity:.6}
+/* Стил за SVG рисунката (силуета на играча) в арената в Build-a-Player */
+.bp-arena svg.fig{position:absolute;left:50%;bottom:5%;height:84%;transform:translateX(-50%);opacity:.9}
+/* Стил за етикет на атрибут в арената */
+.bp-tag{position:absolute;width:min(170px,40%);transform:translate(-50%,-50%);border-radius:6px;overflow:hidden;box-shadow:0 8px 22px rgba(0,0,0,.45)}
+/* Стил за заглавието на етикета в етикет на атрибут в арената */
+.bp-tag .th{background:linear-gradient(180deg,#F43F5E,#E11D2E);color:#fff;font-family:var(--f-display);font-weight:900;text-transform:uppercase;letter-spacing:.06em;font-size:14px;text-align:center;padding:5px 4px}
+/* Стил за долната част на етикета в етикет на атрибут в арената */
+.bp-tag .tb{background:rgba(10,15,28,.82);border:1px dashed rgba(244,63,94,.55);border-top:0;min-height:50px;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px}
+/* Стил за долната част на етикета в етикет на атрибут в арената (попълнен) */
+.bp-tag.filled .tb{border-style:solid;border-color:var(--gc)}
+/* Стил за кръгчето със снимка в етикет на атрибут в арената */
+.bp-tag .tb .ph{width:36px}
+/* Стил за името в етикета в етикет на атрибут в арената */
+.bp-tag .who{font-weight:700;font-size:13px;line-height:1.1;text-align:left}
+/* Стил за малкия текст в етикет на атрибут в арената */
+.bp-tag .who small{display:block;font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+/* Стил за наклонения текст в списъка с атрибутите */
+.statlist em{font-style:normal;color:var(--muted);font-weight:500;font-size:11px;margin-left:4px}
+/* Правила за по-тесни екрани (1000px и по-малко) */
+@media (max-width:1000px){
+  /* Стил за трите колони на Build-a-Player */
+  .bp-grid{grid-template-columns:1fr 1fr}
+  /* Стил за арената в Build-a-Player */
+  .bp-arena{grid-column:1 / -1;order:-1;min-height:420px}
+}
+/* Правила за по-тесни екрани (700px и по-малко) */
+@media (max-width:700px){
+  /* Стил за трите колони на Build-a-Player */
+  .bp-grid{grid-template-columns:1fr}
+  /* Стил за двете карти за режим */
+  .bpm-modes{grid-template-columns:1fr}
+  /* Стил за табовете Skills/Physical/Mental */
+  .bp-tabs{margin-inline:0;width:100%}
+  /* Стил за всички бутони в табовете Skills/Physical/Mental */
+  .bp-tabs button{flex:1;padding:9px 6px}
+  /* Стил за етикет на атрибут в арената */
+  .bp-tag{width:44%}
+  /* Стил за заглавието на етикета в етикет на атрибут в арената */
+  .bp-tag .th{font-size:11px}
+  /* Стил за арената в Build-a-Player */
+  .bp-arena{min-height:380px}
+}
+/* Стил за типа на играча */
+.bp-arch{font-family:var(--f-display);font-weight:900;font-size:24px;text-transform:uppercase;letter-spacing:.03em;line-height:1;text-align:center;color:#fff}
+/* Стил за бутона Simulate season */
+.bp-sim{padding:12px 22px;border-radius:12px;font-family:var(--f-display);font-weight:900;font-size:22px;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:linear-gradient(180deg,#F43F5E,#BE123C);box-shadow:0 4px 0 #881337;width:100%}
+/* Стил за списъка на готовия билд */
+.bp-done-list{display:grid;border-top:1px solid var(--line);margin-top:6px}
+/* Стил за ред в списъка на готовия билд */
+.bp-dl{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:8px;align-items:center;padding:6px 2px;border-bottom:1px solid var(--line)}
+/* Стил за кръгчето със снимка в ред в списъка на готовия билд */
+.bp-dl .ph{width:34px}
+/* Стил за малкия текст в ред в списъка на готовия билд */
+.bp-dl small{display:block;font-family:var(--f-display);font-weight:800;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--orange-2)}
+/* Стил за удебеления текст в ред в списъка на готовия билд */
+.bp-dl b{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Стил за кръгчето на отбора */
+.tb-badge{display:inline-grid;place-items:center;min-width:34px;height:22px;padding:0 5px;border-radius:6px;background:var(--tc);color:#fff;font-family:var(--f-mono);font-weight:700;font-size:11px;letter-spacing:.04em;box-shadow:inset 0 0 0 1px rgba(255,255,255,.18);vertical-align:middle}
+/* Стил за кръгчето на отбора – голям */
+.tb-badge.big{min-width:56px;height:56px;border-radius:50%;font-size:15px;box-shadow:0 0 0 3px rgba(255,255,255,.12),0 8px 20px rgba(0,0,0,.4)}
+/* Стил за прозореца за избор на отбор */
+.tpm{position:relative;max-width:460px;text-align:center}
+/* Стил за малкото заглавие */
+.tpm-eye{font-family:var(--f-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--orange-2);font-weight:700}
+/* Стил за заглавието на прозореца */
+.tpm-h{font-size:26px;font-weight:800;color:#fff!important}
+/* Стил за табовете Spin/Pick */
+.tpm-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:10px;background:#0A0F1C}
+/* Стил за всички бутони в табовете Spin/Pick */
+.tpm-tabs button{padding:8px;border-radius:8px;font-weight:700;color:var(--muted)}
+/* Стил за всички бутони (активен елемент) в табовете Spin/Pick */
+.tpm-tabs button.on{background:var(--panel-2);color:#fff;box-shadow:inset 0 0 0 1px var(--line-2)}
+/* Стил за барабана с отбори */
+.tpm-reel{position:relative;border:1px solid var(--line-2);border-radius:12px;background:#0A0F1C;padding:16px 8px 8px}
+/* Стил за етикета TEAM */
+.tpm-lbl{position:absolute;top:-10px;left:50%;transform:translateX(-50%);font-family:var(--f-mono);font-size:10px;font-weight:700;letter-spacing:.16em;color:var(--orange-2);background:var(--panel);border:1px solid var(--orange);border-radius:999px;padding:1px 10px}
+/* Стил за ред в барабана с отбори */
+.tpm-row{padding:5px;line-height:1.1}
+/* Стил за удебеления текст в ред в барабана с отбори */
+.tpm-row b{display:block;font-size:17px}
+/* Стил за малкия текст в ред в барабана с отбори */
+.tpm-row small{font-size:11px;color:var(--muted)}
+/* Стил за ред в барабана с отбори – краен */
+.tpm-row.far{opacity:.3}
+/* Стил за ред в барабана с отбори – среден */
+.tpm-row.mid{background:linear-gradient(90deg,rgba(225,29,46,.2),rgba(37,99,235,.18));border:1px solid rgba(244,63,94,.5);border-radius:8px}
+/* Стил за резултата от завъртането */
+.tpm-res{display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap}
+/* Стил за подзаглавието */
+.tpm-sub{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);text-align:left}
+/* Стил за търсачката за отбори */
+.tpm-search{width:100%;background:#0A0F1C;border:1px solid var(--line-2);border-radius:9px;padding:10px 12px;color:var(--ink);font:inherit}
+/* Стил за мрежата с отбори */
+.tpm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+/* Стил за бутон с отбор */
+.tpm-team{display:grid;justify-items:center;gap:6px;padding:10px 4px;border-radius:10px;border:1px solid var(--line-2);background:#0F1422}
+/* Стил за бутон с отбор, при посочване с мишката */
+.tpm-team:hover{border-color:var(--tc);background:color-mix(in srgb,var(--tc) 18%,#0F1422)}
+/* Стил за кръгчето на отбора – голям в бутон с отбор */
+.tpm-team .tb-badge.big{width:44px;min-width:44px;height:44px;font-size:12px}
+/* Стил за малкия текст в бутон с отбор */
+.tpm-team small{font-size:11px;color:var(--muted)}
+/* Стил за бутона за затваряне */
+.tpm-close{position:absolute;top:10px;right:10px;width:32px;height:32px;border-radius:8px;border:1px solid var(--line-2);color:var(--muted)}
+/* Анимация pop */
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+/* Правила за по-тесни екрани (820px и по-малко) */
+@media (max-width:820px){
+  /* Стил за мрежата с отбори */
+  .tpm-grid{grid-template-columns:repeat(3,1fr)}
+}
+/* Стил за страницата на сезона */
+.sp-wrap{max-width:640px;width:100%;margin:0 auto;display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+/* Стил за елементите в страницата на сезона, всеки пряк наследник на */
+.sp-wrap > *{min-width:0}
+/* Стил за вътрешните блокове в петицата на отбора */
+.sp-five > div{min-width:0}
+/* Стил за горната лента на сезона */
+.sp-top{display:grid;grid-template-columns:90px 1fr 90px;align-items:center}
+/* Стил за бутона Back */
+.sp-back{justify-self:start;padding:7px 12px;border-radius:8px;border:1px solid var(--orange);color:var(--orange-2);font-weight:700;font-size:13px}
+/* Стил за точките за стъпките */
+.sp-dots{display:flex;gap:6px;justify-content:center}
+/* Стил за малките елементи в точките за стъпките */
+.sp-dots i{width:8px;height:8px;border-radius:50%;background:var(--line-2)}
+/* Стил за малките елементи (завършена стъпка) в точките за стъпките */
+.sp-dots i.done{background:#64748B}
+/* Стил за малките елементи (активен елемент) в точките за стъпките */
+.sp-dots i.on{background:var(--orange-2);box-shadow:0 0 0 3px rgba(244,63,94,.25)}
+/* Стил за картата на отбора */
+.sp-team{background:linear-gradient(120deg,color-mix(in srgb,var(--tc) 30%,#0C111D),#0C111D 60%);border:1px solid var(--line-2);border-left:4px solid var(--tc);border-radius:14px;padding:14px 16px;display:grid;gap:12px}
+/* Стил за горната част на картата на отбора */
+.sp-team-top{display:flex;align-items:center;gap:12px}
+/* Стил за кръгчето на отбора – голям в горната част на картата на отбора */
+.sp-team-top .tb-badge.big{width:48px;min-width:48px;height:48px;font-size:13px}
+/* Стил за заглавията в картата на отбора */
+.sp-team h3{font-size:20px;font-weight:800;flex:1;min-width:0}
+/* Стил за лентите OFF/DEF */
+.sp-bars{display:grid;gap:4px;width:130px}
+/* Стил за лента OFF/DEF */
+.sp-bar{display:grid;grid-template-columns:28px 1fr 30px;gap:6px;align-items:center}
+/* Стил за малкия текст в лента OFF/DEF */
+.sp-bar small{font-family:var(--f-mono);font-size:10px;font-weight:700;color:var(--orange-2)}
+/* Стил за текстовите части в лента OFF/DEF */
+.sp-bar span{height:4px;border-radius:2px;background:var(--line-2);overflow:hidden}
+/* Стил за малките елементи в лента OFF/DEF */
+.sp-bar span i{display:block;height:100%;background:var(--orange-2)}
+/* Стил за удебеления текст в лента OFF/DEF */
+.sp-bar b{font-size:11px;background:var(--orange);color:#fff;border-radius:4px;text-align:center;padding:1px 0}
+/* Стил за петицата на отбора */
+.sp-five{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;border-top:1px solid var(--line-2);padding-top:10px;text-align:center}
+/* Стил за кръгчето със снимка в петицата на отбора */
+.sp-five .ph{width:40px;margin:0 auto 4px}
+/* Стил за малкия текст в петицата на отбора */
+.sp-five small{font-size:11px;color:var(--muted);display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Стил за малкия текст в петицата на отбора */
+.sp-five .you small{color:var(--orange-2);font-weight:700}
+/* Стил за текстовите части в петицата на отбора (и подобните) */
+.sp-five .you .ph span,.sp-award .ph span{font-size:12px}
+/* Стил за OVR и типа на играча */
+.sp-intro{display:grid;gap:8px}
+/* Стил за голямото OVR */
+.sp-ovr{display:flex;align-items:baseline;gap:8px}
+/* Стил за удебеления текст в голямото OVR */
+.sp-ovr b{font-family:var(--f-display);font-weight:900;font-size:110px;line-height:.85}
+/* Стил за текстовите части в голямото OVR */
+.sp-ovr span{font-family:var(--f-display);font-weight:800;color:var(--orange-2);font-size:20px}
+/* Стил за заглавията в OVR и типа на играча */
+.sp-intro h3{font-size:24px;font-weight:800}
+/* Стил за главния бутон на сезона */
+.sp-cta{width:100%;padding:14px;border-radius:12px;font-weight:800;font-size:16px;color:#fff;background:linear-gradient(180deg,#2563EB,#1E3A8A);border:1px solid #3B82F6;box-shadow:0 6px 18px rgba(37,99,235,.35)}
+/* Стил за главния бутон на сезона, при посочване с мишката */
+.sp-cta:hover{filter:brightness(1.1)}
+/* Стил за фланелката */
+.sp-fig{display:grid;place-items:center;padding:10px 0;background:radial-gradient(closest-side,rgba(244,63,94,.2),transparent)}
+/* Стил за списъка с атрибути */
+.sp-list{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:4px 12px}
+/* Стил за заглавие в сезона */
+.sp-h{font-size:20px;font-weight:800;text-align:left}
+/* Стил за резултата W–L */
+.sp-rec{display:flex;justify-content:center;gap:8px;font-family:var(--f-display);font-weight:900;font-size:72px;line-height:1;color:var(--orange-2)}
+/* Стил за точките на редовния сезон */
+.sp-gd{display:grid;grid-template-columns:repeat(16,1fr);gap:4px;max-width:360px;margin:0 auto;width:100%}
+/* Стил за малките елементи в точките на редовния сезон */
+.sp-gd i{aspect-ratio:1;border-radius:50%;background:#2A3145}
+/* Стил за малките елементи (победа) в точките на редовния сезон */
+.sp-gd i.w{background:#FB7185}
+/* Стил за класирането */
+.sp-stand{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+/* Стил за заглавния ред на класирането */
+.sp-sth{display:grid;grid-template-columns:1fr 70px 46px;padding:10px 14px;font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--muted);text-transform:uppercase;border-bottom:1px solid var(--line)}
+/* Стил за текстовите части в заглавния ред на класирането, първия елемент (и подобните) */
+.sp-sth span:not(:first-child),.sp-tr span:nth-last-child(-n+2){text-align:right}
+/* Стил за ред в класирането */
+.sp-tr{display:grid;grid-template-columns:24px 40px 1fr 70px 46px;align-items:center;padding:7px 14px;border-bottom:1px solid var(--line);font-size:14px}
+/* Стил за текстовите части в ред в класирането, първия елемент */
+.sp-tr span:first-child{color:var(--muted);font-family:var(--f-mono);font-size:12px}
+/* Стил за текстовите части в ред в класирането */
+.sp-tr span{font-family:var(--f-mono);font-size:13px}
+/* Стил за текстовите части в ред в класирането, последния елемент */
+.sp-tr span:last-child{color:var(--muted)}
+/* Стил за ред в класирането – нашия */
+.sp-tr.us{background:linear-gradient(90deg,rgba(225,29,46,.25),transparent);font-weight:800}
+/* Стил за удебеления текст в ред в класирането (нашия) */
+.sp-tr.us b{color:#FDA4AF}
+/* Стил за разделителя в класирането */
+.sp-div{text-align:center;font-family:var(--f-mono);font-size:10px;letter-spacing:.2em;color:var(--dim);padding:4px;border-bottom:1px solid var(--line)}
+/* Стил за картата със статистики */
+.sp-stats{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+/* Стил за заглавие в статистиките */
+.sp-sh{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase;padding:10px 14px 0}
+/* Стил за ред със статистики */
+.sp-row{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid var(--line);margin-top:6px}
+/* Стил за вътрешните блокове в ред със статистики */
+.sp-row div{text-align:center;padding:10px 4px}
+/* Стил за вътрешните блокове в ред със статистики */
+.sp-row div+div{border-left:1px solid var(--line)}
+/* Стил за удебеления текст в ред със статистики */
+.sp-row b{display:block;font-family:var(--f-display);font-weight:900;font-size:32px}
+/* Стил за удебеления текст (лош показател) в ред със статистики */
+.sp-row b.bad{color:#F87171}
+/* Стил за малкия текст в ред със статистики */
+.sp-row small{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+/* Стил за реда с PER */
+.sp-per{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-top:2px solid var(--orange)}
+/* Стил за текстовите части в реда с PER */
+.sp-per span{font-family:var(--f-mono);font-size:11px;font-weight:700;letter-spacing:.12em;color:var(--orange-2);text-transform:uppercase}
+/* Стил за удебеления текст в реда с PER */
+.sp-per b{font-family:var(--f-display);font-size:26px;font-weight:900}
+/* Стил за картата за награда */
+.sp-award{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:12px 14px;text-align:left}
+/* Стил за картата за награда – нашия */
+.sp-award.you{border-color:var(--orange);background:linear-gradient(120deg,rgba(225,29,46,.18),var(--panel))}
+/* Стил за малкия текст в картата за награда */
+.sp-award small{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--muted);text-transform:uppercase}
+/* Стил за вътрешните блокове в картата за награда */
+.sp-award > div{display:flex;gap:12px;align-items:center;margin-top:6px}
+/* Стил за кръгчето със снимка в картата за награда */
+.sp-award .ph{width:46px}
+/* Стил за удебеления текст в картата за награда */
+.sp-award b{display:block;font-size:18px;font-weight:800}
+/* Стил за текстовите части в картата за награда */
+.sp-award span{font-size:12px;color:var(--muted)}
+/* Стил за бележката за мястото */
+.sp-note{color:#D3D8E3;text-align:center}
+/* Стил за мястото преди Tip off */
+.sp-seed{display:grid;justify-items:center;gap:4px;font-size:30px}
+/* Стил за малкия текст в мястото преди Tip off */
+.sp-seed small{font-size:12px;color:var(--muted)}
+/* Стил за бутона Tip off */
+.sp-tip{justify-self:center;width:min(240px,100%);padding:14px;border-radius:12px;font-family:var(--f-display);font-weight:900;font-size:26px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:linear-gradient(180deg,#F43F5E,#BE123C);box-shadow:0 0 30px rgba(244,63,94,.45)}
+/* Стил за заглавието на серията */
+.sp-sr{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--line);padding-bottom:6px}
+/* Стил за удебеления текст в заглавието на серията */
+.sp-sr b{font-weight:800}
+/* Стил за текстовите части в заглавието на серията */
+.sp-sr span{font-family:var(--f-mono);font-size:12px;color:var(--orange-2)}
+/* Стил за квадратчетата W/L */
+.sp-sq{display:flex;gap:5px;align-items:center;margin-top:8px}
+/* Стил за малките елементи в квадратчетата W/L */
+.sp-sq i{width:22px;height:22px;border-radius:5px;border:1px solid var(--line-2);font-style:normal;font-size:10px;font-weight:800;display:grid;place-items:center}
+/* Стил за малките елементи (победа) в квадратчетата W/L */
+.sp-sq i.w{border-color:var(--win);color:#86EFAC;background:rgba(34,197,94,.12)}
+/* Стил за малките елементи (загуба) в квадратчетата W/L */
+.sp-sq i.l{border-color:var(--loss);color:#FCA5A5;background:rgba(239,68,68,.12)}
+/* Стил за наклонения текст в квадратчетата W/L */
+.sp-sq em{margin-left:auto;font-style:normal;font-family:var(--f-mono);color:var(--muted)}
+/* Стил за мача на живо */
+.sp-live{border-radius:16px;border:1px solid var(--line-2);padding:16px;background:linear-gradient(135deg,color-mix(in srgb,var(--a) 28%,#0C111D),#0C111D 50%,color-mix(in srgb,var(--b) 28%,#0C111D))}
+/* Стил за заглавието на мача на живо */
+.sp-lh{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--orange-2);text-transform:uppercase;font-weight:700}
+/* Стил за резултата на живо */
+.sp-ls{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:10px}
+/* Стил за вътрешните блокове в резултата на живо */
+.sp-ls > div{display:grid;gap:4px;justify-items:start}
+/* Стил за вътрешните блокове в резултата на живо, последния елемент */
+.sp-ls > div:last-child{justify-items:end}
+/* Стил за малкия текст в резултата на живо */
+.sp-ls small{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+/* Стил за удебеления текст в резултата на живо */
+.sp-ls b{font-family:var(--f-display);font-weight:900;font-size:88px;line-height:.9;color:#fff;opacity:.85}
+/* Стил за удебеления текст (победителя в мача) в резултата на живо */
+.sp-ls b.won{color:#FBBF24;opacity:1}
+/* Стил за малките елементи в надписа в средата */
+.sp-mid i{font-style:normal;font-size:11px;font-weight:800;padding:3px 10px;border-radius:999px;border:1px solid}
+/* Стил за надписа LIVE в надписа в средата */
+.sp-mid .lv{color:#FCA5A5;border-color:#F87171;background:rgba(239,68,68,.12)}
+/* Стил за надписа FINAL в надписа в средата */
+.sp-mid .fin{color:#fff;border-color:var(--line-2)}
+/* Стил за долния ред на мача на живо */
+.sp-lf{display:flex;justify-content:space-between;align-items:center;margin-top:8px;font-family:var(--f-mono);font-weight:700}
+/* Стил за точките за четвъртите */
+.sp-q{display:flex;gap:5px}
+/* Стил за малките елементи в точките за четвъртите */
+.sp-q i{width:8px;height:8px;border-radius:50%;background:var(--line-2)}
+/* Стил за малките елементи (активен елемент) в точките за четвъртите */
+.sp-q i.on{background:var(--orange-2)}
+/* Стил за лентата за времето */
+.sp-prog{height:4px;border-radius:2px;background:var(--line-2);margin-top:8px;overflow:hidden}
+/* Стил за малките елементи в лентата за времето */
+.sp-prog i{display:block;height:100%;background:var(--orange-2)}
+/* Стил за бутоните за скорост */
+.sp-ctrl{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+/* Стил за бутоните за скорост */
+.sp-speed{display:flex;flex-wrap:wrap;max-width:100%;border:1px solid var(--line-2);border-radius:10px;overflow:hidden}
+/* Стил за всички бутони в бутоните за скорост */
+.sp-speed button{padding:9px 12px;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:14px;color:var(--muted);border-right:1px solid var(--line-2)}
+/* Стил за всички бутони (активен елемент) в бутоните за скорост */
+.sp-speed button.on{background:var(--purple);color:#fff}
+/* Стил за бутона Skip в бутоните за скорост */
+.sp-speed .skip{background:var(--orange);color:#fff;border-right:0}
+/* Стил за бутона за дневника */
+.sp-logb{padding:9px 14px;border-radius:10px;border:1px solid var(--line-2);font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#93C5FD}
+/* Стил за дневника с мачове */
+.sp-log{display:grid;gap:4px;max-height:260px;overflow:auto}
+/* Стил за вътрешните блокове в дневника с мачове */
+.sp-log div{display:grid;grid-template-columns:1fr auto auto;gap:10px;padding:6px 10px;border-radius:8px;background:#0C111D;border-left:3px solid var(--win);font-size:13px}
+/* Стил за вътрешните блокове (загуба) в дневника с мачове */
+.sp-log div.l{border-left-color:var(--loss)}
+/* Стил за удебеления текст в дневника с мачове */
+.sp-log b{font-family:var(--f-mono)}
+/* Стил за текстовите части в дневника с мачове, последния елемент */
+.sp-log span:last-child{color:var(--muted)}
+/* Стил за превключвателя West/East */
+.sp-vt{display:flex;justify-content:center;gap:4px;padding:4px;border:1px solid var(--line-2);border-radius:10px;width:max-content;margin:0 auto}
+/* Стил за всички бутони в превключвателя West/East */
+.sp-vt button{padding:6px 18px;border-radius:7px;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+/* Стил за всички бутони (активен елемент) в превключвателя West/East */
+.sp-vt button.on{background:var(--orange);color:#fff}
+/* Стил за заглавията на колоните в схемата */
+.sp-brh{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}
+/* Стил за h5 в заглавията на колоните в схемата */
+.sp-brh h5{margin:0;text-align:center;font-family:var(--f-mono);font-size:10px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase}
+/* Стил за плейофната схема */
+.sp-br{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;height:330px;margin-top:6px}
+/* Стил за колона в схемата */
+.sp-col{display:flex;flex-direction:column;justify-content:space-around;min-width:0}
+/* Стил за кутийка за серия */
+.sp-m{border:1px solid var(--line-2);border-radius:8px;background:#0C111D;overflow:hidden}
+/* Стил за цветната точка на отбора */
+.sp-dot{width:10px;height:10px;border-radius:50%;background:var(--tc);box-shadow:0 0 0 2px rgba(255,255,255,.15)}
+/* Стил за вътрешните блокове в кутийка за серия */
+.sp-m > div{display:grid;grid-template-columns:10px 14px 1fr auto;gap:5px;align-items:center;padding:4px 6px;font-size:12px}
+/* Стил за вътрешните блокове в кутийка за серия */
+.sp-m > div+div{border-top:1px solid var(--line)}
+/* Стил за кръгчето на отбора в кутийка за серия */
+.sp-m .tb-badge{min-width:26px;height:18px;font-size:9px}
+/* Стил за текстовите части в кутийка за серия */
+.sp-m span{font-family:var(--f-mono);font-size:10px;color:var(--muted)}
+/* Стил за наклонения текст в кутийка за серия */
+.sp-m em{font-style:normal;font-family:var(--f-mono);font-weight:700;color:var(--orange-2)}
+/* Стил за удебеления текст в кутийка за серия */
+.sp-m .us b{color:#FDA4AF}
+/* Стил за победител в кутийка за серия */
+.sp-m .win{background:rgba(34,197,94,.12)}
+/* Стил за вътрешните блокове в кутийка за серия (празен) */
+.sp-m.tbd > div{display:block;color:var(--dim);font-family:var(--f-mono);font-size:11px;padding:6px}
+/* Стил за отчета за сезона */
+.sp-report{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;text-align:center;display:grid;gap:10px}
+/* Стил за отчета за сезона – шампион */
+.sp-report.champ{border-color:#FBBF24;background:radial-gradient(400px 200px at 50% 0%,rgba(251,191,36,.2),var(--panel))}
+/* Стил за заглавията в отчета за сезона */
+.sp-report h3{font-family:var(--f-display);font-weight:900;font-size:40px;text-transform:uppercase}
+/* Стил за заглавията в отчета за сезона (шампион) */
+.sp-report.champ h3{color:#FBBF24}
+/* Стил за четирите числа в отчета */
+.sp-sum{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+/* Стил за вътрешните блокове в четирите числа в отчета */
+.sp-sum div{background:#0C111D;border:1px solid var(--line);border-radius:10px;padding:8px 2px}
+/* Стил за удебеления текст в четирите числа в отчета */
+.sp-sum b{display:block;font-family:var(--f-display);font-weight:900;font-size:24px}
+/* Стил за малкия текст в четирите числа в отчета */
+.sp-sum small{font-size:11px;color:var(--muted)}
+/* Стил за значките за награди */
+.sp-badges{display:flex;gap:6px;justify-content:center}
+/* Стил за текстовите части в значките за награди */
+.sp-badges span{padding:4px 12px;border-radius:999px;background:var(--orange);font-weight:800;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+/* Правила за по-тесни екрани (560px и по-малко) */
+@media (max-width:560px){
+  /* Стил за удебеления текст в голямото OVR */
+  .sp-ovr b{font-size:84px}
+  /* Стил за удебеления текст в резултата на живо */
+  .sp-ls b{font-size:60px}
+  /* Стил за плейофната схема (и подобните) */
+  .sp-br,.sp-brh{gap:4px}
+  /* Стил за плейофната схема */
+  .sp-br{height:290px}
+  /* Стил за цветната точка на отбора в кутийка за серия */
+  .sp-m .sp-dot{display:none}
+  /* Стил за вътрешните блокове в кутийка за серия */
+  .sp-m > div{grid-template-columns:0 12px 1fr auto;padding:4px;font-size:11px}
+  /* Стил за всички бутони в бутоните за скорост */
+  .sp-speed button{padding:8px 7px;font-size:11px;flex:1}
+  /* Стил за бутоните за скорост */
+  .sp-speed{width:100%}
+  /* Стил за бутона за дневника */
+  .sp-logb{width:100%}
+  /* Стил за четирите числа в отчета */
+  .sp-sum{grid-template-columns:repeat(2,1fr)}
+  /* Стил за лентите OFF/DEF */
+  .sp-bars{width:100px}
+}
+
+/* Стил за кръга с OVR */
+.ovr{display:grid;justify-items:center;gap:6px;text-align:center}
+/* Стил за SVG рисунката в кръга с OVR */
+.ovr svg{width:140px;height:140px}
+/* Стил за фона на кръга в кръга с OVR */
+.ovr .ring-bg{fill:none;stroke:var(--line-2);stroke-width:8}
+/* Стил за запълването на кръга в кръга с OVR */
+.ovr .ring-fg{fill:none;stroke:var(--orange);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:50% 50%;transition:stroke-dashoffset .5s}
+/* Стил за числото в кръга в кръга с OVR */
+.ovr .ovr-n{font-family:var(--f-display);font-weight:900;font-size:44px;fill:var(--ink)}
+/* Стил за надписа OVR в кръга с OVR */
+.ovr .ovr-l{font-family:var(--f-mono);font-size:10px;letter-spacing:.2em;fill:var(--muted)}
+/* Стил за брояча на свободните места */
+.slotsleft{width:100%;border:1px solid rgba(225,29,46,.45);background:rgba(225,29,46,.08);border-radius:9px;padding:8px;font-family:var(--f-display);font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--orange-2)}
+/* Стил за списъка с атрибутите */
+.statlist{display:grid;margin-top:12px;border-top:1px solid var(--line)}
+/* Стил за вътрешните блокове в списъка с атрибутите */
+.statlist div{display:flex;justify-content:space-between;align-items:center;padding:9px 2px;border-bottom:1px solid var(--line);font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* Стил за удебеления текст в списъка с атрибутите */
+.statlist div b{color:var(--ink);font-size:13px}
+/* Стил за двете колони на куиза */
+.gquiz{display:grid;grid-template-columns:1fr 1.05fr;gap:18px;align-items:start}
+/* Стил за елементите в двете колони на куиза, всеки пряк наследник на */
+.gquiz > *{min-width:0}
+/* Стил за картата на играча в куиза */
+.qplayer{display:grid;justify-items:center;text-align:center;gap:8px}
+/* Стил за кръгчето със снимка в картата на играча в куиза */
+.qplayer .ph{width:150px}
+/* Стил за заглавията в картата на играча в куиза */
+.qplayer h3{font-size:28px;font-weight:800}
+/* Стил за лентите с умения */
+.qbars{width:100%;display:grid;gap:7px;margin-top:6px}
+/* Стил за лента за умение */
+.qbar{display:grid;grid-template-columns:112px 1fr 34px;gap:10px;align-items:center;font-size:12px;color:var(--muted);text-align:left}
+/* Стил за лентата (фон) в лента за умение */
+.qbar .t{height:8px;border-radius:4px;background:#0C111D;overflow:hidden}
+/* Стил за малките елементи в лента за умение */
+.qbar .t i{display:block;height:100%;border-radius:4px;background:var(--gc)}
+/* Стил за удебеления текст в лента за умение */
+.qbar b{font-family:var(--f-mono);color:var(--ink);text-align:right}
+/* Стил за обяснението след отговор */
+.fb{width:100%;text-align:left;border-left:3px solid var(--win);background:var(--panel-2);border-radius:0 10px 10px 0;padding:10px 14px;font-size:14px}
+/* Стил за обяснението след отговор – лош */
+.fb.bad{border-color:var(--loss)}
+/* Стил за трите факта */
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+/* Стил за карта с факт */
+.fact{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:4px}
+/* Стил за удебеления текст в карта с факт */
+.fact b{font-family:var(--f-display);font-weight:900;font-size:40px;color:var(--orange);line-height:1}
+/* Стил за текстовите части в карта с факт */
+.fact span{font-weight:700}
+/* Стил за абзаците в карта с факт */
+.fact p{color:var(--muted);font-size:14px}
+/* Стил за игрището и описанията */
+.posgrid{display:grid;grid-template-columns:1fr 1.05fr;gap:18px;align-items:start}
+/* Стил за елементите в игрището и описанията, всеки пряк наследник на */
+.posgrid > *{min-width:0}
+/* Стил за списъка с позициите */
+.poslist{display:grid;gap:8px}
+/* Стил за карта на позиция */
+.pos{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:start;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--panel);text-align:left;width:100%}
+/* Стил за карта на позиция – подсветен */
+.pos.hl{border-color:var(--pc);background:linear-gradient(90deg,color-mix(in srgb,var(--pc) 18%,var(--panel)),var(--panel))}
+/* Стил за значката за позиция в карта на позиция */
+.pos .pbadge{text-align:center;padding:5px 0;font-size:12px}
+/* Стил за заглавията в карта на позиция */
+.pos h4{font-size:16px;font-weight:700;margin-bottom:3px}
+/* Стил за текстовите части в карта на позиция */
+.pos h4 span{color:var(--muted);font-weight:500;font-size:13px}
+/* Стил за абзаците в карта на позиция */
+.pos p{color:var(--muted);font-size:14px}
+/* Стил за речника */
+.gloss{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+/* Стил за вътрешните блокове в речника */
+.gloss div{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+/* Стил за удебеления текст в речника */
+.gloss b{display:block;font-weight:700}
+/* Стил за абзаците в речника */
+.gloss p{font-size:13px;color:var(--muted)}
+/* Стил за тъмния фон на прозореца */
+.modal{position:fixed;inset:0;z-index:20;background:rgba(3,5,10,.72);display:grid;place-items:center;padding:16px}
+/* Стил за прозореца */
+.dlg{background:var(--panel);border:1px solid var(--line-2);border-radius:14px;max-width:520px;width:100%;max-height:calc(100% - 32px);overflow:auto;padding:22px;display:grid;gap:12px;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+/* Стил за заглавията в прозореца */
+.dlg h3{color:var(--amber);font-size:24px;font-weight:800}
+/* Стил за заглавията в прозореца */
+.dlg h4{font-size:15px;font-weight:700;margin-top:4px}
+/* Стил за абзаците в прозореца (и подобните) */
+.dlg p,.dlg li{color:#C9CFDC;font-size:14px}
+/* Стил за списъка в прозореца */
+.dlg ul{margin:4px 0 0;padding-left:18px;display:grid;gap:2px}
+/* Стил за долната част на прозореца в прозореца */
+.dlg .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;border-top:1px solid var(--line);padding-top:14px;flex-wrap:wrap}
+/* Стил за удебеления текст в прозореца */
+.dlg .foot b{color:var(--amber)}
+/* Стил за долната лента */
+footer{color:var(--dim);font-size:12px;text-align:center;padding-block:24px}
+/* Правила за по-тесни екрани (820px и по-малко) */
+@media (max-width:820px){
+  /* Стил за двете колони на 82-0 (и подобните) */
+  .g82,.gquiz,.posgrid{grid-template-columns:1fr}
+  /* Стил за картите на игрите */
+  .modes{grid-template-columns:1fr}
+  /* Стил за четирите числа */
+  .stripnums{grid-template-columns:repeat(2,1fr)}
+  /* Стил за трите факта (и подобните) */
+  .facts,.gloss{grid-template-columns:1fr}
+  /* Стил за точките на сезона */
+  .season{grid-template-columns:repeat(21,1fr)}
+}
+/* Правила за по-тесни екрани (480px и по-малко) */
+@media (max-width:480px){
+  /* Стил за място на игрището */
+  .slot{width:62px}
+  /* Стил за празното квадратче в място на игрището */
+  .slot .sq{width:46px;height:46px;font-size:12px}
+  /* Стил за кръгчето със снимка в място на игрището (попълнен) */
+  .slot.full .ph{width:46px}
+  /* Стил за името под снимката в място на игрището */
+  .slot .nm{font-size:10px}
+  /* Стил за рамката на барабана в барабан */
+  .reel .box{width:130px}
+  /* Стил за удебеления текст в барабан */
+  .reel .in b{font-size:28px}
+  /* Стил за място на пейката */
+  .bslot{flex-direction:column;text-align:center;gap:4px;padding:6px 4px}
+  /* Стил за удебеления текст в място на пейката */
+  .bslot b{font-size:11px}
+}
+
+/* ===== Допълнителни правила за версията на ASP.NET Core ===== */
+/* Голямото заглавие на началната страница */
+.home-head h1{font-size:clamp(28px,4.5vw,40px);font-weight:800}
+/* Текстът под името в барабана (малък и блед) */
+.reel > span{font-size:12px;color:var(--muted)}
+/* Редът с бутони за място под играч в чекмеджето */
+.place{grid-column:1 / -1;display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--muted)}
+/* Блед (вторичен) текст */
+.muted{color:var(--muted)}
+/* Малък текст */
+.small{font-size:12px}
+/* Удебелен текст */
+.strong{font-weight:700}
+/* Подредени един под друг елементи с разстояние между тях */
+.stack{display:grid;gap:10px}
+/* Центрирано съдържание */
+.center{text-align:center;justify-items:center}
+/* Колона с центрирано съдържание (оценката на отбора в 82-0) */
+.center-stack{display:grid;justify-items:center;gap:4px;text-align:center}
+/* Голямо число (оценка или резултат от куиза) */
+.bignum{font-family:var(--f-display);font-weight:900;font-size:64px;line-height:1;color:var(--ink)}
+/* Подсказка, подравнена вляво */
+.hint.left{text-align:left}
+/* Малко заглавие в панел */
+.h3{font-family:var(--f-display);text-transform:uppercase;font-weight:900;font-size:26px;letter-spacing:.02em}
+/* Заглавие на секция с по-малко разстояние */
+.ghead.tight{margin-bottom:10px}
+/* Панелът със сезона в 82-0 */
+.season-panel{display:grid;gap:12px;margin-top:14px}
+/* Тирето между победите и загубите на таблото */
+.scoreboard .sep{font-size:30px;color:var(--dim)}
+/* Редът с номера на рунда и точките в куиза */
+.qprog{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.12em;color:var(--muted)}
+/* Абзац с ограничена ширина */
+.narrow{max-width:46ch;margin-inline:auto}
+/* Частта след редовния сезон (класиране и награди) */
+.after-season{display:grid;gap:14px}
+/* Една конференция в плейофната схема */
+.sp-conf{display:grid;gap:8px}
+/* Фланелката в цвета на отбора */
+.ss-jersey{width:min(220px,60vw);height:auto;filter:drop-shadow(0 20px 40px rgba(0,0,0,.5))}
+/* Купата при шампионска титла (с анимация) */
+.ss-trophy{font-size:72px;line-height:1;animation:pop .6s ease-out}
+/* Двата бутона в края на сезона: един до друг */
+.ss-actions{display:grid;gap:8px;grid-auto-flow:column;grid-auto-columns:1fr}
+/* Формулярите в тях заемат цялата ширина */
+.ss-actions form{display:grid}
+/* Бутоните във формулярите се разтягат */
+.ss-actions button{width:100%}
+/* Правила за по-тесни екрани (820px и по-малко) */
+@media (max-width:820px){
+  /* Бутоните в края на сезона един под друг */
+  .ss-actions{grid-auto-flow:row}
+}
+/* Правила за много тесни екрани (480px и по-малко) */
+@media (max-width:480px){
+  /* Скриваме текста до малкото лого в менюто */
+  .mini-logo span{display:none}
+}
+/* Без анимации за хора, които са ги изключили в системата */
+@media (prefers-reduced-motion:reduce){
+  /* Спираме всички анимации и преходи */
+  *{animation:none!important;transition:none!important}
+}

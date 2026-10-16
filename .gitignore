@@ -1,0 +1,6 @@
+# Папки, които Visual Studio и dotnet създават при компилиране (не се качват в Git)
+bin/
+obj/
+.vs/
+*.user
+*.suo
