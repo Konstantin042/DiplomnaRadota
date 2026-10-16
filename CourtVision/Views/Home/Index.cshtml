@@ -1,0 +1,27 @@
+@* Началната страница: лого, заглавие, картите на игрите и числата за NBA *@
+@{
+    ViewData["Title"] = "Home"; // Заглавие в раздела
+}
+<section class="view">
+    @* Горната част с логото и заглавието *@
+    <div class="home-head">
+        @* Логото: топка и лента с надпис *@
+        <div class="logo"><svg class="ball"><use href="#ball" /></svg><div class="ribbon">COURT VISION<small>DIPLOMA PROJECT</small></div></div>
+        @* Главното заглавие *@
+        <h1>Can you learn the NBA in 10 minutes?</h1>
+        @* Кратко обяснение *@
+        <p>No basketball knowledge needed. Pick a game below. Each one explains its rules first and ends with a short note on how it works in the real NBA.</p>
+    </div>
+
+    @* Картите с игрите *@
+    <div class="modes">
+    </div>
+
+    @* Четири числа за NBA *@
+    <div class="stripnums">
+        <div class="num"><b>30</b><span>teams in the league</span></div>   @* Отбори *@
+        <div class="num"><b>82</b><span>games per season</span></div>      @* Мачове в сезона *@
+        <div class="num"><b>5</b><span>players on court</span></div>       @* Играчи на игрището *@
+        <div class="num"><b>73–9</b><span>best record ever</span></div>    @* Най-добрият баланс *@
+    </div>
+</section>
