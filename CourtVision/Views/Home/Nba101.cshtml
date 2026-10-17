@@ -1,0 +1,61 @@
+@* Урокът NBA 101: основните правила, позициите и речник *@
+@{
+    ViewData["Title"] = "NBA 101"; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие на секцията *@
+    <div class="ghead"><div><div class="label">Start here</div><h2>NBA 101</h2><p>The NBA (National Basketball Association) is the top professional basketball league in the world, with teams in the USA and Canada.</p></div></div>
+
+    @* Три основни факта *@
+    <div class="facts">
+        <div class="fact"><b>48 min</b><span>Game length</span><p>Four quarters of 12 minutes. The clock stops often, so a game lasts about 2 hours 15 minutes.</p></div>   @* Продължителност *@
+        <div class="fact"><b>1 · 2 · 3</b><span>Points per shot</span><p>1 for a free throw, 2 for a shot inside the line, 3 for a shot from beyond 7.24 m.</p></div>             @* Точки *@
+        <div class="fact"><b>16</b><span>Playoff teams</span><p>After 82 games the best teams play knockout series. First to win 4 games goes through.</p></div>               @* Плейофи *@
+    </div>
+
+    @* Игрището и описанията на позициите *@
+    <div class="posgrid">
+        <div>
+            @* Указание *@
+            <div class="label" style="margin-bottom:8px">Where each position usually plays · tap a spot</div>
+            @* Игрището с бутоните за позициите *@
+            <div class="court" id="court101">
+                <partial name="_CourtLines" />
+                @* За всяка от петте позиции *@
+                @foreach (var code in Positions.Order)
+                {
+                    var (left, top) = Positions.Spot[code]; // Къде стои на игрището
+                    @* Бутон: при натискане JavaScript подсвечва описанието *@
+                    <button class="slot @(code == "PG" ? "target" : "")" data-spot="@code" style="left:@left%;top:@top%" aria-label="@Positions.Info[code].Name"><span class="sq">@code</span></button>
+                }
+            </div>
+        </div>
+        @* Списъкът с позициите *@
+        <div class="poslist" id="poslist">
+            @* За всяка позиция *@
+            @foreach (var p in Positions.Info.Values)
+            {
+                @* Карта с код, име, ръст и описание *@
+                <div class="pos @(p.Code == "PG" ? "hl" : "")" data-pos="@p.Code" style="--pc:var(--@p.Code)">
+                    <span class="pbadge">@p.Code</span>
+                    <div><h4>@p.Name <span>· @p.Height</span></h4><p>@p.Description</p></div>
+                </div>
+            }
+        </div>
+    </div>
+
+    @* Речник с основните думи *@
+    <div class="gloss">
+        <div><b>Rebound</b><p>Catching the ball after a missed shot.</p></div>                               @* Борба *@
+        <div><b>Assist</b><p>A pass that leads straight to a teammate's basket.</p></div>                    @* Асистенция *@
+        <div><b>Block / Steal</b><p>Stopping a shot with your hand, or taking the ball from an opponent.</p></div> @* Блокада / кражба *@
+        <div><b>PPG · RPG · APG</b><p>Points, rebounds and assists per game.</p></div>                       @* Съкращения *@
+        <div><b>OVR</b><p>Overall rating from 1 to 99 used on this site.</p></div>                           @* Обща оценка *@
+        <div><b>MVP</b><p>Most Valuable Player: the award for the season's best player.</p></div>            @* Най-полезен играч *@
+    </div>
+</section>
+
+@* JavaScript за подсветяване на позициите *@
+@section Scripts {
+    <script src="~/js/nba101.js" asp-append-version="true"></script>
+}
