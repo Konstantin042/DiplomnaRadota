@@ -9,6 +9,9 @@ public class HomeController : Controller
     // GET / или /Home/Index – началната страница
     public IActionResult Index() => View();
 
+    // GET /Home/Nba101 – урокът за начинаещи
+    public IActionResult Nba101() => View();
+
     // GET /Home/Error – обща страница при грешка
     public IActionResult Error() => View();
 }
