@@ -29,6 +29,8 @@ builder.Services.AddSession(options =>
 builder.Services.AddSingleton<DataService>();
 // Услугата за снимките също е една за цялото приложение
 builder.Services.AddSingleton<PhotoService>();
+// Логиката на играта 82-0 (не пази състояние, затова може да е Singleton)
+builder.Services.AddSingleton<ChallengeService>();
 
 // Създаваме самото приложение от събраните настройки
 var app = builder.Build();

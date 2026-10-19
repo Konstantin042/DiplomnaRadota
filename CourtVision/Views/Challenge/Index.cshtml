@@ -1,0 +1,53 @@
+@* Страницата на играта 82-0 *@
+@model ChallengeState
+@{
+    ViewData["Title"] = "82-0"; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие и бутон за правилата *@
+    <div class="ghead"><div><div class="label">Game 1 · Team building</div><h2>Can you go 82-0?</h2></div><button type="button" class="iconbtn" data-help="challenge" aria-label="How to play">?</button></div>
+
+    @* Таблото на играта: съдържанието идва от частичния изглед _Board и се подменя без презареждане *@
+    <div id="board">
+        <partial name="_Board" model="Model" />
+    </div>
+
+    @* Обяснение как е в истинската NBA *@
+    <div class="real">
+        <h3>In the real NBA</h3>
+        <p>Each of the 30 teams plays 82 games in the regular season: 41 at home and 41 away. No team has ever won all 82. The best record is 73 wins and 9 losses, set by the Golden State Warriors in 2015–16.</p>
+        <p>Stars alone don't win. A team needs balance: a playmaker, shooters, and tall players to protect the basket. That's why this game also checks your team's weakest skill.</p>
+        <p>The stats in this game are real: per-game averages from Basketball-Reference for each player, on that team, in that decade. Steals and blocks were only recorded from the 1973–74 season, so older players show “–” and the game estimates them.</p>
+        <p>Only five players are on the court at once, but each team has up to 15 players. The five who begin the game are the starters; the rest are reserves (the "bench"), who come in when starters get tired or in foul trouble. Many players can play more than one position, which gives the coach more options.</p>
+    </div>
+</section>
+
+@* Текстът за прозореца "How to play" *@
+<template id="help-challenge">
+    <h3>How to play 82-0</h3>
+    <p>Build the best team you can and see if it can win every game of an 82-game season.</p>
+    <h4>The draft</h4>
+    <ul>
+        <li>Eight rounds: five starters (PG, SG, SF, PF, C) and three reserves on the bench.</li>
+        <li>Each round, press Spin to get a random team and a decade (era). You see every player from that team in that decade.</li>
+        <li>Not happy? You have 2 team respins and 2 era respins for the whole draft.</li>
+        <li>Tap a player, then choose his spot. Some players can play more than one position.</li>
+    </ul>
+    <h4>Stats</h4>
+    <ul>
+        <li>PPG, RPG, APG, SPG, BPG: points, rebounds, assists, steals and blocks per game, for that team in that decade.</li>
+        <li>Use search, the G / F / C filter and the sort menu to find the right player.</li>
+    </ul>
+    <h4>Team rating</h4>
+    <ul>
+        <li>Your rating comes from your players' stats, plus a little from the bench.</li>
+        <li>Your starting five needs enough rebounds, assists, steals and blocks. Too many scorers also hurts.</li>
+        <li>82-0 is very hard: even a great team can lose any single game.</li>
+    </ul>
+    <div class="foot"><b>Can you go 82-0?</b><button type="button" class="btn" data-close>Let's play</button></div>
+</template>
+
+@* JavaScript за анимациите и филтрите на 82-0 *@
+@section Scripts {
+    <script src="~/js/challenge.js" asp-append-version="true"></script>
+}
