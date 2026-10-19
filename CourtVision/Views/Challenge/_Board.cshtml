@@ -1,0 +1,267 @@
+@* Таблото на 82-0: барабани, списък с играчи, игрище, пейка, таблица и сезон *@
+@model ChallengeState
+@inject ChallengeService Game
+@inject PhotoService Photos
+@{
+    // Истина, ако всички 8 места са попълнени
+    var done = Model.IsComplete;
+    // Завъртяният отбор и ера (или null)
+    var team = Model.CurrentKey?.Split('|')[0];
+    var era = Model.CurrentKey?.Split('|')[1];
+    // Свободните титулярски места
+    var openStarters = Positions.Order.Where(k => !Model.Lineup.ContainsKey(k)).ToList();
+    // Броят свободни места на пейката
+    var openBench = new[] { "B0", "B1", "B2" }.Count(k => !Model.Lineup.ContainsKey(k));
+    // Рейтингът на отбора (само когато драфтът е готов)
+    var rating = done ? Game.Rate(Model) : null;
+    // Играчите в отворения състав
+    var drawer = Game.DrawerPlayers(Model);
+}
+@* Един формуляр за цялото табло: всеки бутон изпраща различно действие към контролера *@
+<form id="cform" method="post" data-ajax="#board">
+    <div class="g82">
+        @* Лявата част: рунд, барабани, бутони и списък с играчи *@
+        <div class="panel" id="chLeft">
+            @* Рундът и осемте точки за напредъка *@
+            <div class="roundbar">
+                <b>@(done ? "Roster complete" : $"Round {Model.Round}/8")<span class="muted">@(done ? "" : Model.Round <= 5 ? " · starters" : " · bench")</span></b>
+                <div class="dots5">
+                    @for (var i = 1; i <= 8; i++)
+                    {
+                        <i class="@(i < Model.Round ? "on" : "")"></i>
+                    }
+                </div>
+            </div>
+
+            @if (!done)
+            {
+                @* Двата барабана: отбор (червен) и ера (син) *@
+                <div class="reels">
+                    <div class="reel" style="--rc:var(--orange)"><div class="box"><div class="in"><small>TEAM</small><b data-reel="team">@(team ?? "–")</b></div></div></div>
+                    <div class="reel" style="--rc:var(--purple)"><div class="box"><div class="in"><small>ERA</small><b data-reel="era">@(era != null ? ChallengeService.EraLabel(era) : "–")</b></div></div></div>
+                </div>
+
+                @* Бутоните: Spin или двата респина *@
+                <div class="spinrow">
+                    @if (team == null)
+                    {
+                        @* Обикновено завъртане *@
+                        <button type="submit" class="btn" formaction="/Challenge/Spin" name="mode" value="all" data-spin="all">Spin</button>
+                    }
+                    else
+                    {
+                        @* Респин само на отбора *@
+                        <button type="submit" class="btn sec" formaction="/Challenge/Spin" name="mode" value="team" data-spin="team" disabled="@(Model.TeamRespins <= 0)">↻ Team (@Model.TeamRespins)</button>
+                        @* Респин само на ерата *@
+                        <button type="submit" class="btn sec" formaction="/Challenge/Spin" name="mode" value="era" data-spin="era" disabled="@(Model.EraRespins <= 0)">↻ Era (@Model.EraRespins)</button>
+                    }
+                </div>
+
+                if (team != null && era != null)
+                {
+                    @* Чекмеджето със състава на отбора *@
+                    <div class="drawer">
+                        @* Заглавие: отбор и десетилетие *@
+                        <div class="dhead"><b>@team · @ChallengeService.EraLabel(era)</b><span>@Teams.Get(team).Name, @ChallengeService.EraYears(era)</span></div>
+                        @* Търсене, филтри и подреждане (работят в браузъра) *@
+                        <div class="dtools">
+                            <input id="psearch" type="search" placeholder="Search…" aria-label="Search players" autocomplete="off">
+                            <div class="fchips">
+                                <button type="button" class="fchip on" data-f="ALL">ALL</button>   @* Всички *@
+                                <button type="button" class="fchip" data-f="G">G</button>          @* Гардове *@
+                                <button type="button" class="fchip" data-f="F">F</button>          @* Крила *@
+                                <button type="button" class="fchip" data-f="C">C</button>          @* Центрове *@
+                            </div>
+                            <select id="psort" aria-label="Sort by">
+                                <option value="ppg">PPG</option>   @* По точки *@
+                                <option value="rpg">RPG</option>   @* По борби *@
+                                <option value="apg">APG</option>   @* По асистенции *@
+                                <option value="spg">SPG</option>   @* По кражби *@
+                                <option value="bpg">BPG</option>   @* По блокади *@
+                            </select>
+                        </div>
+                        @* Списъкът с играчите *@
+                        <div class="plist" id="plist">
+                            @foreach (var p in drawer)
+                            {
+                                // Има ли място за този играч
+                                var fits = ChallengeService.Fits(Model, p);
+                                // Свободните места, на които може да играе
+                                var spots = ChallengeService.OpenSlots(Model).Where(p.CanPlay).ToList();
+                                <div class="prow @(fits ? "" : "off")" data-name="@p.Name.ToLowerInvariant()" data-pos="@(string.Join(" ", p.Positions))" data-fit="@(fits ? 1 : 0)"
+                                     data-ppg="@p.Ppg.ToString("0.0")" data-rpg="@p.Rpg.ToString("0.0")" data-apg="@p.Apg.ToString("0.0")" data-spg="@p.StealValue.ToString("0.0")" data-bpg="@p.BlockValue.ToString("0.0")">
+                                    @* Редът с името и статистиките (натискане показва къде да сложим играча) *@
+                                    <button type="button" class="prow-main" data-toggle disabled="@(!fits)">
+                                        @Photos.Face(p.Name, p.Id, p.MainPosition)
+                                        <span class="pinfo"><b>@p.Name</b><small>@p.PositionsText@(fits ? "" : " · no open spot")</small></span>
+                                        <span class="pstats">
+                                            <span><small>PPG</small><b>@p.Ppg.ToString("0.0")</b></span>                                     @* Точки *@
+                                            <span><small>RPG</small><b>@p.Rpg.ToString("0.0")</b></span>                                     @* Борби *@
+                                            <span><small>APG</small><b>@p.Apg.ToString("0.0")</b></span>                                     @* Асистенции *@
+                                            <span><small>SPG</small><b>@(p.Spg?.ToString("0.0") ?? "–")</b></span>                           @* Кражби *@
+                                            <span><small>BPG</small><b>@(p.Bpg?.ToString("0.0") ?? "–")</b></span>                           @* Блокади *@
+                                        </span>
+                                    </button>
+                                    @* Бутоните за мястото (скрити, докато не натиснем играча) *@
+                                    <div class="place" hidden>
+                                        <span>Place @p.Name.Split(' ').Last() as:</span>
+                                        @foreach (var spot in spots.Where(x => !ChallengeService.IsBench(x)))
+                                        {
+                                            <button type="submit" class="pbtn" formaction="/Challenge/Place" name="pick" value="@($"{p.Id}|{spot}")">@spot</button>
+                                        }
+                                        @if (spots.Any(ChallengeService.IsBench))
+                                        {
+                                            <button type="submit" class="pbtn bench" formaction="/Challenge/Place" name="pick" value="@($"{p.Id}|{spots.First(ChallengeService.IsBench)}")">Bench</button>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @* Бележка за данните *@
+                        <p class="dnote">Every player who played at least 20 games for the @Teams.Get(team).Name in the @ChallengeService.EraLabel(era). Stats are his per-game averages for this team in this decade. “–” means the stat wasn't recorded yet (steals and blocks started in 1973–74).</p>
+                    </div>
+                }
+                else
+                {
+                    @* Подсказка кои места са свободни *@
+                    <p class="hint">Open: @(openStarters.Count > 0 ? string.Join(", ", openStarters) : "no starting spots")@(openBench > 0 ? $" + {openBench} bench" : ""). Press Spin to get a team and an era.</p>
+                }
+            }
+            else if (rating != null)
+            {
+                @* Рейтингът на отбора след драфта *@
+                <div class="center-stack">
+                    <div class="label">Team rating</div>
+                    <div class="bignum">@rating.Rating</div>
+                    <p class="muted small">Even a rating in the 90s is not enough for an easy 82-0. Every game can be lost.</p>
+                </div>
+                @* Зелени и червени кутийки за баланса на петицата *@
+                <div class="needs">
+                    @foreach (var n in rating.Needs)
+                    {
+                        <div class="@(n.Penalty > 0 ? "bad" : "ok")"><span>@n.Label</span><b>@n.Value.ToString("0.0")</b><small>need @n.Min+</small></div>
+                    }
+                    <div class="@(rating.ShotPenalty > 0 ? "bad" : "ok")"><span>Points</span><b>@rating.Points.ToString("0.0")</b><small>max 110</small></div>
+                </div>
+                <p class="hint left">Totals of your starting five. Red means the team loses strength: too few rebounds, assists or defense, or too many scorers sharing one ball.</p>
+                @* Бутони: симулация и нов драфт *@
+                <div class="stack">
+                    <button type="submit" class="btn wide" formaction="/Challenge/Simulate" data-sim>@(Model.Games == null ? "Simulate 82 games" : "Simulate again")</button>
+                    <button type="submit" class="btn sec wide" formaction="/Challenge/Reset">Draft a new team</button>
+                </div>
+            }
+        </div>
+
+        @* Дясната част: игрището, пейката и съобщението *@
+        <div>
+            <div class="court" id="court82">
+                <partial name="_CourtLines" />
+                @foreach (var code in Positions.Order)
+                {
+                    // Играчът на това място (ако има)
+                    Model.Lineup.TryGetValue(code, out var p);
+                    // Позицията на мястото върху игрището
+                    var (left, top) = Positions.Spot[code];
+                    // CSS класове: пълно, избрано, възможна цел
+                    var cls = $"slot {(p != null ? "full" : "")} {(Model.SelectedSlot == code ? "sel" : "")} {(ChallengeService.IsTarget(Model, code) ? "elig" : "")}";
+                    <button type="submit" class="@cls" formaction="/Challenge/Slot" name="slot" value="@code" style="left:@left%;top:@top%" aria-label="@Positions.Info[code].Name">
+                        @if (p != null)
+                        {
+                            @Photos.Face(p.Name, p.Id, code)<span class="pbadge" style="--pc:var(--@code)">@code</span><span class="nm">@p.Name.Split(' ').Last()</span>
+                        }
+                        else
+                        {
+                            <span class="sq">@code</span>
+                        }
+                    </button>
+                }
+            </div>
+            @* Пейката с трите резерви *@
+            <div class="bench">
+                <span class="bl">BENCH</span>
+                @for (var i = 0; i < 3; i++)
+                {
+                    // Ключът на мястото на пейката
+                    var key = "B" + i;
+                    // Играчът там (ако има)
+                    Model.Lineup.TryGetValue(key, out var p);
+                    var cls = $"bslot {(p != null ? "full" : "")} {(Model.SelectedSlot == key ? "sel" : "")} {(ChallengeService.IsTarget(Model, key) ? "elig" : "")}";
+                    <button type="submit" class="@cls" formaction="/Challenge/Slot" name="slot" value="@key" aria-label="Reserve @(i + 1)">
+                        @if (p != null)
+                        {
+                            @Photos.Face(p.Name, p.Id, p.MainPosition)<span><b>@p.Name.Split(' ').Last()</b><small>@p.PositionsText</small></span>
+                        }
+                        else
+                        {
+                            <span class="empty">Reserve @(i + 1)</span>
+                        }
+                    </button>
+                }
+            </div>
+            @* Съобщението от последното действие *@
+            <p class="hint" id="chMsg">@(Model.Message != "" ? Model.Message : Model.Lineup.Count > 0 ? "Tap a player on the court or bench to move or swap him." : "")</p>
+        </div>
+    </div>
+
+    @* Таблицата със статистиките на отбора *@
+    <div class="panel">
+        <div class="ghead tight"><div><div class="label">Your roster</div><h3 class="h3">Player stats</h3></div><span class="muted small">Per game, for that team in that decade</span></div>
+        <div class="tscroll">
+            <table class="ltable">
+                <thead><tr><th>Spot</th><th>Player</th><th>Team · Era</th><th>Plays</th><th class="n">PPG</th><th class="n">RPG</th><th class="n">APG</th><th class="n">SPG</th><th class="n">BPG</th></tr></thead>
+                <tbody>
+                    @foreach (var slot in ChallengeService.Slots)
+                    {
+                        // Играчът на това място
+                        Model.Lineup.TryGetValue(slot, out var p);
+                        <tr class="@(ChallengeService.IsBench(slot) ? "bn" : "")">
+                            <td>@if (ChallengeService.IsBench(slot)) {<span class="pbadge" style="--pc:#475569">BN</span>} else {<span class="pbadge" style="--pc:var(--@slot)">@slot</span>}</td>
+                            <td class="pn">@(p?.Name ?? "Empty")</td>
+                            <td>@(p != null ? $"{p.Team} · {ChallengeService.EraLabel(p.Decade)}" : "")</td>
+                            <td>@(p?.PositionsText ?? "")</td>
+                            <td class="n">@(p?.Ppg.ToString("0.0") ?? "–")</td>
+                            <td class="n">@(p?.Rpg.ToString("0.0") ?? "–")</td>
+                            <td class="n">@(p?.Apg.ToString("0.0") ?? "–")</td>
+                            <td class="n">@(p?.Spg?.ToString("0.0") ?? "–")</td>
+                            <td class="n">@(p?.Bpg?.ToString("0.0") ?? "–")</td>
+                        </tr>
+                    }
+                </tbody>
+                @{
+                    // Титулярите, които вече са избрани
+                    var starters = Positions.Order.Where(Model.Lineup.ContainsKey).Select(k => Model.Lineup[k]).ToList();
+                }
+                <tfoot>
+                    <tr>
+                        <td></td><td colspan="3">Starting five total@(starters.Any(p => p.IsEstimated) ? " (missing steals/blocks estimated)" : "")</td>
+                        <td class="n">@(starters.Count > 0 ? starters.Sum(p => p.Ppg).ToString("0.0") : "–")</td>
+                        <td class="n">@(starters.Count > 0 ? starters.Sum(p => p.Rpg).ToString("0.0") : "–")</td>
+                        <td class="n">@(starters.Count > 0 ? starters.Sum(p => p.Apg).ToString("0.0") : "–")</td>
+                        <td class="n">@(starters.Count > 0 ? starters.Sum(p => p.StealValue).ToString("0.0") : "–")</td>
+                        <td class="n">@(starters.Count > 0 ? starters.Sum(p => p.BlockValue).ToString("0.0") : "–")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    @if (Model.Games != null)
+    {
+        // Броят победи
+        var wins = Model.Games.Count(g => g);
+        // Текстът за резултата
+        var verdict = ChallengeService.Verdict(wins);
+        @* Сезонът: JavaScript показва мачовете един по един (W = победа, L = загуба) *@
+        <div class="panel season-panel" id="season82" data-games="@(string.Concat(Model.Games.Select(g => g ? 'W' : 'L')))">
+            <div class="scoreboard"><div class="w"><b data-w>0</b><small>WINS</small></div><b class="sep">–</b><div class="l"><b data-l>0</b><small>LOSSES</small></div></div>
+            <div class="season">
+                @for (var i = 0; i < 82; i++)
+                {
+                    <i></i>
+                }
+            </div>
+            @* Крайният резултат (показва се в края на анимацията) *@
+            <div class="verdict" data-verdict hidden><h3>@verdict.Title</h3><p>@verdict.Text</p></div>
+        </div>
+    }
+</form>
