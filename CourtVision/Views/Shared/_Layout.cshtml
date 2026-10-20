@@ -50,6 +50,7 @@
                 <a class="tab" asp-controller="Home" asp-action="Index" aria-current="@Current("Home")">Home</a>
                 <a class="tab" asp-controller="Home" asp-action="Nba101" aria-current="@Current("Home", "Nba101")">NBA 101</a>
                 <a class="tab" asp-controller="Challenge" asp-action="Index" aria-current="@Current("Challenge")">82-0</a>
+                <a class="tab" asp-controller="Build" asp-action="Index" aria-current="@((controller is "Build" or "Season").ToString().ToLower())">Build-a-Player</a>
             </nav>
         </div>
     </header>

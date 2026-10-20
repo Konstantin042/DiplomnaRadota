@@ -1,0 +1,52 @@
+@* Началното меню на Build-a-Player: Guard/Big и All-Time/Current *@
+@model BuildState
+@inject BuildService Game
+@{
+    // Атрибутите на избраната група
+    var attrs = Grades.For(Model.Group);
+    // Цветовете на лентите по силуета
+    var colors = new[] { "#3B82F6", "#F43F5E", "#22C55E", "#60A5FA", "#EAB308", "#FB7185", "#0EA5E9", "#A78BFA", "#38BDF8", "#F97316" };
+    // Кратките етикети на атрибутите
+    var lab = attrs.Select(a => a.Short).ToArray();
+}
+@* Формуляр: бутоните изпращат избора към контролера *@
+<form method="post" data-ajax="#broot" class="bpm">
+    @* Превключвател Guard / Big *@
+    <div class="bpm-toggle" role="group" aria-label="Position">
+        <button type="submit" formaction="/Build/Group" name="group" value="g" class="@(Model.Group == "g" ? "on" : "")"><b>Guard</b><small>PG · SG · SF</small></button>
+        <button type="submit" formaction="/Build/Group" name="group" value="b" class="@(Model.Group == "b" ? "on" : "")"><b>Big</b><small>PF · C</small></button>
+    </div>
+
+    @* Силуетът с цветни ленти: всяка лента е един атрибут *@
+    <div class="bpm-fig">
+        <svg viewBox="0 0 200 230" aria-hidden="true">
+            <g font-family="Big Shoulders Display,Arial Narrow,sans-serif" font-weight="800" font-size="9" text-anchor="middle">
+                <circle cx="100" cy="24" r="15" fill="@colors[8]" /><text x="100" y="27" fill="#0B1020">@lab[8]</text>                                              @* Глава: IQ *@
+                <path d="M30 52 Q100 38 170 52 L170 64 Q100 54 30 64Z" fill="@colors[0]" /><text x="100" y="60" fill="#0B1020">@lab[0]</text>                     @* Ръце: стрелба *@
+                <rect x="74" y="64" width="52" height="22" fill="@colors[1]" /><text x="100" y="78" fill="#0B1020">@lab[1]</text>                                  @* Гърди: завършване *@
+                <rect x="74" y="86" width="52" height="22" fill="@colors[5]" /><text x="100" y="100" fill="#0B1020">@lab[5]</text>                                 @* Корем: бързина *@
+                <rect x="74" y="108" width="52" height="22" fill="@colors[6]" /><text x="100" y="122" fill="#0B1020">@lab[6]</text>                                @* Колан: отскок *@
+                <path d="M74 130h52l-2 26H76z" fill="@colors[2]" /><text x="100" y="146" fill="#0B1020">@lab[2]</text>                                            @* Шорти: умение 3 *@
+                <path d="M76 156h22l-2 32H78zM102 156h22l-2 32h-18z" fill="@colors[3]" /><text x="100" y="175" fill="#0B1020">@lab[3]</text>                      @* Бедра: умение 4 *@
+                <path d="M78 188h18l-1 22H79zM104 188h18l-1 22h-16z" fill="@colors[4]" /><text x="100" y="203" fill="#0B1020" font-size="8">@lab[4]</text>        @* Прасци: защита *@
+                <path d="M76 210h22v10H70zM102 210h22l6 10h-28z" fill="@colors[9]" /><text x="100" y="228" fill="@colors[7]" font-size="8">@lab[7] · @lab[9]</text> @* Обувки: ръст и лидерство *@
+            </g>
+        </svg>
+    </div>
+    @* Кратко описание на групата *@
+    <p class="bpm-tag"><i></i>@(Model.Group == "g" ? "Shooting, handles and perimeter defense" : "Rebounding, rim protection and finishing") · ten attributes</p>
+
+    @* Двете карти: All-Time и Current *@
+    <div class="bpm-modes">
+        <button type="submit" formaction="/Build/Start" name="mode" value="a" class="bpm-card t-gold">
+            <span class="corner">LEGENDS</span><h3>All-Time</h3><span class="chip">NBA legends</span>
+            <p>@Game.Count("a", Model.Group) all-time greats, graded from their years with one team.</p>
+            <span class="go">Start drafting →</span>
+        </button>
+        <button type="submit" formaction="/Build/Start" name="mode" value="c" class="bpm-card t-orange">
+            <span class="corner">2025–26</span><h3>Current</h3><span class="chip">Current NBA</span>
+            <p>@Game.Count("c", Model.Group) players from today's rosters, graded from last season.</p>
+            <span class="go">Start drafting →</span>
+        </button>
+    </div>
+</form>
