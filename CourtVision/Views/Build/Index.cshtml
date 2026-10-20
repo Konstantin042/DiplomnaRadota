@@ -1,0 +1,53 @@
+@* Страницата на Build-a-Player *@
+@model BuildState
+@{
+    ViewData["Title"] = "Build-a-Player"; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие и бутон за правилата *@
+    <div class="ghead"><div><div class="label">Game 2 · Player skills</div><h2>Build-a-Player</h2></div><button type="button" class="iconbtn" data-help="build" aria-label="How to play">?</button></div>
+
+    @* Съдържанието: менюто или самата игра (подменя се без презареждане) *@
+    <div id="broot">
+        @if (Model.Mode == "")
+        {
+            <partial name="_Menu" model="Model" />
+        }
+        else
+        {
+            <partial name="_Game" model="Model" />
+        }
+    </div>
+
+    @* Обяснение как е в истинската NBA *@
+    <div class="real">
+        <h3>In the real NBA</h3>
+        <p><b>Guards</b> (point guard, shooting guard, small forward) handle the ball, shoot from outside and guard quick players on the perimeter. <b>Bigs</b> (power forward, center) play near the basket: they rebound, protect the rim and finish close shots. That is why the two modes ask for different skills.</p>
+        <p>Scouts split a player's game the same way this game does: <b>skills</b> he has learned (shooting, finishing, passing, defense), <b>physical</b> tools he was born with or trained (speed, jumping, size) and the <b>mental</b> side (reading the game and stepping up in big moments). Almost no real player is elite at all ten.</p>
+        <p>The grades here are calculated from real NBA statistics (Basketball-Reference): for example free-throw and three-point percentage for the jump shot, rebound percentage for rebounding, blocks and defensive win shares for defense, and All-Star selections for leadership. All-Time uses each player's years with that team; Current uses the 2025–26 season. Rookies with no NBA games yet get an estimate from their height and weight.</p>
+    </div>
+</section>
+
+@* Текстът за прозореца "How to play" *@
+<template id="help-build">
+    <h3>How to play Build-a-Player</h3>
+    <p>Create your own NBA player by copying one attribute from ten different real players.</p>
+    <h4>Start</h4>
+    <ul>
+        <li>Choose Guard (PG · SG · SF) or Big (PF · C). Each has its own skills.</li>
+        <li>Choose All-Time (legends) or Current (today's NBA).</li>
+    </ul>
+    <h4>Spin &amp; build</h4>
+    <ul>
+        <li>Press Spin. The reels land on a real team and one of its players.</li>
+        <li>His ten grades appear, from S (elite) and A down to F (weak).</li>
+        <li>Click one grade to copy it into your player. Every attribute can only be filled once.</li>
+        <li>You get 1 team respin and 1 player respin per build.</li>
+    </ul>
+    <div class="foot"><b>Can you build an MVP?</b><button type="button" class="btn" data-close>Let's play</button></div>
+</template>
+
+@* JavaScript за анимациите на барабаните *@
+@section Scripts {
+    <script src="~/js/build.js" asp-append-version="true"></script>
+}
