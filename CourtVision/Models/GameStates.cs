@@ -24,3 +24,37 @@ public class ChallengeState
     public bool IsComplete => Round > 8;
 }
 
+// Атрибут, копиран от реален играч
+public class TakenAttribute
+{
+    // Номерът на играча в списъка с играчи
+    public int PlayerIndex { get; set; }
+    // Оценката (от 0 = F до 11 = S)
+    public int Value { get; set; }
+}
+
+// Състояние на Build-a-Player
+public class BuildState
+{
+    // Режим: "" = началното меню, "a" = All-Time, "c" = Current
+    public string Mode { get; set; } = "";
+    // Група: "g" = Guard, "b" = Big
+    public string Group { get; set; } = "g";
+    // Отвореният таб в арената: skills, physical или mental
+    public string Tab { get; set; } = "skills";
+    // Завъртяният отбор
+    public string? Team { get; set; }
+    // Номерът на завъртяния играч (null, ако няма)
+    public int? Current { get; set; }
+    // Оставащ респин за отбор
+    public int TeamRespins { get; set; } = 1;
+    // Оставащ респин за играч
+    public int PlayerRespins { get; set; } = 1;
+    // Попълнените атрибути: номер на атрибута → копирана оценка
+    public Dictionary<int, TakenAttribute> Taken { get; set; } = new();
+    // Номерата на вече използваните играчи (да не се падат пак)
+    public HashSet<int> Used { get; set; } = new();
+    // Истина, когато са попълнени всичките 10 атрибута
+    public bool Done => Taken.Count == 10;
+}
+
