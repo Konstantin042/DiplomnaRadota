@@ -58,3 +58,15 @@ public class BuildState
     public bool Done => Taken.Count == 10;
 }
 
+// Състояние на Position Quiz
+public class QuizState
+{
+    // Номерата на 8-те играча за този куиз
+    public List<int> Order { get; set; } = new();
+    // Текущият рунд (0 до 7; 8 = край)
+    public int Round { get; set; }
+    // Точки (верни отговори)
+    public int Score { get; set; }
+    // Отговорът в текущия рунд (null, ако още няма отговор)
+    public string? Answer { get; set; }
+}
