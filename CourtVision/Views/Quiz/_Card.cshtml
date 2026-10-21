@@ -1,0 +1,87 @@
+@* Един рунд от куиза: играч с умения и игрище с бутоните за отговор *@
+@model QuizState
+@inject QuizService Quiz
+@inject PhotoService Photos
+@{
+    // Текущият играч (null, ако куизът е свършил)
+    var p = Quiz.Current(Model);
+    // Истина, ако вече има отговор
+    var answered = Model.Answer != null;
+    // Истина, ако отговорът е верен
+    var correct = answered && p != null && p.Positions.Contains(Model.Answer!);
+}
+<form method="post" data-ajax="#qroot" class="gquiz">
+    @* Лявата част: играчът *@
+    <div class="panel qplayer">
+        @if (p == null)
+        {
+            @* Край на куиза: резултат и нова игра *@
+            <div class="label">Quiz complete</div>
+            <div class="bignum">@Model.Score/@QuizService.Rounds</div>
+            <h3>@QuizService.FinalTitle(Model.Score)</h3>
+            <p class="muted narrow">@(Model.Score >= 5 ? "You can read a player's role from his skills." : "Tip: high size and low shooting usually means a Center or Power Forward.")</p>
+            <button type="submit" class="btn" formaction="/Quiz/Restart">Play again</button>
+        }
+        else
+        {
+            @* Рунд и точки *@
+            <div class="qprog mono"><span>ROUND @(Model.Round + 1)/@QuizService.Rounds</span><span>SCORE @Model.Score</span></div>
+            @* Снимка, име, отбор и десетилетие *@
+            @Photos.Face(p.Name, null, answered ? p.MainPosition : "orange")
+            <h3>@p.Name</h3>
+            <div class="muted">@Teams.Get(p.Team).Name · '@p.Decade</div>
+            @* Петте умения като ленти *@
+            <div class="qbars">
+                @for (var i = 0; i < 5; i++)
+                {
+                    // Стойността и цветът на умението
+                    var v = p.Skills[i];
+                    var color = Grades.Color(QuizService.SkillGrade(v));
+                    <div class="qbar" style="--gc:@color"><span>@QuizSkills.Labels[i]</span><div class="t"><i style="width:@v%"></i></div><b>@v</b></div>
+                }
+            </div>
+            @if (!answered)
+            {
+                <p class="hint">Where does he play? Tap a spot on the court.</p>
+            }
+        }
+    </div>
+
+    @* Дясната част: игрището с петте позиции *@
+    <div>
+        <div class="court" id="courtQ">
+            <partial name="_CourtLines" />
+            @foreach (var code in Positions.Order)
+            {
+                // Позицията върху игрището
+                var (left, top) = Positions.Spot[code];
+                // Вярна позиция (зелено) или грешен отговор (червено)
+                var mark = answered && p != null ? (p.Positions.Contains(code) ? "right" : Model.Answer == code ? "wrong" : "") : "";
+                if (answered && p != null && p.MainPosition == code)
+                {
+                    @* След отговора играчът стои на основната си позиция *@
+                    <div class="slot full @mark" style="left:@left%;top:@top%">@Photos.Face(p.Name, null, code)<span class="pbadge" style="--pc:var(--@code)">@code</span><span class="nm">@p.Name.Split(' ').Last()</span></div>
+                }
+                else if (answered || p == null)
+                {
+                    @* След отговора бутоните са неактивни *@
+                    <div class="slot @mark" style="left:@left%;top:@top%"><span class="sq">@code</span></div>
+                }
+                else
+                {
+                    @* Бутон за отговор: изпраща позицията към /Quiz/Answer *@
+                    <button type="submit" class="slot" formaction="/Quiz/Answer" name="position" value="@code" style="left:@left%;top:@top%" aria-label="@Positions.Info[code].Name"><span class="sq">@code</span></button>
+                }
+            }
+        </div>
+        @if (answered && p != null)
+        {
+            // Най-силното умение за обяснението
+            var best = QuizService.BestSkill(p);
+            @* Обяснение на отговора *@
+            <div class="fb @(correct ? "" : "bad")"><b>@(correct ? "Correct!" : "Not quite.")</b> @p.Name is mainly a @Positions.Info[p.MainPosition].Name@(p.Positions.Count > 1 ? $" and can also play {string.Join(" and ", p.Positions.Skip(1))}" : ""). His best skill is @best.Label.ToLowerInvariant() (@best.Value). @Positions.Info[p.MainPosition].Description</div>
+            @* Следващ играч *@
+            <button type="submit" class="btn wide" formaction="/Quiz/Next">@(Model.Round == QuizService.Rounds - 1 ? "See your score" : "Next player")</button>
+        }
+    </div>
+</form>

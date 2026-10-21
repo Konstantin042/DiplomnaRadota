@@ -1,0 +1,37 @@
+@* Страницата на Position Quiz *@
+@model QuizState
+@{
+    ViewData["Title"] = "Position Quiz"; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие и бутон за правилата *@
+    <div class="ghead"><div><div class="label">Game 3 · Positions</div><h2>Position Quiz</h2></div><button type="button" class="iconbtn" data-help="quiz" aria-label="How to play">?</button></div>
+    @* Картата на куиза (подменя се без презареждане) *@
+    <div id="qroot">
+        <partial name="_Card" model="Model" />
+    </div>
+    @* Обяснение как е в истинската NBA *@
+    <div class="real">
+        <h3>In the real NBA</h3>
+        <p>A position describes a player's job. Guards (PG, SG) are smaller and handle the ball. Forwards (SF, PF) play in between. The center (C) is the tallest and stays near the basket. The skill profile gives it away: a center has high size but low shooting, and a point guard has the opposite.</p>
+        <p>Today's game is more flexible. Some centers, like Nikola Jokić, pass like point guards. Coaches call this "positionless" basketball.</p>
+    </div>
+</section>
+
+@* Текстът за прозореца "How to play" *@
+<template id="help-quiz">
+    <h3>How to play the Position Quiz</h3>
+    <p>Learn the five positions by guessing where real players play.</p>
+    <h4>Each round</h4>
+    <ul>
+        <li>Look at the player's five skill bars on the left.</li>
+        <li>Tap the spot on the court where you think he plays.</li>
+        <li>The answer appears with a short explanation.</li>
+    </ul>
+    <h4>Tips</h4>
+    <ul>
+        <li>High size and low shooting: Center or Power Forward.</li>
+        <li>High handles and jump shot, low size: a guard.</li>
+    </ul>
+    <div class="foot"><b>Eight rounds. Can you get them all?</b><button type="button" class="btn" data-close>Let's play</button></div>
+</template>

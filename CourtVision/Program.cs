@@ -33,6 +33,8 @@ builder.Services.AddSingleton<PhotoService>();
 builder.Services.AddSingleton<ChallengeService>();
 // Логиката на Build-a-Player
 builder.Services.AddSingleton<BuildService>();
+// Логиката на Position Quiz
+builder.Services.AddSingleton<QuizService>();
 
 // Създаваме самото приложение от събраните настройки
 var app = builder.Build();
