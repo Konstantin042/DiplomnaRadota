@@ -185,4 +185,44 @@ public class BuildService
         return Enumerable.Range(-2, 5).Select(k => (BuildPlayer?)pool[((i + k) % pool.Count + pool.Count) % pool.Count]).ToList();
     }
 
+    // Статистиките за сезона според оценките
+    public static PlayerSeasonStats SeasonStats(BuildState s)
+    {
+        // Оценките (празните са 0)
+        var v = Values(s).Select(x => (double)(x ?? 0)).ToArray();
+        // Истина за гардовете
+        var guard = s.Group == "g";
+        // Малко случайност: число между -1 и 1
+        double J() => (Random.Shared.NextDouble() - 0.5) * 2;
+        // Без отрицателни стойности
+        double R(double x) => Math.Max(0, x);
+        // Кратки имена на оценките
+        double js = v[0], fin = v[1], a2 = v[2], a3 = v[3], def = v[4], spd = v[5], bnc = v[6], sz = v[7], iq = v[8];
+        // OVR на играча
+        var ovr = Overall(s) ?? 60;
+        // Връщаме всички статистики
+        return new PlayerSeasonStats
+        {
+            // Точки: от стрелба, завършване и дрибъл/създаване
+            Ppg = R(5 + 27 * (js * .35 + fin * .4 + (guard ? a3 : a2 * .3 + a3 * .7) * .25) / 11 + J() * 1.5),
+            // Борби: гардовете от ръст и отскок, високите от борбата
+            Rpg = guard ? R(2 + 6 * (sz * .5 + bnc * .5) / 11 + J() * .5) : R(4 + 10 * (a2 * .6 + sz * .4) / 11 + J() * .7),
+            // Асистенции: от подаване и IQ
+            Apg = guard ? R(1 + 9 * (a2 * .6 + a3 * .2 + iq * .2) / 11 + J() * .5) : R(1 + 7 * (a3 * .7 + iq * .3) / 11 + J() * .4),
+            // Кражби: от защитата (гардове) или от бързината (високи)
+            Spg = guard ? R(.4 + 1.6 * def / 11 + J() * .15) : R(.4 + .8 * spd / 11 + J() * .1),
+            // Блокади: от отскок и ръст (гардове) или от защита на коша (високи)
+            Bpg = guard ? R(.1 + .8 * (bnc + sz) / 22 + J() * .1) : R(.3 + 3 * (def * .6 + sz * .2 + bnc * .2) / 11 + J() * .2),
+            // Процент от игра
+            Fg = guard ? 40 + fin * .9 + js * .3 + J() : 45 + fin * 1.1 + J(),
+            // Процент от тройки (високите със слаба стрелба не стрелят тройки)
+            Tp = js < 3 && !guard ? 0 : 24 + js * 1.35 + J() * 1.5,
+            // Процент от наказателни
+            Ft = 58 + js * 2.5 + J() * 2,
+            // Загубени топки
+            Tov = Math.Max(.6, (guard ? 1 + a3 * .22 : .8 + a3 * .18) + J() * .2),
+            // Рейтинг на ефективност
+            Per = Math.Max(6, 7 + (ovr - 55) * .45 + J()),
+        };
+    }
 }

@@ -1,0 +1,33 @@
+@* Картата на отбора: лого-кръг, име, оценки OFF/DEF и стартовата петица с нашия играч *@
+@model SeasonState
+@inject SeasonService Season
+@inject PhotoService Photos
+@{
+    // Информация за отбора
+    var team = Teams.Get(Model.Team);
+    // Оценки за нападение и защита (без билда, той се добавя в Start)
+    var grades = Season.TeamGrades(Model.Team, null);
+    // Четиримата най-добри играчи на отбора днес
+    var core = Season.CurrentPlayers(Model.Team).Take(4).ToList();
+}
+<div class="sp-team" style="--tc:@team.Color">
+    <div class="sp-team-top">
+        @* Кръг с цвета и съкращението на отбора *@
+        <span class="tb-badge big" style="--tc:@team.Color">@team.Abbr</span>
+        @* Името на отбора *@
+        <h3>@team.Name</h3>
+        @* Лентите за нападение и защита *@
+        <div class="sp-bars">
+            <div class="sp-bar"><small>OFF</small><span><i style="width:@((int)(grades.Off / 11 * 100))%"></i></span><b>@Grades.Letter(grades.Off)</b></div>
+            <div class="sp-bar"><small>DEF</small><span><i style="width:@((int)(grades.Def / 11 * 100))%"></i></span><b>@Grades.Letter(grades.Def)</b></div>
+        </div>
+    </div>
+    @* Петицата: 4 играчи на отбора + нашият билд *@
+    <div class="sp-five">
+        @foreach (var p in core)
+        {
+            <div>@Photos.Face(p.Name, p.Id, "PG")<small>@($"{p.Name[0]}. {p.Name.Split(' ').Last()}")</small></div>
+        }
+        <div class="you"><div class="ph" style="--pc:var(--orange)"><span>YOU</span></div><small>Your build</small></div>
+    </div>
+</div>

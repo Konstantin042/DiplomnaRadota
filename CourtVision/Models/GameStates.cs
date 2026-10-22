@@ -58,6 +58,164 @@ public class BuildState
     public bool Done => Taken.Count == 10;
 }
 
+// Един мач от редовния сезон
+public class SeasonGame
+{
+    // Противникът (съкращение на отбора)
+    public string Opponent { get; set; } = "";
+    // Истина при победа
+    public bool Win { get; set; }
+}
+
+// Серия между два отбора (до 4 победи, или 1 мач в Play-In)
+public class Series
+{
+    // Първият отбор (по-високо поставен)
+    public string A { get; set; } = "";
+    // Вторият отбор
+    public string B { get; set; } = "";
+    // Резултат от всеки мач: true = победа за A
+    public List<bool> Games { get; set; } = new();
+    // Точки на A във всеки мач
+    public List<int> ScoresA { get; set; } = new();
+    // Точки на B във всеки мач
+    public List<int> ScoresB { get; set; } = new();
+    // Победи на A в серията
+    public int WinsA => Games.Count(g => g);
+    // Победи на B в серията
+    public int WinsB => Games.Count(g => !g);
+    // Победителят в серията
+    public string Winner => WinsA > WinsB ? A : B;
+    // Загубилият в серията
+    public string Loser => WinsA > WinsB ? B : A;
+    // Истина, ако е само един мач (Play-In)
+    public bool Single { get; set; }
+    // Истина, ако даден отбор участва в серията
+    public bool Has(string team) => A == team || B == team;
+}
+
+// Една двойка мачове в Play-In с етикет
+public class PlayInGame
+{
+    // Описание, например "7 vs 8"
+    public string Label { get; set; } = "";
+    // Самият мач
+    public Series Match { get; set; } = new();
+}
+
+// Резултат от Play-In за една конференция
+public class PlayInResult
+{
+    // Окончателните 8 поставени отбора след Play-In
+    public List<string> Seeds { get; set; } = new();
+    // Трите мача от Play-In
+    public List<PlayInGame> Games { get; set; } = new();
+}
+
+// Плейофна схема (bracket) за една конференция
+public class Bracket
+{
+    // Поставените отбори 1–8
+    public List<string> Seeds { get; set; } = new();
+    // Първи кръг: 4 серии
+    public List<Series> FirstRound { get; set; } = new();
+    // Полуфинали в конференцията: 2 серии
+    public List<Series> Semis { get; set; } = new();
+    // Финал на конференцията
+    public Series ConferenceFinal { get; set; } = new();
+    // Шампионът на конференцията
+    public string Champion => ConferenceFinal.Winner;
+    // Номерът на поставяне на отбор (0, ако не е в плейофите)
+    public int SeedOf(string team) => Seeds.IndexOf(team) + 1;
+}
+
+// Един кръг от пътя на нашия отбор
+public class PathRound
+{
+    // Име на кръга, например "First Round"
+    public string Name { get; set; } = "";
+    // Номер на кръга: -1 = Play-In, 0 = първи кръг ... 3 = финали
+    public int Round { get; set; }
+    // Серията, която играем
+    public Series Match { get; set; } = new();
+}
+
+// Награда за сезона (MVP или DPOY)
+public class Award
+{
+    // Истина, ако наградата е за нашия играч
+    public bool IsYou { get; set; }
+    // Име на победителя
+    public string Name { get; set; } = "";
+    // Отбор на победителя
+    public string Team { get; set; } = "";
+    // Идентификатор за снимката
+    public string Id { get; set; } = "";
+    // Ред със статистики
+    public string Line { get; set; } = "";
+}
+
+// Статистики на нашия играч за сезона
+public class PlayerSeasonStats
+{
+    public double Ppg { get; set; }  // Точки на мач
+    public double Rpg { get; set; }  // Борби на мач
+    public double Apg { get; set; }  // Асистенции на мач
+    public double Spg { get; set; }  // Откраднати топки на мач
+    public double Bpg { get; set; }  // Блокади на мач
+    public double Tov { get; set; }  // Загубени топки на мач
+    public double Fg { get; set; }   // Процент от стрелбата от игра
+    public double Tp { get; set; }   // Процент от тройки (0 = не стреля тройки)
+    public double Ft { get; set; }   // Процент от наказателни удари
+    public double Per { get; set; }  // Рейтинг на ефективност (PER)
+}
+
+// Копиран атрибут за показване на страницата на сезона
+public class BuildLine
+{
+    public string Attribute { get; set; } = ""; // Име на атрибута
+    public string Player { get; set; } = "";    // От кой играч е копиран
+    public string PlayerId { get; set; } = "";  // Идентификатор за снимката
+    public int Value { get; set; }              // Оценката
+}
+
+// Целият сезон: изчислява се веднъж и се показва стъпка по стъпка
+public class SeasonState
+{
+    public string Team { get; set; } = "";                    // Нашият отбор
+    public string Mode { get; set; } = "";                    // All-Time или Current
+    public string Group { get; set; } = "";                   // Guard или Big
+    public int Overall { get; set; }                          // OVR на нашия играч
+    public string Archetype { get; set; } = "";               // Тип на играча
+    public int JerseyNumber { get; set; }                     // Номер на фланелката
+    public int Step { get; set; }                             // 0 отбор, 1 сезон, 2 плейофи, 3 отчет
+    public List<BuildLine> Build { get; set; } = new();       // Копираните атрибути
+    public List<SeasonGame> Games { get; set; } = new();      // 82-та мача
+    public Dictionary<string, int> Wins { get; set; } = new(); // Победи на всеки отбор
+    public Dictionary<string, double> Strength { get; set; } = new(); // Сила на всеки отбор
+    public List<string> Standings { get; set; } = new();      // Класиране в нашата конференция
+    public List<string> OtherStandings { get; set; } = new(); // Класиране в другата конференция
+    public PlayerSeasonStats Stats { get; set; } = new();     // Статистиките ни
+    public Award Mvp { get; set; } = new();                   // Най-полезен играч
+    public Award Dpoy { get; set; } = new();                  // Най-добър защитник
+    public PlayInResult? PlayIn { get; set; }                 // Play-In на нашата конференция (ако сме 7–10)
+    public Bracket MyBracket { get; set; } = new();           // Схемата на нашата конференция
+    public Bracket OtherBracket { get; set; } = new();        // Схемата на другата конференция
+    public Series Finals { get; set; } = new();               // Финалите на NBA
+    public List<PathRound> Path { get; set; } = new();        // Сериите, които играем
+    public bool Prepared { get; set; }                        // Истина, след като плейофите са изчислени
+    public bool IsEast => Teams.Get(Team).IsEast;             // Истина, ако сме от Изтока
+    public int Seed => Standings.IndexOf(Team) + 1;           // Нашето място в конференцията
+    // Истина, ако сме спечелили финалите
+    public bool Champion => Path.Count > 0 && Path[^1].Round == 3 && Path[^1].Match.Winner == Team;
+}
+
+// Данни за една кутийка в плейофната схема (за частичния изглед _SeriesBox)
+public record SeriesBox(Series? Match, List<string> Seeds, string Us, int Round);
+
+// Данни за картата на една награда (за частичния изглед _Award): име на наградата и победителят
+public record AwardBox(string Label, Award Winner);
+
 // Състояние на Position Quiz
 public class QuizState
 {

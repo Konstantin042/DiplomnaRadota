@@ -1,0 +1,204 @@
+@* Страницата на сезона: 0 отбор, 1 редовен сезон, 2 плейофи, 3 отчет *@
+@model SeasonState
+@inject PhotoService Photos
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Season"; // Заглавие в раздела
+    // Информация за нашия отбор
+    var team = Teams.Get(Model.Team);
+    // Победите и загубите ни
+    var wins = Model.Wins[Model.Team];
+    // Мястото ни в конференцията
+    var seed = Model.Seed;
+    // Пътят в плейофите като JSON за анимацията (мач по мач)
+    var pathJson = JsonSerializer.Serialize(Model.Path.Select(r => new
+    {
+        name = r.Name,                                              // Име на кръга
+        round = r.Round,                                            // Номер на кръга
+        opp = r.Match.A == Model.Team ? r.Match.B : r.Match.A,      // Противникът
+        oppColor = Teams.Get(r.Match.A == Model.Team ? r.Match.B : r.Match.A).Color, // Цветът на противника
+        single = r.Match.Single,                                    // Един мач ли е (Play-In)
+        games = r.Match.Games.Select((aWin, i) => new               // Мачовете
+        {
+            win = r.Match.A == Model.Team ? aWin : !aWin,                                     // Дали сме победили
+            us = r.Match.A == Model.Team ? r.Match.ScoresA[i] : r.Match.ScoresB[i],           // Нашите точки
+            them = r.Match.A == Model.Team ? r.Match.ScoresB[i] : r.Match.ScoresA[i],         // Техните точки
+        }),
+    }));
+}
+<section class="view">
+    <div class="ghead"><div><div class="label">Game 2 · Player skills</div><h2>Build-a-Player</h2></div></div>
+    <div class="sp-wrap" id="season" data-step="@Model.Step" data-color="@team.Color">
+        @* Горна лента: бутон назад и точките за стъпките *@
+        <div class="sp-top">
+            @if (Model.Step is 1 or 2)
+            {
+                <form method="post" action="/Season/Step"><input type="hidden" name="step" value="@(Model.Step - 1)"><button type="submit" class="sp-back">← Back</button></form>
+            }
+            else
+            {
+                <span></span>
+            }
+            <div class="sp-dots">
+                @for (var i = 0; i < 4; i++)
+                {
+                    <i class="@(i == Model.Step ? "on" : i < Model.Step ? "done" : "")"></i>
+                }
+            </div>
+            <span></span>
+        </div>
+
+        @* Картата на отбора се показва на всяка стъпка *@
+        <partial name="_TeamCard" model="Model" />
+
+        @if (Model.Step == 0)
+        {
+            @* Стъпка 0: OVR, тип играч и фланелка *@
+            <div class="sp-intro">
+                <div class="sp-ovr"><b>@Model.Overall</b><span>OVR</span></div>
+                <h3>@Model.Archetype</h3>
+                <form method="post" action="/Season/Step"><input type="hidden" name="step" value="1"><button type="submit" class="sp-cta">Simulate season</button></form>
+            </div>
+            @* Фланелка в цвета на отбора с номер *@
+            <div class="sp-fig">
+                <svg class="ss-jersey" viewBox="0 0 160 190" aria-hidden="true">
+                    <path d="M48 8c6 12 18 18 32 18s26-6 32-18l26 10-6 50-14-4v120H42V64l-14 4-6-50z" fill="@team.Color" stroke="rgba(255,255,255,.65)" stroke-width="3" />   @* Тялото на фланелката *@
+                    <path d="M48 8c6 12 18 18 32 18s26-6 32-18" fill="none" stroke="#fff" stroke-width="5" />                                                              @* Яката *@
+                    <text x="80" y="78" text-anchor="middle" font-family="Big Shoulders Display,Impact,sans-serif" font-weight="900" font-size="22" fill="#fff" letter-spacing="2">@team.Nickname.ToUpperInvariant()</text> @* Името на отбора *@
+                    <text x="80" y="150" text-anchor="middle" font-family="Big Shoulders Display,Impact,sans-serif" font-weight="900" font-size="64" fill="#fff">@Model.JerseyNumber</text> @* Номерът *@
+                </svg>
+            </div>
+            @* Копираните атрибути *@
+            <div class="bp-done-list sp-list">
+                @foreach (var line in Model.Build)
+                {
+                    <div class="bp-dl">@Photos.Face(line.Player, line.PlayerId, "PG")<div><small>@line.Attribute</small><b>@line.Player</b></div><span class="gr" style="--gc:@Grades.Color(line.Value)">@Grades.Letters[line.Value]</span></div>
+                }
+            </div>
+        }
+        else if (Model.Step == 1)
+        {
+            @* Стъпка 1: редовният сезон. JavaScript показва мачовете един по един *@
+            <h4 class="sp-h">Regular season</h4>
+            <div class="sp-rec" id="spRec" data-games="@(string.Concat(Model.Games.Select(g => g.Win ? 'W' : 'L')))"><b data-w>@wins</b><span>–</span><b data-l>@(82 - wins)</b></div>
+            <div class="sp-gd" id="spDots">
+                @foreach (var g in Model.Games)
+                {
+                    <i class="@(g.Win ? "w" : "l")" title="@(g.Win ? "W" : "L") vs @g.Opponent"></i>
+                }
+            </div>
+            @* Всичко след сезона (показва се след анимацията) *@
+            <div class="after-season" id="afterSeason">
+                @* Класирането в конференцията *@
+                <div class="sp-stand">
+                    <div class="sp-sth"><span>@(team.IsEast ? "Eastern" : "Western") Conference standings</span><span>W–L</span><span>GB</span></div>
+                    @for (var i = 0; i < Model.Standings.Count; i++)
+                    {
+                        // Отборът на това място
+                        var t = Model.Standings[i];
+                        // Колко мача изостава от първия
+                        var gb = Model.Wins[Model.Standings[0]] - Model.Wins[t];
+                        if (i == 6) { <div class="sp-div">Play-In</div> }  // Разделител преди място 7
+                        if (i == 10) { <div class="sp-div">Out</div> }     // Разделител преди място 11
+                        <div class="sp-tr @(t == Model.Team ? "us" : "")"><span>@(i + 1)</span><span class="tb-badge" style="--tc:@Teams.Get(t).Color">@t</span><b>@Teams.Get(t).Nickname</b><span>@Model.Wins[t]–@(82 - Model.Wins[t])</span><span>@(i == 0 ? "-" : gb.ToString())</span></div>
+                    }
+                </div>
+                <partial name="_StatCard" model="Model.Stats" />
+                @* Наградите за сезона *@
+                <h4 class="sp-h">Season awards</h4>
+                @{
+                    // Картите на двете награди
+                    var mvpBox = new AwardBox("Most Valuable Player", Model.Mvp);
+                    var dpoyBox = new AwardBox("Defensive Player of the Year", Model.Dpoy);
+                }
+                <partial name="_Award" model="mvpBox" />
+                <partial name="_Award" model="dpoyBox" />
+                @* Какво следва според мястото ни *@
+                <p class="sp-note">@(seed <= 6 ? $"#{seed} seed: straight into the playoffs." : seed <= 10 ? $"#{seed} seed: you must win the Play-In to reach the playoffs." : $"#{seed} in the conference: season over. Only the top 10 reach the Play-In.")</p>
+                <form method="post" action="/Season/Step">
+                    <input type="hidden" name="step" value="@(seed <= 10 ? 2 : 3)">
+                    <button type="submit" class="sp-cta">@(seed <= 6 ? "Enter playoffs" : seed <= 10 ? "Enter Play-In" : "See report")</button>
+                </form>
+            </div>
+        }
+        else if (Model.Step == 2)
+        {
+            @* Стъпка 2: плейофите на живо *@
+            <h4 class="sp-h">@(Model.PlayIn != null ? "Play-In & playoffs" : "Playoffs")</h4>
+            @* Преди началото: мястото ни и бутон Tip off *@
+            <div id="spStart" class="stack center">
+                <div class="sp-seed">🏀<small>#@seed seed · @Model.Team</small></div>
+                <button type="button" class="sp-tip" id="spTip">Tip off</button>
+            </div>
+            @* Тук JavaScript показва серията и мача на живо *@
+            <div id="spSeries"></div>
+            <div id="spLive"></div>
+            @* Бутони за скорост, пропускане и дневник *@
+            <div class="sp-ctrl" id="spCtrl" hidden>
+                <div class="sp-speed">
+                    <button type="button" data-spd="0.35">Slowest</button>   @* Най-бавно *@
+                    <button type="button" data-spd="0.6">Slow</button>       @* Бавно *@
+                    <button type="button" data-spd="0">❚❚</button>           @* Пауза *@
+                    <button type="button" data-spd="1.6" class="on">Fast</button> @* Бързо *@
+                    <button type="button" class="skip" id="spSkip">Skip playoffs</button> @* Пропусни *@
+                </div>
+                <button type="button" class="sp-logb" id="spLogB">View game log</button>
+            </div>
+            <div class="sp-log" id="spLog" hidden></div>
+            @* Плейофната схема (bracket) *@
+            <partial name="_Bracket" model="Model" />
+            @* Скрит формуляр: JavaScript го изпраща, когато плейофите свършат *@
+            <form method="post" action="/Season/Step" id="spDone"><input type="hidden" name="step" value="3"></form>
+            @* Данните за анимацията *@
+            <script id="spPath" type="application/json">@Html.Raw(pathJson)</script>
+        }
+        else
+        {
+            @* Стъпка 3: отчет за сезона *@
+            var last = Model.Path.LastOrDefault();
+            var opp = Model.Finals.A == Model.Team ? Model.Finals.B : Model.Finals.A;
+            <div class="sp-report @(Model.Champion ? "champ" : "")">
+                @if (Model.Champion)
+                {
+                    <div class="ss-trophy">🏆</div>
+                }
+                <h3>@SeasonService.Outcome(Model)</h3>
+                @if (Model.Champion)
+                {
+                    <p>@(Model.Finals.A == Model.Team ? Model.Finals.WinsA : Model.Finals.WinsB)–@(Model.Finals.A == Model.Team ? Model.Finals.WinsB : Model.Finals.WinsA) against the @Teams.Get(opp).Name in the Finals.@(Model.Overall >= 85 ? " Your build is Finals MVP." : "")</p>
+                }
+                else
+                {
+                    <p>Champion: @Teams.Get(Model.Finals.Winner).Name.</p>
+                }
+                @* Четири числа за сезона *@
+                <div class="sp-sum">
+                    <div><b>@wins–@(82 - wins)</b><small>Record</small></div>
+                    <div><b>#@seed</b><small>@(team.IsEast ? "East" : "West") seed</small></div>
+                    <div><b>@(Model.Path.Sum(r => r.Match.Games.Count(g => (r.Match.A == Model.Team) == g)))–@(Model.Path.Sum(r => r.Match.Games.Count(g => (r.Match.A == Model.Team) != g)))</b><small>Playoff games</small></div>
+                    <div><b>@Model.Overall</b><small>OVR</small></div>
+                </div>
+                @* Значки за наградите *@
+                @if (Model.Mvp.IsYou || Model.Dpoy.IsYou || Model.Champion)
+                {
+                    <div class="sp-badges">@if (Model.Mvp.IsYou) {<span>MVP</span>}@if (Model.Dpoy.IsYou) {<span>DPOY</span>}@if (Model.Champion) {<span>Champion</span>}</div>
+                }
+            </div>
+            <partial name="_StatCard" model="Model.Stats" />
+            @if (last != null)
+            {
+                <partial name="_Bracket" model="Model" />
+            }
+            @* Бутони: нов билд или смяна на режима (връщат към Build-a-Player) *@
+            <div class="ss-actions">
+                <form method="post" action="/Build/Reset"><button type="submit" class="sp-cta">Build again</button></form>
+                <form method="post" action="/Build/Menu"><button type="submit" class="btn sec wide">Change mode</button></form>
+            </div>
+        }
+    </div>
+</section>
+
+@* JavaScript за анимациите на сезона и плейофите *@
+@section Scripts {
+    <script src="~/js/season.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,27 @@
+@* Картата със статистиките на нашия играч за сезона *@
+@model PlayerSeasonStats
+<div class="sp-stats">
+    @* На мач: точки, борби, асистенции *@
+    <div class="sp-sh">Per game</div>
+    <div class="sp-row">
+        <div><b>@Model.Ppg.ToString("0.0")</b><small>PPG</small></div>
+        <div><b>@Model.Rpg.ToString("0.0")</b><small>RPG</small></div>
+        <div><b>@Model.Apg.ToString("0.0")</b><small>APG</small></div>
+    </div>
+    @* Защита и контрол на топката: кражби, блокади, загубени топки (червено, ако са над 3) *@
+    <div class="sp-sh">Defense / ball control</div>
+    <div class="sp-row">
+        <div><b>@Model.Spg.ToString("0.0")</b><small>SPG</small></div>
+        <div><b>@Model.Bpg.ToString("0.0")</b><small>BPG</small></div>
+        <div><b class="@(Model.Tov > 3 ? "bad" : "")">@Model.Tov.ToString("0.0")</b><small>TOV</small></div>
+    </div>
+    @* Стрелба: проценти от игра, от тройки и от наказателни *@
+    <div class="sp-sh">Shooting</div>
+    <div class="sp-row">
+        <div><b>@(Math.Round(Model.Fg))%</b><small>FG%</small></div>
+        <div><b>@(Model.Tp > 0 ? Math.Round(Model.Tp) + "%" : "–")</b><small>3P%</small></div>
+        <div><b>@(Math.Round(Model.Ft))%</b><small>FT%</small></div>
+    </div>
+    @* Рейтинг на ефективност *@
+    <div class="sp-per"><span>Player efficiency rating</span><b>@Model.Per.ToString("0.0")</b></div>
+</div>

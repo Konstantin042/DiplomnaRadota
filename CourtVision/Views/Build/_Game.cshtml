@@ -163,6 +163,8 @@
                 {
                     @* Тип на играча *@
                     <div class="bp-arch">@BuildService.Archetype(Model)</div>
+                    @* Бутон за сезона: отваря прозореца за избор на отбор *@
+                    <button type="button" class="bp-sim" data-open-picker>Simulate season</button>
                 }
                 else
                 {
@@ -197,3 +199,51 @@
     </div>
 </form>
 
+@if (Model.Done)
+{
+    // Отборите на играчите, от които сме копирали (за таба Pick)
+    var myTeams = Model.Taken.Values.Select(t => Game.Player(t.PlayerIndex).Team).Distinct().Where(t => Teams.All.Any(x => x.Abbr == t)).ToList();
+    @* Прозорецът за избор на отбор: Spin (случаен) или Pick (от нашите отбори) *@
+    <div class="modal" id="tpModal" hidden>
+        <div class="dlg tpm" role="dialog" aria-modal="true" aria-label="Simulate season">
+            <div class="tpm-eye">Simulate season</div>
+            <h3 class="tpm-h" data-tp-title>Spin your team</h3>
+            @* Табовете Spin и Pick (сменят се в браузъра) *@
+            <div class="tpm-tabs"><button type="button" class="on" data-tp="spin">Spin</button><button type="button" data-tp="pick">Pick</button></div>
+            @* Таб Spin: барабан с всички отбори *@
+            <div data-tp-panel="spin">
+                <div class="tpm-reel" id="tpReel" data-teams="@(string.Join(",", Teams.All.Select(x => x.Abbr)))" data-names="@(string.Join(",", Teams.All.Select(x => x.Nickname)))">
+                    <span class="tpm-lbl">TEAM</span>
+                    @for (var k = -2; k <= 2; k++)
+                    {
+                        // Пет реда: средният е избраният
+                        var team = Teams.All[(k + Teams.All.Count) % Teams.All.Count];
+                        <div class="tpm-row @(k == 0 ? "mid" : Math.Abs(k) == 2 ? "far" : "")"><b>@team.Abbr</b><small>@team.Nickname</small></div>
+                    }
+                </div>
+                @* Резултат от завъртането и бутон за старт (обикновен формуляр към /Season/Start) *@
+                <form method="post" action="/Season/Start" data-tp-result hidden>
+                    <input type="hidden" name="team" value="">
+                    <p class="tpm-res" data-tp-text></p>
+                    <button type="submit" class="bp-spin">Start season</button>
+                </form>
+                <button type="button" class="bp-spin" id="tpSpin">Spin</button>
+            </div>
+            @* Таб Pick: търсачка и отборите на нашите играчи *@
+            <div data-tp-panel="pick" hidden>
+                <div class="tpm-sub">Available for your build: teams of the players you copied</div>
+                <input id="tpSearch" class="tpm-search" placeholder="Search teams…" aria-label="Search teams" autocomplete="off">
+                <form method="post" action="/Season/Start" class="tpm-grid">
+                    @foreach (var abbr in myTeams)
+                    {
+                        // Пълната информация за отбора
+                        var team = Teams.Get(abbr);
+                        <button type="submit" class="tpm-team" name="team" value="@abbr" data-search="@($"{abbr} {team.Name}".ToLowerInvariant())" style="--tc:@team.Color"><span class="tb-badge big" style="--tc:@team.Color">@abbr</span><small>@team.Nickname</small></button>
+                    }
+                </form>
+            </div>
+            @* Бутон за затваряне *@
+            <button type="button" class="tpm-close" data-tp-close aria-label="Close">✕</button>
+        </div>
+    </div>
+}
