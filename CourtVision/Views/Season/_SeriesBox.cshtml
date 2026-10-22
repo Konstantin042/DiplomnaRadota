@@ -1,0 +1,23 @@
+@* Една кутийка в плейофната схема: два отбора и победите им в серията *@
+@model SeriesBox
+@if (Model.Match == null)
+{
+    @* Още няма серия: показваме TBD (to be decided) *@
+    <div class="sp-m tbd"><div>TBD</div><div>TBD</div></div>
+}
+else
+{
+    // Серията
+    var m = Model.Match;
+    // Резултатите като низ: "a" = победа за първия отбор, "b" = за втория (за анимацията)
+    var games = string.Concat(m.Games.Select(g => g ? 'a' : 'b'));
+    @* data-round и data-games позволяват на JavaScript да показва серията мач по мач *@
+    <div class="sp-m" data-round="@Model.Round" data-games="@games">
+        @* Първият отбор *@
+        <div class="@(m.A == Model.Us ? "us" : "") @(m.Winner == m.A ? "win" : "")" data-side="a"><i class="sp-dot" style="--tc:@Teams.Get(m.A).Color"></i><span>@(Model.Seeds.IndexOf(m.A) + 1)</span><b>@m.A</b><em data-wins>@m.WinsA</em></div>
+        @* Вторият отбор *@
+        <div class="@(m.B == Model.Us ? "us" : "") @(m.Winner == m.B ? "win" : "")" data-side="b"><i class="sp-dot" style="--tc:@Teams.Get(m.B).Color"></i><span>@(Model.Seeds.IndexOf(m.B) + 1)</span><b>@m.B</b><em data-wins>@m.WinsB</em></div>
+    </div>
+    @* Празна кутийка, която JavaScript показва, докато серията още не е започнала *@
+    <div class="sp-m tbd" data-tbd-for="@Model.Round" hidden><div>TBD</div><div>TBD</div></div>
+}
