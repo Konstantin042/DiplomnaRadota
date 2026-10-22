@@ -33,6 +33,8 @@ builder.Services.AddSingleton<PhotoService>();
 builder.Services.AddSingleton<ChallengeService>();
 // Логиката на Build-a-Player
 builder.Services.AddSingleton<BuildService>();
+// Симулацията на сезон, Play-In, плейофи и финали
+builder.Services.AddSingleton<SeasonService>();
 // Логиката на Position Quiz
 builder.Services.AddSingleton<QuizService>();
 

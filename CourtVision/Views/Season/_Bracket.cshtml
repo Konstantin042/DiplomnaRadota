@@ -1,0 +1,47 @@
+@* Плейофната схема (bracket) за Запада и Изтока *@
+@model SeasonState
+@{
+    // Схемите по конференции: нашата и другата
+    var west = Model.IsEast ? Model.OtherBracket : Model.MyBracket;
+    var east = Model.IsEast ? Model.MyBracket : Model.OtherBracket;
+}
+@* Превключвател West / East (започва от нашата конференция) *@
+<div class="sp-vt">
+    <button type="button" class="@(Model.IsEast ? "" : "on")" data-view="W">West</button>
+    <button type="button" class="@(Model.IsEast ? "on" : "")" data-view="E">East</button>
+</div>
+@foreach (var (code, br) in new[] { ("W", west), ("E", east) })
+{
+    // Колоните: Запад отляво надясно (R1 → финали), Изток огледално
+    var columns = new List<(string Title, List<SeriesBox> Boxes)>
+    {
+        ("R1", br.FirstRound.Select(s => new SeriesBox(s, br.Seeds, Model.Team, 0)).ToList()),            // Първи кръг
+        ("Semis", br.Semis.Select(s => new SeriesBox(s, br.Seeds, Model.Team, 1)).ToList()),              // Полуфинали
+        ("Conf Finals", new List<SeriesBox> { new(br.ConferenceFinal, br.Seeds, Model.Team, 2) }),        // Финал на конференцията
+        ("NBA Finals", new List<SeriesBox> { new(Model.Finals, Model.MyBracket.Seeds.Contains(Model.Finals.A) ? Model.MyBracket.Seeds : Model.OtherBracket.Seeds, Model.Team, 3) }), // Финали
+    };
+    // Изтокът е огледален
+    if (code == "E") { columns.Reverse(); }
+    @* Една конференция (скрита, ако не е избрана) *@
+    <div class="sp-conf" data-conf="@code" hidden="@((code == "E") != Model.IsEast)">
+        @* Заглавията на колоните *@
+        <div class="sp-brh">
+            @foreach (var col in columns)
+            {
+                <h5>@col.Title</h5>
+            }
+        </div>
+        @* Кутийките на сериите *@
+        <div class="sp-br">
+            @foreach (var col in columns)
+            {
+                <div class="sp-col">
+                    @foreach (var box in col.Boxes)
+                    {
+                        <partial name="_SeriesBox" model="box" />
+                    }
+                </div>
+            }
+        </div>
+    </div>
+}
