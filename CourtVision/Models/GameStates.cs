@@ -204,6 +204,8 @@ public class SeasonState
     public Series Finals { get; set; } = new();               // Финалите на NBA
     public List<PathRound> Path { get; set; } = new();        // Сериите, които играем
     public bool Prepared { get; set; }                        // Истина, след като плейофите са изчислени
+    public string Source { get; set; } = "build";             // Откъде е билдът: "build" (Build-a-Player) или "salary" (Salary Cap)
+    public string SalaryKey { get; set; } = "";               // За Salary Cap: денят ("2026-10-27") или "inf"
     public bool IsEast => Teams.Get(Team).IsEast;             // Истина, ако сме от Изтока
     public int Seed => Standings.IndexOf(Team) + 1;           // Нашето място в конференцията
     // Истина, ако сме спечелили финалите
@@ -215,6 +217,55 @@ public record SeriesBox(Series? Match, List<string> Seeds, string Us, int Round)
 
 // Данни за картата на една награда (за частичния изглед _Award): име на наградата и победителят
 public record AwardBox(string Label, Award Winner);
+
+// Един ден (или една безкрайна игра) в Build-a-Player Salary
+public class SalaryDay
+{
+    public string Key { get; set; } = "";                       // Ключ: дата "2026-10-27" или "inf"
+    public int Seed { get; set; }                               // Число, от което се генерира мрежата (еднакво за всички в един ден)
+    public int Budget { get; set; }                             // Таванът на заплатите за деня ($130M–$170M)
+    public List<List<int>> Grid { get; set; } = new();          // Мрежата 5×5: [колона][ред] → номер на играча
+    public Dictionary<int, int> Picks { get; set; } = new();    // Избраните играчи: колона → ред
+    public int Shuffles { get; set; } = 2;                      // Оставащи разбърквания (rerolls)
+    public int Scouts { get; set; } = 1;                        // Оставащи скаутвания
+    public Dictionary<int, string> Scouted { get; set; } = new(); // Скаутвани играчи: номер на играча → оценка (буква)
+    public string Mode { get; set; } = "";                      // Режим: "" (избор), "shuffle" (разбъркване) или "scout" (скаут)
+    public List<string> Flip { get; set; } = new();             // Клетките, които току-що са сменени ("колона-ред"), за анимацията
+    public SalaryResult? Result { get; set; }                   // Резултатът, след като билдът е заключен (null преди това)
+}
+
+// Заключеният билд в Salary Cap
+public class SalaryResult
+{
+    public List<int> Players { get; set; } = new();  // Избраните играчи по колони
+    public List<int> Prices { get; set; } = new();   // Цената на всеки от тях (в милиони)
+    public int Overall { get; set; }                 // Обща оценка: сбор от най-силния атрибут на всеки играч
+    public double Ppg { get; set; }                  // Точки на мач
+    public double Apg { get; set; }                  // Асистенции на мач
+    public double Rpg { get; set; }                  // Борби на мач
+    public int Spent { get; set; }                   // Похарчени милиони
+    public string Team { get; set; } = "";           // Отборът, за който играе билдът
+}
+
+// Цялото състояние на Salary Cap в сесията на посетителя
+public class SalaryState
+{
+    public string Current { get; set; } = "";                              // Кой ден е отворен ("" = днес)
+    public Dictionary<string, SalaryDay> Days { get; set; } = new();       // Всички изиграни или започнати дни
+    public string Menu { get; set; } = "";                                 // Отворено меню: "" , "power", "dates" или "board"
+    public bool Locked { get; set; }                                       // Истина за кратко съобщение "Play today's game to unlock"
+}
+
+// Един ред в класацията на Salary Cap
+public class SalaryEntry
+{
+    public string Owner { get; set; } = "";          // Идентификатор на сесията (за да знаем кой ред е наш)
+    public string Name { get; set; } = "";           // Име за показване, например "Guest 4821"
+    public List<int> Players { get; set; } = new();  // Избраните играчи
+    public int Overall { get; set; }                 // Обща оценка
+    public double Total { get; set; }                // PPG + APG + RPG (при равен резултат)
+    public int Spare { get; set; }                   // Неизхарчени милиони
+}
 
 // Състояние на Position Quiz
 public class QuizState

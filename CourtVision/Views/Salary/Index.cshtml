@@ -1,0 +1,51 @@
+@* Страницата на Build-a-Player Salary *@
+@model SalaryState
+@{
+    ViewData["Title"] = "Build-a-Player Salary"; // Заглавие в раздела
+}
+<section class="view">
+    @* Бутон за правилата (заглавието е в самото табло) *@
+    <div class="ghead"><div><div class="label">Game 4 · Salary cap</div><h2>Build-a-Player Salary</h2></div><button type="button" class="iconbtn" data-help="salary" aria-label="How to play">?</button></div>
+
+    @* Таблото на играта (подменя се без презареждане) *@
+    <div id="sroot">
+        <partial name="_Board" model="Model" />
+    </div>
+
+    @* Обяснение как е в истинската NBA *@
+    <div class="real">
+        <h3>In the real NBA</h3>
+        <p>Every team has a <b>salary cap</b>: a limit on how much it can pay its players in one season. For 2026–27 the cap is about <b>$165 million</b>. Teams that go far above it pay a luxury tax (from about $200 million), and above the "aprons" ($209 million and $222 million) they lose some ways to trade and sign players.</p>
+        <p>The NBA cap is "soft": a team may go over it to re-sign its own players. That is why the general manager's job looks like this game: the best players cost the most, so you can't buy five stars. Good teams find cheap players who are great at one thing.</p>
+        <p>Here the prices come from the same grades as in Build-a-Player: in each column the top 20% of players cost $50M, the next 20% cost $40M, and so on down to $10M.</p>
+    </div>
+</section>
+
+@* Текстът за прозореца "How to play" *@
+<template id="help-salary">
+    <h3>How to play Build-a-Player Salary</h3>
+    <p>Build one player from five real players without going over the salary cap.</p>
+    <h4>The grid</h4>
+    <ul>
+        <li>Five columns: Finishing, Shooting, Defense, Playmaking, Size &amp; Athleticism.</li>
+        <li>Five rows of prices: $50M, $40M, $30M, $20M and $10M. Better players cost more.</li>
+        <li>Pick exactly one player in each column. His grade in that column goes into your build.</li>
+        <li>Stay under today's cap (between $130M and $170M), then press Lock In Build.</li>
+    </ul>
+    <h4>Power-ups (the dice button)</h4>
+    <ul>
+        <li>Shuffle (2 per grid): mix one column (⇅, the players change prices) or one row (⇄, the players change columns).</li>
+        <li>Scout (1 per grid): see one player's grade (S, A … F) before you pick him.</li>
+    </ul>
+    <h4>Daily or infinite</h4>
+    <ul>
+        <li>Everyone gets the same grid each day. Use the date button to play the last 10 days or ∞ Infinite for random grids.</li>
+        <li>After you lock in, your player plays a full season and the playoffs. The trophy shows today's top builds.</li>
+    </ul>
+    <div class="foot"><b>Can you build a star on a budget?</b><button type="button" class="btn" data-close>Let's play</button></div>
+</template>
+
+@* JavaScript за предварително зареждане на снимките и съобщенията *@
+@section Scripts {
+    <script src="~/js/salary.js" asp-append-version="true"></script>
+}

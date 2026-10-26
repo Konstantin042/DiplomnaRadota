@@ -72,6 +72,8 @@ document.addEventListener("submit", async e => {
     const target = form.dataset.ajax && document.querySelector(form.dataset.ajax);
     // Иначе браузърът го изпраща нормално (с презареждане)
     if (!target) return;
+    // Бутон с data-full изпраща формуляра нормално (например към друга страница)
+    if (e.submitter && e.submitter.hasAttribute("data-full")) return;
     // Спираме нормалното изпращане
     e.preventDefault();
     // Бутонът, който е натиснат (носи formaction, name и value)
