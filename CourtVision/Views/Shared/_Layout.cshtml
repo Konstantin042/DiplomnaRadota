@@ -52,7 +52,7 @@
                 <a class="tab" asp-controller="Challenge" asp-action="Index" aria-current="@Current("Challenge")">82-0</a>
                 <a class="tab" asp-controller="Build" asp-action="Index" aria-current="@((controller is "Build" or "Season").ToString().ToLower())">Build-a-Player</a>
                 <a class="tab" asp-controller="Quiz" asp-action="Index" aria-current="@Current("Quiz")">Position Quiz</a>
-                <a class="tab" asp-controller="Salary" asp-action="Index" aria-current="@Current("Salary")">Salary Cap</a>
+                <a class="tab" asp-controller="Salary" asp-action="Index" aria-current="@Current("Salary")">Salary Cap Game</a>
             </nav>
         </div>
     </header>
@@ -61,14 +61,6 @@
     <main class="wrap">
         @RenderBody()
     </main>
-
-    @* Долната лента с източниците *@
-    <footer>
-        Court Vision · Diploma project · Stats from Basketball-Reference; Build-a-Player grades are calculated from those stats for teaching purposes.
-        Player photos: official NBA headshots (NBA.com); older players without one use Basketball-Reference headshots.
-        Salary Cap cards use the player headshots from Build-A-Player (build-a-player.com).
-        Not affiliated with the NBA.
-    </footer>
 
     @* Прозорецът "How to play" (съдържанието се попълва от всяка игра) *@
     <div class="modal" id="modal" hidden>

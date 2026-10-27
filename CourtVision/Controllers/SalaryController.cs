@@ -1,4 +1,4 @@
-// Контролер за Build-a-Player Salary (мрежа с цени и таван на заплатите)
+// Контролер за Salary Cap Game (мрежа с цени и таван на заплатите)
 using CourtVision.Models;          // Моделите
 using CourtVision.Services;        // Услугите
 using Microsoft.AspNetCore.Mvc;    // Базовите класове за MVC

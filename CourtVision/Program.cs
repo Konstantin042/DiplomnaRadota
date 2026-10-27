@@ -35,9 +35,9 @@ builder.Services.AddSingleton<ChallengeService>();
 builder.Services.AddSingleton<BuildService>();
 // Симулацията на сезон, Play-In, плейофи и финали
 builder.Services.AddSingleton<SeasonService>();
-// Логиката на Build-a-Player Salary (мрежа с цени и таван на заплатите)
+// Логиката на Salary Cap Game (мрежа с цени и таван на заплатите)
 builder.Services.AddSingleton<SalaryService>();
-// Класацията на Salary Cap (обща за всички посетители, в паметта на сървъра)
+// Класацията на Salary Cap Game (обща за всички посетители, в паметта на сървъра)
 builder.Services.AddSingleton<SalaryLeaderboard>();
 // Логиката на Position Quiz
 builder.Services.AddSingleton<QuizService>();

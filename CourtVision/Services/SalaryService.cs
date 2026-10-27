@@ -1,4 +1,4 @@
-// Логиката на Build-a-Player Salary: мрежа 5×5 с цени, таван на заплатите, разбъркване, скаут и заключване на билда
+// Логиката на Salary Cap Game (по идеята на Build-a-Player Salary): мрежа 5×5 с цени, таван на заплатите, разбъркване, скаут и заключване на билда
 using System.Text.Json;   // За четене на файла със снимките
 using CourtVision.Models; // Нашите модели
 
@@ -7,7 +7,7 @@ namespace CourtVision.Services; // Пространство от имена за
 // Една колона (категория) в мрежата: ключ, име, цвят и кои атрибути на гард/висок играч я описват
 public record SalaryColumn(string Key, string Label, string Color, int[] GuardAttrs, int[] BigAttrs);
 
-// Услугата за Salary Cap
+// Услугата за Salary Cap Game
 public class SalaryService
 {
     // Цените на петте реда (в милиони долари), от най-скъпия към най-евтиния

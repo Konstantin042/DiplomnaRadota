@@ -27,12 +27,12 @@
     }));
 }
 <section class="view">
-    @* Заглавие: Build-a-Player или Build-a-Player Salary (според това откъде е билдът) *@
+    @* Заглавие: Build-a-Player или Salary Cap Game (според това откъде е билдът) *@
     @{
-        // Истина, ако билдът е от Salary Cap
+        // Истина, ако билдът е от Salary Cap Game
         var fromSalary = Model.Source == "salary";
     }
-    <div class="ghead"><div><div class="label">@(fromSalary ? "Game 4 · Salary cap" : "Game 2 · Player skills")</div><h2>@(fromSalary ? "Build-a-Player Salary" : "Build-a-Player")</h2></div></div>
+    <div class="ghead"><div><div class="label">@(fromSalary ? "Game 4 · Salary cap" : "Game 2 · Player skills")</div><h2>@(fromSalary ? "Salary Cap Game" : "Build-a-Player")</h2></div></div>
     <div class="sp-wrap" id="season" data-step="@Model.Step" data-color="@team.Color">
         @* Горна лента: бутон назад и точките за стъпките *@
         <div class="sp-top">
@@ -198,8 +198,8 @@
             <div class="ss-actions">
                 @if (fromSalary)
                 {
-                    @* Билдът е от Salary Cap: връщаме се към мрежата *@
-                    <a class="sp-cta" href="/Salary">← Back to Salary</a>
+                    @* Билдът е от Salary Cap Game: връщаме се към мрежата *@
+                    <a class="sp-cta" href="/Salary">← Back to Salary Cap Game</a>
                 }
                 else
                 {

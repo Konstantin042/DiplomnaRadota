@@ -1,4 +1,4 @@
-@* Таблото на Salary Cap: горна лента, мрежата 5×5, бутоните и лентата на бюджета *@
+@* Таблото на Salary Cap Game: горна лента, заплатите, мрежата 5×5 и бутоните *@
 @model SalaryState
 @inject SalaryService Game
 @inject SalaryLeaderboard Leaders
@@ -20,11 +20,13 @@
     // Колко още трябва да изберем
     var left = SalaryService.Columns.Length - d.Picks.Count;
     // Текстът на главния бутон
-    var cta = locked ? "View Results →" : !all ? $"Pick {left} more" : over ? $"${spent - d.Budget}M over budget" : "Lock In Build →";
+    var cta = locked ? "View Results →" : !all ? $"Sign {left} more" : over ? $"${spent - d.Budget}M over the cap" : "Sign Contracts →";
     // Може ли да се натисне главният бутон
     var canLock = locked || (all && !over);
-    // Цветът на лентата на бюджета: червен над тавана, лилав точно на тавана, жълт близо до него, зелен иначе
-    var barColor = over ? "#ef4444" : spent == d.Budget && all ? "#a855f7" : spent >= d.Budget - 10 ? "#f59e0b" : "#34d399";
+    // Цветът на лентата на заплатите: червен над тавана, златен точно на тавана, оранжев близо до него, зелен иначе
+    var barColor = over ? "#ef4444" : spent == d.Budget && all ? "#FDE047" : spent >= d.Budget - 10 ? "#F59E0B" : "#22C55E";
+    // Свободното място под тавана (или колко сме над него)
+    var space = Math.Abs(d.Budget - spent);
     // Колко от лентата е запълнено (в проценти)
     var fill = Math.Min(1.0, spent / (double)d.Budget) * 100;
     // Идентификаторът на нашата сесия (за класацията)
@@ -38,7 +40,11 @@
     }
     @* Горната лента: заглавие и трите бутона (power-ups, класация, дата) *@
     <div class="sc-header">
-        <div class="sc-title">BUILD<span>-A-</span>PLAYER <span>SALARY</span></div>
+        @* Името на играта и ред с деня и тавана *@
+        <div class="sc-brand">
+            <div class="sc-eyebrow">@(isInf ? "INFINITE" : "DAILY · " + date.ToString("MMM d").ToUpperInvariant()) · CAP $@(d.Budget)M</div>
+            <div class="sc-title">SALARY CAP <span>GAME</span></div>
+        </div>
         <div class="sc-icons">
             @* Power-ups: разбъркване и скаут (само ако са останали и билдът не е заключен) *@
             @if ((d.Shuffles > 0 || d.Scouts > 0) && !locked)
@@ -52,10 +58,10 @@
                         @* Менюто с двете power-ups и броя им *@
                         <div class="sc-power">
                             <div class="sc-power-item">
-                                <button type="submit" class="sc-circle @(d.Mode == "shuffle" ? "on" : "")" formaction="/Salary/Mode" name="mode" value="shuffle" disabled="@(d.Shuffles == 0)" aria-label="Shuffle">
+                                <button type="submit" class="sc-circle @(d.Mode == "shuffle" ? "on" : "")" formaction="/Salary/Mode" name="mode" value="shuffle" disabled="@(d.Shuffles == 0)" aria-label="Reroll">
                                     <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5" /></svg><i>@d.Shuffles</i>
                                 </button>
-                                <small>SHUFFLE</small>
+                                <small>REROLL</small>
                             </div>
                             <div class="sc-power-item">
                                 <button type="submit" class="sc-circle @(d.Mode == "scout" ? "on" : "")" formaction="/Salary/Mode" name="mode" value="scout" disabled="@(d.Scouts == 0)" aria-label="Scout">
@@ -140,8 +146,15 @@
     @* Съобщение, когато дневният билд вече е заключен *@
     @if (locked && !isInf)
     {
-        <div class="sc-banner"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>Today's build is locked — come back tomorrow for a new lineup or play a previous date</div>
+        <div class="sc-banner"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></svg>Today's contracts are signed — come back tomorrow for a new grid or play a previous date</div>
     }
+
+    @* Заплатите: похарчено, таван и свободно място (лента с деления през $10M) *@
+    <div class="sc-payroll">
+        <div class="sc-payroll-l"><small>PAYROLL</small><b style="color:@(over ? "#ef4444" : spent == d.Budget && all ? "#FDE047" : "var(--ink)")">$@(spent)M</b><span>of $@(d.Budget)M</span></div>
+        <div class="sc-payroll-r @(over ? "over" : "")"><small>@(over ? "OVER THE CAP" : "CAP SPACE")</small><b>$@(space)M</b></div>
+        <div class="sc-track" style="--ticks:@(d.Budget / 10)"><i style="width:@fill.ToString("0.#")%;background:@barColor"></i></div>
+    </div>
 
     @* Мрежата: колона с цените отляво + 5 колони с категории *@
     <div class="sc-grid-wrap">
@@ -156,7 +169,7 @@
                     <span>@col.Label</span>
                     @if (d.Mode == "shuffle")
                     {
-                        <button type="submit" class="sc-arrow" formaction="/Salary/Column" name="col" value="@c" aria-label="Shuffle @col.Label">⇅</button>
+                        <button type="submit" class="sc-arrow" formaction="/Salary/Column" name="col" value="@c" aria-label="Reroll @col.Label">⇅</button>
                     }
                 </div>
             }
@@ -168,7 +181,7 @@
                     <span>$@(SalaryService.Prices[r])M</span>
                     @if (d.Mode == "shuffle")
                     {
-                        <button type="submit" class="sc-arrow" formaction="/Salary/Row" name="row" value="@r" aria-label="Shuffle the $@(SalaryService.Prices[r])M row">⇄</button>
+                        <button type="submit" class="sc-arrow" formaction="/Salary/Row" name="row" value="@r" aria-label="Reroll the $@(SalaryService.Prices[r])M row">⇄</button>
                     }
                 </div>
                 for (var c = 0; c < SalaryService.Columns.Length; c++)
@@ -212,11 +225,11 @@
         @* Подсказки за режимите *@
         @if (d.Mode == "shuffle")
         {
-            <div class="sc-hint">⇅ column · ⇄ row<button type="submit" formaction="/Salary/Mode" name="mode" value="shuffle">Cancel</button></div>
+            <div class="sc-hint">⇅ reroll a column · ⇄ reroll a row<button type="submit" formaction="/Salary/Mode" name="mode" value="shuffle">Cancel</button></div>
         }
         else if (d.Mode == "scout")
         {
-            <div class="sc-hint scout">Choose a player to scout<button type="submit" formaction="/Salary/Mode" name="mode" value="scout">Cancel</button></div>
+            <div class="sc-hint scout">Tap a player to scout his grade<button type="submit" formaction="/Salary/Mode" name="mode" value="scout">Cancel</button></div>
         }
     </div>
 
@@ -233,11 +246,6 @@
             {
                 <button type="button" class="sc-confirm" disabled>@cta</button>
             }
-        </div>
-        @* Лентата: похарчено / таван *@
-        <div class="sc-budget">
-            <div class="sc-budget-l"><b style="color:@(over ? "#ef4444" : spent == d.Budget && all ? "#a855f7" : "var(--ink)")">$@(spent)M</b><span> / $@(d.Budget)M</span></div>
-            <div class="sc-track"><i style="width:@fill.ToString("0.#")%;background:@barColor"></i></div>
         </div>
         @if (d.Result != null)
         {

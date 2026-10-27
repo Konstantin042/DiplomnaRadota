@@ -204,8 +204,8 @@ public class SeasonState
     public Series Finals { get; set; } = new();               // Финалите на NBA
     public List<PathRound> Path { get; set; } = new();        // Сериите, които играем
     public bool Prepared { get; set; }                        // Истина, след като плейофите са изчислени
-    public string Source { get; set; } = "build";             // Откъде е билдът: "build" (Build-a-Player) или "salary" (Salary Cap)
-    public string SalaryKey { get; set; } = "";               // За Salary Cap: денят ("2026-10-27") или "inf"
+    public string Source { get; set; } = "build";             // Откъде е билдът: "build" (Build-a-Player) или "salary" (Salary Cap Game)
+    public string SalaryKey { get; set; } = "";               // За Salary Cap Game: денят ("2026-10-27") или "inf"
     public bool IsEast => Teams.Get(Team).IsEast;             // Истина, ако сме от Изтока
     public int Seed => Standings.IndexOf(Team) + 1;           // Нашето място в конференцията
     // Истина, ако сме спечелили финалите
@@ -218,7 +218,7 @@ public record SeriesBox(Series? Match, List<string> Seeds, string Us, int Round)
 // Данни за картата на една награда (за частичния изглед _Award): име на наградата и победителят
 public record AwardBox(string Label, Award Winner);
 
-// Един ден (или една безкрайна игра) в Build-a-Player Salary
+// Един ден (или една безкрайна игра) в Salary Cap Game
 public class SalaryDay
 {
     public string Key { get; set; } = "";                       // Ключ: дата "2026-10-27" или "inf"
@@ -234,7 +234,7 @@ public class SalaryDay
     public SalaryResult? Result { get; set; }                   // Резултатът, след като билдът е заключен (null преди това)
 }
 
-// Заключеният билд в Salary Cap
+// Заключеният билд в Salary Cap Game
 public class SalaryResult
 {
     public List<int> Players { get; set; } = new();  // Избраните играчи по колони
@@ -247,7 +247,7 @@ public class SalaryResult
     public string Team { get; set; } = "";           // Отборът, за който играе билдът
 }
 
-// Цялото състояние на Salary Cap в сесията на посетителя
+// Цялото състояние на Salary Cap Game в сесията на посетителя
 public class SalaryState
 {
     public string Current { get; set; } = "";                              // Кой ден е отворен ("" = днес)
@@ -256,7 +256,7 @@ public class SalaryState
     public bool Locked { get; set; }                                       // Истина за кратко съобщение "Play today's game to unlock"
 }
 
-// Един ред в класацията на Salary Cap
+// Един ред в класацията на Salary Cap Game
 public class SalaryEntry
 {
     public string Owner { get; set; } = "";          // Идентификатор на сесията (за да знаем кой ред е наш)
