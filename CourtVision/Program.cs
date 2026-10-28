@@ -39,6 +39,8 @@ builder.Services.AddSingleton<SeasonService>();
 builder.Services.AddSingleton<SalaryService>();
 // Класацията на Salary Cap Game (обща за всички посетители, в паметта на сървъра)
 builder.Services.AddSingleton<SalaryLeaderboard>();
+// Логиката на Higher or Lower
+builder.Services.AddSingleton<HigherLowerService>();
 // Логиката на Position Quiz
 builder.Services.AddSingleton<QuizService>();
 

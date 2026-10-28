@@ -76,6 +76,10 @@ public class SalaryService
     public string? PhotoUrl(BuildPlayer p) =>
         _photos.TryGetValue(DataService.NormalizeName(p.Name), out var id) ? $"/faces/salary/{id}.webp" : null;
 
+    // Адресът на голямата снимка по име (ползва се и от Higher or Lower)
+    public string? PhotoUrl(string name) =>
+        _photos.TryGetValue(DataService.NormalizeName(name), out var id) ? $"/faces/salary/{id}.webp" : null;
+
     // Номерата на атрибутите, които описват колоната за този играч (гард или висок)
     private static int[] AttrsFor(BuildPlayer p, SalaryColumn col) => p.Group == "b" ? col.BigAttrs : col.GuardAttrs;
 

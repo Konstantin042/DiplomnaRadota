@@ -1,0 +1,27 @@
+@* Менюто на Higher or Lower: избор между Current и All-Time *@
+@model HigherLowerState
+@inject HigherLowerService Game
+<form method="post" data-ajax="#hroot" class="hl hl-menu">
+    @* Заглавие на менюто *@
+    <div class="hl-menu-h">
+        <h3>Choose your players</h3>
+        <p>Same game, two player pools. Your best streak is kept for each mode.</p>
+    </div>
+    @* Двете карти за режимите *@
+    <div class="hl-modes">
+        @* Current: сезон 2025–26 *@
+        <button type="submit" class="hl-pick" formaction="/HigherLower/Mode" name="mode" value="c">
+            <span class="corner">2025–26</span>
+            <h4>Current</h4>
+            <p>@Game.Count("c") players from today's NBA, with their stats from the 2025–26 season.</p>
+            <span class="hl-pick-f"><small>BEST</small><b>@Model.BestCurrent</b><em>Play Current →</em></span>
+        </button>
+        @* All-Time: всички десетилетия *@
+        <button type="submit" class="hl-pick at" formaction="/HigherLower/Mode" name="mode" value="a">
+            <span class="corner">ALL ERAS</span>
+            <h4>All-Time</h4>
+            <p>@Game.Count("a") stat lines: one player, one team, one decade, from the 1960s to today.</p>
+            <span class="hl-pick-f"><small>BEST</small><b>@Model.BestAllTime</b><em>Play All-Time →</em></span>
+        </button>
+    </div>
+</form>
