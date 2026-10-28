@@ -1,0 +1,108 @@
+@* Един рунд от Higher or Lower: двама играчи, въпрос и бутоните Higher / Lower *@
+@model HigherLowerState
+@inject HigherLowerService Game
+@inject SalaryService Large
+@inject PhotoService Faces
+@{
+    // Левият и десният играч
+    var l = Game.Player(Model.Mode, Model.Left);
+    var r = Game.Player(Model.Mode, Model.Right);
+    // Какво пише под името: сезонът (Current) или десетилетието (All-Time)
+    string When(PoolPlayer p) => Model.Mode == "c" ? "2025–26" : ChallengeService.EraYears(p.Decade);
+    // Показателят в този рунд
+    var stat = HigherLowerService.StatInfo(Model.Stat);
+    // Стойностите им
+    var lv = HigherLowerService.Value(l, Model.Stat);
+    var rv = HigherLowerService.Value(r, Model.Stat);
+    // Има ли вече отговор
+    var answered = Model.Guess != null;
+    // Отборите им
+    var lt = Teams.Get(l.Team);
+    var rt = Teams.Get(r.Team);
+    // Големите снимки (или null, ако няма)
+    var lurl = Large.PhotoUrl(l.Name);
+    var rurl = Large.PhotoUrl(r.Name);
+}
+<form method="post" data-ajax="#hroot" class="hl @(answered ? (Model.Correct ? "hl--ok" : "hl--bad") : "")">
+    @* Горе: серия, въпрос и рекорд *@
+    <div class="hl-top">
+        <div class="hl-score"><small>STREAK</small><b>@Model.Score</b></div>
+        @* Бутон за смяна на режима (връща към менюто) *@
+        <button type="submit" class="hl-mode" formaction="/HigherLower/Menu" aria-label="Change mode"><small>MODE</small><b>@(Model.Mode == "c" ? "Current" : "All-Time") ▾</b></button>
+        <div class="hl-q">Does <b>@r.Name</b> have a <em>higher</em> or <em>lower</em> @stat.Name?</div>
+        <div class="hl-score best"><small>BEST</small><b>@Model.Best</b></div>
+    </div>
+
+    @* Двамата играчи един срещу друг *@
+    <div class="hl-duel">
+        @* Левият играч: стойността се вижда *@
+        <div class="hl-card" style="--tc:@lt.Color">
+            <div class="hl-photo">
+                @if (lurl != null)
+                {
+                    <img src="@lurl" alt="" />
+                }
+                else
+                {
+                    @Faces.Face(l.Name, l.Id, l.MainPosition)
+                }
+            </div>
+            <div class="hl-info">
+                <b class="hl-name">@l.Name</b>
+                <span class="hl-meta">@lt.Name · @When(l)</span>
+                <div class="hl-val"><b>@lv.ToString("0.0")</b><small>@stat.Short</small></div>
+            </div>
+        </div>
+
+        @* Кръгът VS (или знак за верен/грешен отговор) *@
+        <div class="hl-vs">@(answered ? (Model.Correct ? "✓" : "✕") : "VS")</div>
+
+        @* Десният играч: стойността е скрита до отговора *@
+        <div class="hl-card right" style="--tc:@rt.Color">
+            <div class="hl-photo">
+                @if (rurl != null)
+                {
+                    <img src="@rurl" alt="" />
+                }
+                else
+                {
+                    @Faces.Face(r.Name, r.Id, r.MainPosition)
+                }
+            </div>
+            <div class="hl-info">
+                <b class="hl-name">@r.Name</b>
+                <span class="hl-meta">@rt.Name · @When(r)</span>
+                @if (answered)
+                {
+                    @* JavaScript брои от 0 до стойността *@
+                    <div class="hl-val"><b data-count="@rv.ToString("0.0")">@rv.ToString("0.0")</b><small>@stat.Short</small></div>
+                }
+                else
+                {
+                    @* Бутоните за отговор *@
+                    <div class="hl-btns">
+                        <button type="submit" class="hl-btn up" formaction="/HigherLower/Guess" name="dir" value="higher">▲ Higher</button>
+                        <button type="submit" class="hl-btn down" formaction="/HigherLower/Guess" name="dir" value="lower">▼ Lower</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    @* След отговора: следващ рунд или край на играта *@
+    @if (answered && Model.Correct)
+    {
+        <div class="hl-verdict ok">Correct! @r.Name: <b>@rv.ToString("0.0")</b> vs <b>@lv.ToString("0.0")</b> @stat.Short</div>
+        @* JavaScript натиска този бутон сам след кратка пауза *@
+        <button type="submit" class="btn wide" formaction="/HigherLower/Next" data-auto-next>Next player →</button>
+    }
+    else if (Model.Over)
+    {
+        <div class="hl-over">
+            <h3>Game over</h3>
+            <p>@r.Name averaged <b>@rv.ToString("0.0")</b> @stat.Name for the @rt.Name @(Model.Mode == "c" ? "in 2025–26" : "in the " + ChallengeService.EraYears(r.Decade)), @(rv > lv ? "more" : "less") than @l.Name (<b>@lv.ToString("0.0")</b>).</p>
+            <p class="muted">Your streak: <b>@Model.Score</b> · Best this session: <b>@Model.Best</b></p>
+            <button type="submit" class="btn wide" formaction="/HigherLower/Restart">Play again</button>
+        </div>
+    }
+</form>

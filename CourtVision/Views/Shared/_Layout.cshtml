@@ -53,6 +53,7 @@
                 <a class="tab" asp-controller="Build" asp-action="Index" aria-current="@((controller is "Build" or "Season").ToString().ToLower())">Build-a-Player</a>
                 <a class="tab" asp-controller="Quiz" asp-action="Index" aria-current="@Current("Quiz")">Position Quiz</a>
                 <a class="tab" asp-controller="Salary" asp-action="Index" aria-current="@Current("Salary")">Salary Cap Game</a>
+                <a class="tab" asp-controller="HigherLower" asp-action="Index" aria-current="@Current("HigherLower")">Higher or Lower</a>
             </nav>
         </div>
     </header>

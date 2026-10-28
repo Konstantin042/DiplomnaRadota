@@ -1,0 +1,57 @@
+@* Страницата на Higher or Lower *@
+@model HigherLowerState
+@{
+    ViewData["Title"] = "Higher or Lower"; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие и бутон за правилата *@
+    <div class="ghead"><div><div class="label">Game 5 · Stats</div><h2>Higher or Lower</h2></div><button type="button" class="iconbtn" data-help="higherlower" aria-label="How to play">?</button></div>
+
+    @* Картата на играта (подменя се без презареждане) *@
+    <div id="hroot">
+        @if (Model.Mode == "")
+        {
+            <partial name="_Menu" model="Model" />
+        }
+        else
+        {
+            <partial name="_Card" model="Model" />
+        }
+    </div>
+
+    @* Обяснение как е в истинската NBA *@
+    <div class="real">
+        <h3>In the real NBA</h3>
+        <p>Players are compared by <b>per-game averages</b>: the total for a season divided by the games played. PPG means points per game, RPG rebounds per game and APG assists per game. Today 20 PPG makes a player a strong scorer, 10 RPG is a lot for a center and 8 APG is a lot for a point guard.</p>
+        <p>The era matters. In the 1960s teams took many more shots per game, so there were more missed shots to rebound. That is why Wilt Chamberlain averaged 27.2 rebounds in 1960–61 and 50.4 points in 1961–62, numbers no one reaches today. The assist record is John Stockton's 14.5 per game in 1989–90.</p>
+        <p>All-Time uses real Basketball-Reference averages for one player, on one team, in one decade, the same data as in 82-0. Current uses each player's averages from the 2025–26 season.</p>
+    </div>
+</section>
+
+@* Текстът за прозореца "How to play" *@
+<template id="help-higherlower">
+    <h3>How to play Higher or Lower</h3>
+    <p>Learn what NBA stats mean by comparing real players.</p>
+    <h4>Choose a mode</h4>
+    <ul>
+        <li>Current: today's players with their 2025–26 season stats.</li>
+        <li>All-Time: players from every decade since the 1960s, with their stats for one team in one decade.</li>
+    </ul>
+    <h4>Each round</h4>
+    <ul>
+        <li>The left player's stat is shown: points (PPG), rebounds (RPG) or assists (APG) per game.</li>
+        <li>Guess if the right player's number is higher or lower.</li>
+        <li>In All-Time each stat is for one team and one decade, so the same player can appear with different numbers.</li>
+    </ul>
+    <h4>Streak</h4>
+    <ul>
+        <li>Every correct answer adds 1 to your streak and the right player moves to the left.</li>
+        <li>One wrong answer ends the game. Equal numbers count as correct.</li>
+    </ul>
+    <div class="foot"><b>How long can your streak get?</b><button type="button" class="btn" data-close>Let's play</button></div>
+</template>
+
+@* JavaScript за броенето на числата и автоматичния следващ рунд *@
+@section Scripts {
+    <script src="~/js/higherlower.js" asp-append-version="true"></script>
+}

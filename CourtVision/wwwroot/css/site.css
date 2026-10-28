@@ -1352,6 +1352,136 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
   /* По-тясна класация */
   .sc-lb{min-width:260px}
 }
+/* ===== Higher or Lower ===== */
+/* Зеленият цвят на картата на играта в началната страница */
+.t-green{--tint:rgba(34,197,94,.2);--tint-b:rgba(34,197,94,.4);--tint-s:#86EFAC}
+/* Цялото табло на играта */
+.hl{display:grid;gap:16px;background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;max-width:900px;margin:0 auto}
+/* Горе: серия, режим, въпрос и рекорд */
+.hl-top{display:grid;grid-template-columns:auto auto 1fr auto;gap:14px;align-items:center}
+/* Бутонът за смяна на режима */
+.hl-mode{display:grid;justify-items:start;padding:8px 12px;border-radius:12px;background:#0B0F19;border:1px solid var(--line-2);text-align:left;line-height:1.1}
+/* Етикетът MODE */
+.hl-mode small{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--muted)}
+/* Името на режима */
+.hl-mode b{font-weight:800;color:#86EFAC}
+/* Бутонът за режима при посочване */
+.hl-mode:hover{border-color:rgba(34,197,94,.6)}
+/* Менюто: заглавие и текст */
+.hl-menu-h{text-align:center;display:grid;gap:6px}
+/* Заглавието на менюто */
+.hl-menu-h h3{font-family:var(--f-display);font-size:30px;font-weight:900;text-transform:uppercase}
+/* Текстът под заглавието */
+.hl-menu-h p{color:var(--muted)}
+/* Двете карти за режимите една до друга */
+.hl-modes{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+/* Карта за режим (Current е зелена) */
+.hl-pick{--tint-s:#86EFAC;position:relative;overflow:hidden;display:grid;gap:8px;align-content:start;text-align:left;padding:20px;border-radius:16px;min-height:200px;border:1px solid rgba(34,197,94,.45);background:linear-gradient(160deg,rgba(34,197,94,.22),var(--panel) 75%);transition:transform .15s,border-color .15s}
+/* All-Time е синя */
+.hl-pick.at{--tint-s:#93C5FD;border-color:rgba(59,130,246,.5);background:linear-gradient(160deg,rgba(59,130,246,.26),var(--panel) 75%)}
+/* Карта за режим при посочване */
+.hl-pick:hover{transform:translateY(-3px)}
+/* Името на режима */
+.hl-pick h4{font-family:var(--f-display);font-size:38px;font-weight:900;text-transform:uppercase;line-height:1}
+/* Описанието */
+.hl-pick p{color:#C9CFDC;font-size:14px}
+/* Долният ред: рекорд и "Play →" */
+.hl-pick-f{display:flex;align-items:baseline;gap:8px;margin-top:auto}
+/* Етикетът BEST */
+.hl-pick-f small{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--muted)}
+/* Рекордът */
+.hl-pick-f b{font-family:var(--f-display);font-size:24px;font-weight:900}
+/* "Play Current →" вдясно */
+.hl-pick-f em{margin-left:auto;font-style:normal;font-family:var(--f-display);font-weight:800;text-transform:uppercase;letter-spacing:.06em;color:#86EFAC}
+/* "Play All-Time →" е синьо */
+.hl-pick.at .hl-pick-f em{color:#93C5FD}
+/* Кутийка със серията или рекорда */
+.hl-score{display:grid;justify-items:center;min-width:70px;padding:8px 10px;border-radius:12px;background:#0B0F19;border:1px solid var(--line)}
+/* Етикетът STREAK / BEST */
+.hl-score small{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:var(--muted)}
+/* Числото */
+.hl-score b{font-family:var(--f-display);font-size:30px;font-weight:900;line-height:1;color:var(--win)}
+/* Рекордът е син */
+.hl-score.best b{color:var(--amber)}
+/* Въпросът в средата */
+.hl-q{text-align:center;font-size:17px;font-weight:600;text-wrap:balance}
+/* Думите higher / lower във въпроса */
+.hl-q em{font-style:normal;font-weight:800;color:var(--ink)}
+/* Двамата играчи и кръгът VS между тях */
+.hl-duel{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:14px;align-items:stretch}
+/* Карта на играч в цвета на отбора */
+.hl-card{display:grid;grid-template-rows:auto 1fr;border-radius:16px;overflow:hidden;border:1px solid color-mix(in srgb,var(--tc) 55%,var(--line));background:#0B0F19}
+/* Снимката: голяма, на фон в цвета на отбора */
+.hl-photo{position:relative;aspect-ratio:600/436;background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 80%,#fff 8%),color-mix(in srgb,var(--tc) 40%,#000));display:grid;place-items:center;overflow:hidden}
+/* Голямата снимка */
+.hl-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center bottom}
+/* Малката кръгла снимка, ако няма голяма */
+.hl-photo .ph{width:42%}
+/* Името, отборът, стойността или бутоните */
+.hl-info{display:grid;gap:4px;padding:12px 14px 14px;justify-items:center;align-content:start;text-align:center}
+/* Името на играча */
+.hl-name{font-family:var(--f-display);font-size:22px;font-weight:900;text-transform:uppercase;letter-spacing:.02em;line-height:1.05}
+/* Отборът и десетилетието */
+.hl-meta{font-size:13px;color:var(--muted)}
+/* Стойността на показателя */
+.hl-val{display:flex;align-items:baseline;gap:6px;margin-top:4px}
+/* Числото */
+.hl-val b{font-family:var(--f-display);font-size:48px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+/* Съкращението PPG / RPG / APG */
+.hl-val small{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;color:var(--muted)}
+/* Кръгът VS между картите */
+.hl-vs{align-self:center;width:54px;height:54px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:900;font-size:20px;background:var(--panel-2);border:2px solid var(--line-2)}
+/* Верен отговор: зелен кръг */
+.hl--ok .hl-vs{background:var(--win);border-color:var(--win);color:#04130A;animation:pop .35s ease-out}
+/* Грешен отговор: червен кръг */
+.hl--bad .hl-vs{background:var(--loss);border-color:var(--loss);color:#fff;animation:pop .35s ease-out}
+/* Десният играч свети зелено при верен отговор */
+.hl--ok .hl-card.right{box-shadow:0 0 0 3px rgba(34,197,94,.45)}
+/* Десният играч свети червено при грешен отговор */
+.hl--bad .hl-card.right{box-shadow:0 0 0 3px rgba(239,68,68,.45)}
+/* Двата бутона за отговор */
+.hl-btns{display:grid;gap:8px;width:100%;margin-top:6px}
+/* Бутон Higher / Lower */
+.hl-btn{padding:12px;border-radius:12px;font-weight:800;font-size:16px;border:1px solid}
+/* Higher: зелен */
+.hl-btn.up{background:rgba(34,197,94,.14);border-color:rgba(34,197,94,.5);color:#86EFAC}
+/* Lower: червен */
+.hl-btn.down{background:rgba(239,68,68,.14);border-color:rgba(239,68,68,.5);color:#FCA5A5}
+/* Бутоните при посочване */
+.hl-btn:hover:not(:disabled){filter:brightness(1.25)}
+/* Текстът след верен отговор */
+.hl-verdict{text-align:center;font-weight:600}
+/* Верен отговор: зелен */
+.hl-verdict.ok{color:#86EFAC}
+/* Кутията "Game over" */
+.hl-over{display:grid;gap:8px;text-align:center;padding:14px;border-radius:14px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.35)}
+/* Заглавието Game over */
+.hl-over h3{font-family:var(--f-display);font-size:32px;font-weight:900;text-transform:uppercase;color:#FCA5A5}
+/* Правила за тесни екрани (640px и по-малко) */
+@media (max-width:640px){
+  /* По-малко разстояние */
+  .hl{padding:12px;gap:12px}
+  /* Серията, режимът и рекордът на един ред, въпросът под тях */
+  .hl-top{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  /* Картите за режимите една под друга */
+  .hl-modes{grid-template-columns:1fr}
+  /* По-ниски карти за режимите */
+  .hl-pick{min-height:0;padding:16px}
+  /* Въпросът заема целия ред */
+  .hl-q{grid-column:1 / -1;order:3;font-size:15px}
+  /* По-тесен кръг VS */
+  .hl-duel{gap:6px}
+  /* По-малък кръг VS */
+  .hl-vs{width:36px;height:36px;font-size:13px}
+  /* По-малко име */
+  .hl-name{font-size:15px}
+  /* По-малко число */
+  .hl-val b{font-size:32px}
+  /* По-малък отстъп */
+  .hl-info{padding:8px 6px 10px}
+  /* По-малки бутони */
+  .hl-btn{padding:10px 4px;font-size:14px}
+}
 /* Без анимации за хора, които са ги изключили в системата */
 @media (prefers-reduced-motion:reduce){
   /* Спираме всички анимации и преходи */

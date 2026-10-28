@@ -267,6 +267,22 @@ public class SalaryEntry
     public int Spare { get; set; }                   // Неизхарчени милиони
 }
 
+// Състояние на Higher or Lower
+public class HigherLowerState
+{
+    public string Mode { get; set; } = "";       // Режим: "" (меню), "c" (Current – сезон 2025–26) или "a" (All-Time – всички десетилетия)
+    public int Left { get; set; } = -1;          // Играчът вляво (номер в списъка); стойността му се вижда
+    public int Right { get; set; } = -1;         // Играчът вдясно; стойността му е скрита до отговора
+    public string Stat { get; set; } = "ppg";    // Показателят в този рунд: ppg, rpg или apg
+    public int Score { get; set; }               // Поредни верни отговори
+    public int BestCurrent { get; set; }         // Най-добрата серия в режим Current (в тази сесия)
+    public int BestAllTime { get; set; }         // Най-добрата серия в режим All-Time (в тази сесия)
+    public int Best => Mode == "c" ? BestCurrent : BestAllTime; // Рекордът за текущия режим
+    public string? Guess { get; set; }           // Отговорът: "higher", "lower" или null (още няма)
+    public bool Correct { get; set; }            // Истина, ако отговорът е верен
+    public bool Over { get; set; }               // Истина, когато играта е свършила (грешен отговор)
+}
+
 // Състояние на Position Quiz
 public class QuizState
 {
