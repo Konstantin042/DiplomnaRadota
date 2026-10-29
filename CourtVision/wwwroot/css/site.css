@@ -100,6 +100,25 @@ main{padding-block:28px 56px}
 .home-head p{color:var(--muted);max-width:56ch}
 /* Стил за картите на игрите */
 .modes{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:880px;width:100%;margin:0 auto}
+/* NBA 101 като дълъг правоъгълник: текстът вляво, "Learn the basics →" вдясно */
+.mode.banner{grid-template-columns:minmax(0,1fr) auto;align-items:center;min-height:0;max-width:880px;width:100%;margin:0 auto;padding:18px 22px}
+/* Етикетът и заглавието в правоъгълника на един ред */
+.mode.banner > div{display:flex;flex-wrap:wrap;align-items:center;gap:6px 16px}
+/* По-малко заглавие в правоъгълника */
+.mode.banner h3{font-size:34px}
+/* Текстът без горен отстъп */
+.mode.banner p{margin-top:0}
+/* Ъгловата лента малко навътре, за да не закрива текста */
+.mode.banner .go{padding-right:44px}
+/* На тесен екран всичко едно под друго */
+@media (max-width:700px){
+  /* Една колона */
+  .mode.banner{grid-template-columns:1fr}
+  /* Заглавието и текстът едно под друго */
+  .mode.banner > div{grid-template-columns:1fr;justify-items:start}
+  /* Без отстъп вдясно */
+  .mode.banner .go{padding-right:0}
+}
 /* Стил за карта на игра */
 .mode{position:relative;overflow:hidden;text-align:left;border-radius:14px;padding:22px;min-height:170px;display:grid;align-content:space-between;gap:16px;border:1px solid var(--tint-b);background:linear-gradient(160deg,var(--tint) 0%,var(--panel) 75%);transition:transform .15s,border-color .15s}
 /* Стил за карта на игра, при посочване с мишката */
@@ -196,6 +215,10 @@ main{padding-block:28px 56px}
 .roundbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}
 /* Стил за удебеления текст в реда с рунда */
 .roundbar b{font-weight:800}
+/* Бутонът Reset в реда с рунда */
+.ch-reset{padding:7px 12px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font-weight:800;font-size:12px}
+/* Бутонът Reset при посочване: червена рамка */
+.ch-reset:hover{border-color:var(--orange);color:#fff}
 /* Стил за точките за рундовете */
 .dots5{display:flex;gap:6px}
 /* Стил за малките елементи в точките за рундовете */
