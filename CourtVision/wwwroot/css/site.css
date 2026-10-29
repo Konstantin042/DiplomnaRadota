@@ -1505,6 +1505,102 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
   /* По-малки бутони */
   .hl-btn{padding:10px 4px;font-size:14px}
 }
+/* ===== Guess the Player ===== */
+/* Тюркоазеният цвят на картата на играта в началната страница */
+.t-cyan{--tint:rgba(20,184,166,.22);--tint-b:rgba(20,184,166,.42);--tint-s:#5EEAD4}
+/* Цялото табло */
+.gp{display:grid;gap:14px;background:var(--panel);border:1px solid var(--line);border-top:3px solid #14B8A6;border-radius:18px;padding:18px;max-width:1000px;margin:0 auto}
+/* Горе: тайният играч вляво, броячите вдясно */
+.gp-top{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}
+/* Тайният играч: снимка и текст */
+.gp-mystery{display:flex;align-items:center;gap:14px;min-width:0;flex:1 1 300px}
+/* Кутийката за снимката */
+.gp-photo{position:relative;width:120px;flex:none;aspect-ratio:600/436;border-radius:12px;overflow:hidden;display:grid;place-items:center;background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 85%,#fff 8%),color-mix(in srgb,var(--tc) 45%,#000));border:1px solid var(--line-2)}
+/* Голямата снимка в края */
+.gp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center bottom}
+/* Малката кръгла снимка, ако няма голяма */
+.gp-photo .ph{width:52%}
+/* Въпросителният знак, докато играта тече */
+.gp-q{font-family:var(--f-display);font-size:48px;font-weight:900;color:#5EEAD4}
+/* Текстът до снимката */
+.gp-who{display:grid;gap:2px;min-width:0}
+/* Етикетът MYSTERY PLAYER / THE ANSWER */
+.gp-who small{font-family:var(--f-mono);font-size:10px;letter-spacing:.14em;color:#5EEAD4}
+/* Името (или "Who is it?") */
+.gp-who b{font-family:var(--f-display);font-size:28px;font-weight:900;text-transform:uppercase;line-height:1}
+/* Описанието под името */
+.gp-who span{color:var(--muted);font-size:13px}
+/* Победа: зелен етикет */
+.gp--won .gp-who small{color:var(--win)}
+/* Загуба: червен етикет */
+.gp--lost .gp-who small{color:var(--loss)}
+/* Броячите вдясно */
+.gp-counts{display:flex;gap:8px}
+/* Един брояч */
+.gp-counts div{display:grid;justify-items:center;padding:8px 12px;border-radius:12px;background:#0B0F19;border:1px solid var(--line)}
+/* Етикетът на брояча */
+.gp-counts small{font-family:var(--f-mono);font-size:9px;letter-spacing:.14em;color:var(--muted)}
+/* Числото */
+.gp-counts b{font-family:var(--f-display);font-size:26px;font-weight:900;line-height:1}
+/* Полето за опит и бутоните на един ред */
+.gp-input{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+/* Полето за име */
+.gp-input input{padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);background:#0B0F19;color:var(--ink);font:inherit;font-size:16px;min-width:0}
+/* Полето при фокус */
+.gp-input input:focus{outline:2px solid #14B8A6;outline-offset:1px}
+/* Съобщението под полето */
+.gp-msg{color:#FCA5A5;font-size:14px}
+/* Краят на играта: текст и бутон */
+.gp-end{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:#0B0F19;border:1px solid var(--line)}
+/* Таблицата с опитите */
+.gp-table{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:13px}
+/* Заглавията на колоните */
+.gp-table th{font-family:var(--f-mono);font-size:10px;letter-spacing:.12em;color:var(--muted);font-weight:500;text-align:center;padding:0 6px}
+/* Първата колона е подравнена вляво */
+.gp-table th:first-child{text-align:left}
+/* Клетките */
+.gp-table td{padding:8px 6px;text-align:center;background:#0B0F19;border-top:1px solid var(--line);border-bottom:1px solid var(--line);white-space:nowrap}
+/* Първата клетка: заоблен ляв край */
+.gp-table td:first-child{border-left:1px solid var(--line);border-radius:10px 0 0 10px;text-align:left}
+/* Последната клетка: заоблен десен край */
+.gp-table td:last-child{border-right:1px solid var(--line);border-radius:0 10px 10px 0}
+/* Играчът: снимка и име */
+.gp-pl{display:flex;align-items:center;gap:8px}
+/* Малката снимка в реда */
+.gp-pl .ph{width:30px}
+/* Подсказка: съвпада (зелено) */
+.gp-table td.hit{background:rgba(34,197,94,.38);color:#BBF7D0;font-weight:700}
+/* Подсказка: близо (жълто) */
+.gp-table td.near{background:rgba(234,179,8,.34);color:#FEF08A;font-weight:700}
+/* Стрелката до стойността */
+.gp-table td i{font-style:normal;margin-left:4px;font-weight:900}
+/* Познатият играч: зелена рамка */
+.gp-table tr.right td{border-color:var(--win)}
+/* Празен ред за оставащ опит */
+.gp-table tr.empty td{color:var(--dim);background:transparent;border-style:dashed;text-align:center;font-size:12px}
+/* Обяснението на цветовете */
+.gp-legend{font-size:12px;color:var(--muted)}
+/* Думата Green */
+.gp-legend .hit{color:#86EFAC;font-weight:700}
+/* Думата Yellow */
+.gp-legend .near{color:#FDE047;font-weight:700}
+/* Правила за тесни екрани (640px и по-малко) */
+@media (max-width:640px){
+  /* По-малко разстояние */
+  .gp{padding:12px}
+  /* Броячите на отделен ред под тайния играч */
+  .gp-top{display:grid}
+  /* Броячите по равно */
+  .gp-counts div{flex:1}
+  /* По-малка снимка */
+  .gp-photo{width:84px}
+  /* По-малко име */
+  .gp-who b{font-size:20px}
+  /* Полето на цял ред, бутоните под него */
+  .gp-input{grid-template-columns:1fr 1fr}
+  /* Полето заема двете колони */
+  .gp-input input{grid-column:1 / -1}
+}
 /* Без анимации за хора, които са ги изключили в системата */
 @media (prefers-reduced-motion:reduce){
   /* Спираме всички анимации и преходи */
