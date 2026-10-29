@@ -31,6 +31,8 @@
                         <i class="@(i < Model.Round ? "on" : "")"></i>
                     }
                 </div>
+                @* Бутон Reset: започва нов драфт от рунд 1 по всяко време *@
+                <button type="submit" class="ch-reset" formaction="/Challenge/Reset" aria-label="Start a new draft">↺ Reset</button>
             </div>
 
             @if (!done)
