@@ -9,9 +9,14 @@
         <div class="logo"><svg class="ball"><use href="#ball" /></svg><div class="ribbon">COURT VISION<small>DIPLOMA PROJECT</small></div></div>
         @* Главното заглавие *@
         <h1>Can you learn the NBA in 10 minutes?</h1>
-        @* Кратко обяснение *@
-        <p>No basketball knowledge needed. Pick a game below. Each one explains its rules first and ends with a short note on how it works in the real NBA.</p>
     </div>
+
+    @* Урокът NBA 101: дълъг правоъгълник над картите с игрите *@
+    <a class="mode t-gold banner" asp-controller="Home" asp-action="Nba101">
+        <span class="corner">START HERE</span>
+        <div><span class="chip">2-minute read</span><h3>NBA 101</h3></div>
+        <span class="go">Learn the basics →</span>
+    </a>
 
     @* Картите с игрите *@
     <div class="modes">
@@ -27,17 +32,11 @@
             <div><span class="chip">Player skills</span><h3>Build-a-Player</h3><p>Pick Guard or Big and All-Time or Current. Spin real teams and players and copy one of ten attributes from each.</p></div>
             <span class="go">Spin the wheel →</span>
         </a>
-        @* Урокът NBA 101 *@
-        <a class="mode t-gold" asp-controller="Home" asp-action="Nba101">
-            <span class="corner">START HERE</span>
-            <div><span class="chip">2-minute read</span><h3>NBA 101</h3><p>Scoring, the five positions and how a season works, in plain words.</p></div>
-            <span class="go">Learn the basics →</span>
-        </a>
-        @* Игра 3: Position Quiz *@
-        <a class="mode t-red" asp-controller="Quiz" asp-action="Index">
+        @* Игра 3: Higher or Lower *@
+        <a class="mode t-green" asp-controller="HigherLower" asp-action="Index">
             <span class="corner">GAME 3</span>
-            <div><span class="chip">Positions</span><h3>Position Quiz</h3><p>Read a player's skills and place him in the right spot on the court.</p></div>
-            <span class="go">Take the quiz →</span>
+            <div><span class="chip">Stats</span><h3>Higher or Lower</h3><p>Two real players, one stat. Does the second one have more or fewer points, rebounds or assists per game? Keep your streak alive.</p></div>
+            <span class="go">Start guessing →</span>
         </a>
         @* Игра 4: Salary Cap Game *@
         <a class="mode t-yellow" asp-controller="Salary" asp-action="Index">
@@ -45,11 +44,11 @@
             <div><span class="chip">Salary cap</span><h3>Salary Cap Game</h3><p>Sign five real players, one per skill, without going over the cap. Stars cost $50M, role players $10M. Then play a season.</p></div>
             <span class="go">Sign your team →</span>
         </a>
-        @* Игра 5: Higher or Lower *@
-        <a class="mode t-green" asp-controller="HigherLower" asp-action="Index">
+        @* Игра 5: Position Quiz *@
+        <a class="mode t-red" asp-controller="Quiz" asp-action="Index">
             <span class="corner">GAME 5</span>
-            <div><span class="chip">Stats</span><h3>Higher or Lower</h3><p>Two real players, one stat. Does the second one have more or fewer points, rebounds or assists per game? Keep your streak alive.</p></div>
-            <span class="go">Start guessing →</span>
+            <div><span class="chip">Positions</span><h3>Position Quiz</h3><p>Read a player's skills and place him in the right spot on the court.</p></div>
+            <span class="go">Take the quiz →</span>
         </a>
     </div>
 
