@@ -1,0 +1,113 @@
+@* Таблото на Guess the Player: тайният играч, полето за опит и редовете с подсказки *@
+@model GuessState
+@inject GuessService Game
+@inject SalaryService Large
+@inject PhotoService Faces
+@{
+    // Тайният играч
+    var m = Game.Player(Model.Mystery);
+    // Колко опита остават
+    var left = GuessService.MaxGuesses - Model.Guesses.Count;
+    // Голямата снимка на тайния играч (показва се в края)
+    var murl = Large.PhotoUrl(m.Name);
+    // Опитите, най-новият най-отгоре
+    var rows = Model.Guesses.AsEnumerable().Reverse().ToList();
+}
+<form method="post" data-ajax="#groot" class="gp @(Model.Over ? (Model.Won ? "gp--won" : "gp--lost") : "")" autocomplete="off">
+    @* Горе: тайният играч (или отговорът в края) и броячите *@
+    <div class="gp-top">
+        <div class="gp-mystery">
+            <div class="gp-photo" style="--tc:@(Model.Over ? Teams.Get(m.Team).Color : "#1B2335")">
+                @if (!Model.Over)
+                {
+                    @* Силует с въпросителен знак, докато играта тече *@
+                    <span class="gp-q">?</span>
+                }
+                else if (murl != null)
+                {
+                    <img src="@murl" alt="" />
+                }
+                else
+                {
+                    @Faces.Face(m.Name, m.Id, m.MainPosition)
+                }
+            </div>
+            <div class="gp-who">
+                <small>@(Model.Over ? (Model.Won ? "YOU GOT HIM" : "THE ANSWER") : "MYSTERY PLAYER")</small>
+                <b>@(Model.Over ? m.Name : "Who is it?")</b>
+                @if (Model.Over)
+                {
+                    <span>@Teams.Get(m.Team).Name · @m.PositionsText · @ChallengeService.EraYears(m.Decade) · @m.Ppg.ToString("0.0") PPG, @m.Rpg.ToString("0.0") RPG, @m.Apg.ToString("0.0") APG</span>
+                }
+                else
+                {
+                    <span>A star with at least 18 points per game, from any decade since the 1960s.</span>
+                }
+            </div>
+        </div>
+        <div class="gp-counts">
+            <div><small>GUESSES LEFT</small><b>@left</b></div>
+            <div><small>WON</small><b>@Model.Wins/@Model.Played</b></div>
+        </div>
+    </div>
+
+    @* Полето за опит (само докато играта тече) *@
+    @if (!Model.Over)
+    {
+        <div class="gp-input">
+            <input id="gpName" name="name" list="gpNames" placeholder="Type a player's name…" aria-label="Player name" required />
+            <button type="submit" class="btn" formaction="/Guess/Try">Guess</button>
+            <button type="submit" class="btn sec" formaction="/Guess/GiveUp" formnovalidate>Give up</button>
+        </div>
+        @if (Model.Message != "")
+        {
+            <p class="gp-msg">@Model.Message</p>
+        }
+    }
+    else
+    {
+        @* Край: резултат и нова игра *@
+        <div class="gp-end">
+            <p>@(Model.Won ? $"Solved in {Model.Guesses.Count} of {GuessService.MaxGuesses} guesses." : "Out of guesses. Look at the clues below to see how close you were.")</p>
+            <button type="submit" class="btn" formaction="/Guess/New">New mystery player</button>
+        </div>
+    }
+
+    @* Таблицата с опитите и подсказките *@
+    <div class="tscroll">
+        <table class="gp-table">
+            <thead><tr><th>Player</th><th>Team</th><th>Conf</th><th>Pos</th><th>Decade</th><th>PPG</th><th>RPG</th><th>APG</th></tr></thead>
+            <tbody>
+                @foreach (var gi in rows)
+                {
+                    // Играчът от опита и подсказките за него
+                    var g = Game.Player(gi);
+                    var team = GuessService.TeamClue(g, m);
+                    var conf = GuessService.ConferenceClue(g, m);
+                    var pos = GuessService.PositionClue(g, m);
+                    var dec = GuessService.DecadeClue(g, m);
+                    var ppg = GuessService.StatClue(g.Ppg, m.Ppg, 4);
+                    var rpg = GuessService.StatClue(g.Rpg, m.Rpg, 2);
+                    var apg = GuessService.StatClue(g.Apg, m.Apg, 2);
+                    <tr class="@(gi == Model.Mystery ? "right" : "")">
+                        <td class="gp-pl">@Faces.Face(g.Name, g.Id, g.MainPosition)<b>@g.Name</b></td>
+                        <td class="c @team.State">@g.Team</td>
+                        <td class="c @conf.State">@(Teams.Get(g.Team).IsEast ? "East" : "West")</td>
+                        <td class="c @pos.State">@g.PositionsText</td>
+                        <td class="c @dec.State">@ChallengeService.EraYears(g.Decade)<i>@dec.Arrow</i></td>
+                        <td class="c @ppg.State">@g.Ppg.ToString("0.0")<i>@ppg.Arrow</i></td>
+                        <td class="c @rpg.State">@g.Rpg.ToString("0.0")<i>@rpg.Arrow</i></td>
+                        <td class="c @apg.State">@g.Apg.ToString("0.0")<i>@apg.Arrow</i></td>
+                    </tr>
+                }
+                @* Празни редове за оставащите опити *@
+                @for (var i = 0; i < left && !Model.Over; i++)
+                {
+                    <tr class="empty"><td colspan="8">Guess @(Model.Guesses.Count + i + 1)</td></tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @* Обяснение на цветовете *@
+    <p class="gp-legend"><span class="hit">Green</span> match · <span class="near">Yellow</span> close (same conference, shared position, next decade, or a few points away) · ↑ ↓ the mystery player is higher or lower</p>
+</form>

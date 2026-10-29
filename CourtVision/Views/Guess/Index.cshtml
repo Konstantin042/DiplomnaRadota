@@ -1,0 +1,55 @@
+@* Страницата на Guess the Player *@
+@model GuessState
+@inject GuessService Game
+@{
+    ViewData["Title"] = "Guess the Player"; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие и бутон за правилата *@
+    <div class="ghead"><div><div class="label">Game 6 · Players</div><h2>Guess the Player</h2></div><button type="button" class="iconbtn" data-help="guess" aria-label="How to play">?</button></div>
+
+    @* Списъкът с имената за подсказване докато пишеш (браузърът го показва под полето) *@
+    <datalist id="gpNames">
+        @for (var i = 0; i < Game.Count; i++)
+        {
+            <option value="@Game.Label(i)"></option>
+        }
+    </datalist>
+
+    @* Таблото (подменя се без презареждане) *@
+    <div id="groot">
+        <partial name="_Board" model="Model" />
+    </div>
+
+    @* Обяснение как е в истинската NBA *@
+    <div class="real">
+        <h3>In the real NBA</h3>
+        <p>The league has 30 teams in two conferences: 15 in the East and 15 in the West. Teams play most of their games inside their own conference, and the playoffs are played East against East and West against West until the Finals.</p>
+        <p>Every player has a position, but many can play two (for example a "SG/SF"). Good scouts can guess a player from his numbers alone: lots of rebounds usually means a big man, lots of assists a point guard.</p>
+        <p>Each player here is shown with the team and decade where he scored the most points per game, using real Basketball-Reference averages, the same data as in 82-0.</p>
+    </div>
+</section>
+
+@* Текстът за прозореца "How to play" *@
+<template id="help-guess">
+    <h3>How to play Guess the Player</h3>
+    <p>Find the mystery NBA star in 8 guesses.</p>
+    <h4>Each guess</h4>
+    <ul>
+        <li>Type any player's name and pick him from the list.</li>
+        <li>Green: the same team, conference, position or decade, or a stat within 1.</li>
+        <li>Yellow: close. Same conference, a shared position, the next decade, or a stat a few points away.</li>
+        <li>↑ means the mystery player's number (or decade) is higher, ↓ means lower.</li>
+    </ul>
+    <h4>The mystery player</h4>
+    <ul>
+        <li>Always a star with at least 18 points per game.</li>
+        <li>He is shown with his best team and decade.</li>
+    </ul>
+    <div class="foot"><b>Can you find him in fewer than 8?</b><button type="button" class="btn" data-close>Let's play</button></div>
+</template>
+
+@* JavaScript: курсорът отива в полето за име след всеки опит *@
+@section Scripts {
+    <script src="~/js/guess.js" asp-append-version="true"></script>
+}

@@ -41,6 +41,8 @@ builder.Services.AddSingleton<SalaryService>();
 builder.Services.AddSingleton<SalaryLeaderboard>();
 // Логиката на Higher or Lower
 builder.Services.AddSingleton<HigherLowerService>();
+// Логиката на Guess the Player
+builder.Services.AddSingleton<GuessService>();
 // Логиката на Position Quiz
 builder.Services.AddSingleton<QuizService>();
 
