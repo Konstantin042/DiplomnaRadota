@@ -289,7 +289,9 @@ public class GuessState
     public int Mystery { get; set; } = -1;               // Тайният играч (номер в списъка)
     public List<int> Guesses { get; set; } = new();      // Опитите досега (номера на играчи), най-новият е последен
     public bool Won { get; set; }                        // Истина, ако сме познали
-    public bool Over { get; set; }                       // Истина, когато играта е свършила (познали или 8 опита)
+    public bool Over { get; set; }                       // Истина, когато играта е свършила (познали или показан отговор)
+    public int Limit { get; set; } = 8;                  // Колко опита има в момента (расте с 4 при "Keep guessing")
+    public bool OutOfGuesses { get; set; }               // Истина, когато опитите са свършили, но отговорът още е скрит
     public string Message { get; set; } = "";            // Съобщение след последния опит (например "Player not found")
     public int Played { get; set; }                      // Изиграни игри в тази сесия
     public int Wins { get; set; }                        // Спечелени игри в тази сесия
