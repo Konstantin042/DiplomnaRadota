@@ -67,6 +67,16 @@ public class GuessController : Controller
         return Board(s);
     }
 
+    // POST /Guess/More – още 4 опита за същия играч
+    [HttpPost]
+    public IActionResult More()
+    {
+        // Зареждаме, добавяме опити и връщаме таблото
+        var s = Load();
+        _game.More(s);
+        return Board(s);
+    }
+
     // POST /Guess/New – нов таен играч
     [HttpPost]
     public IActionResult New()

@@ -7,7 +7,7 @@
     // Тайният играч
     var m = Game.Player(Model.Mystery);
     // Колко опита остават
-    var left = GuessService.MaxGuesses - Model.Guesses.Count;
+    var left = Model.Limit - Model.Guesses.Count;
     // Голямата снимка на тайния играч (показва се в края)
     var murl = Large.PhotoUrl(m.Name);
     // Опитите, най-новият най-отгоре
@@ -41,7 +41,7 @@
                 }
                 else
                 {
-                    <span>A star with at least 18 points per game, from any decade since the 1960s.</span>
+                    <span>A famous NBA player: an all-time great or one of today's stars.</span>
                 }
             </div>
         </div>
@@ -52,11 +52,26 @@
     </div>
 
     @* Полето за опит (само докато играта тече) *@
-    @if (!Model.Over)
+    @if (Model.OutOfGuesses)
+    {
+        @* Опитите свършиха: продължаваш със същия играч или виждаш отговора *@
+        <div class="gp-end gp-out">
+            <p><b>Out of guesses.</b> Keep going with the same mystery player, or see the answer.</p>
+            <div class="gp-endbtns">
+                <button type="submit" class="btn" formaction="/Guess/More">Keep guessing (+@GuessService.ExtraGuesses)</button>
+                <button type="submit" class="btn sec" formaction="/Guess/GiveUp">Show answer</button>
+            </div>
+        </div>
+    }
+    else if (!Model.Over)
     {
         <div class="gp-input">
-            <input id="gpName" name="name" list="gpNames" placeholder="Type a player's name…" aria-label="Player name" required />
-            <button type="submit" class="btn" formaction="/Guess/Try">Guess</button>
+            @* Полето и падащият списък с подсказки под него *@
+            <div class="gp-field">
+                <input id="gpName" name="name" placeholder="Type a player's name…" aria-label="Player name" aria-autocomplete="list" aria-controls="gpSuggest" required />
+                <div class="gp-suggest" id="gpSuggest" role="listbox" hidden></div>
+            </div>
+            <button type="submit" class="btn" formaction="/Guess/Try" data-guess>Guess</button>
             <button type="submit" class="btn sec" formaction="/Guess/GiveUp" formnovalidate>Give up</button>
         </div>
         @if (Model.Message != "")
@@ -68,7 +83,7 @@
     {
         @* Край: резултат и нова игра *@
         <div class="gp-end">
-            <p>@(Model.Won ? $"Solved in {Model.Guesses.Count} of {GuessService.MaxGuesses} guesses." : "Out of guesses. Look at the clues below to see how close you were.")</p>
+            <p>@(Model.Won ? (Model.Guesses.Count <= GuessService.MaxGuesses ? $"Solved in {Model.Guesses.Count} of {GuessService.MaxGuesses} guesses." : $"Solved in {Model.Guesses.Count} guesses, with extra tries.") : "Here is the answer. Look at the clues below to see how close you were.")</p>
             <button type="submit" class="btn" formaction="/Guess/New">New mystery player</button>
         </div>
     }
@@ -101,7 +116,7 @@
                     </tr>
                 }
                 @* Празни редове за оставащите опити *@
-                @for (var i = 0; i < left && !Model.Over; i++)
+                @for (var i = 0; i < left && !Model.Over && !Model.OutOfGuesses; i++)
                 {
                     <tr class="empty"><td colspan="8">Guess @(Model.Guesses.Count + i + 1)</td></tr>
                 }

@@ -109,7 +109,11 @@ main{padding-block:28px 56px}
 /* Текстът без горен отстъп */
 .mode.banner p{margin-top:0}
 /* Ъгловата лента малко навътре, за да не закрива текста */
-.mode.banner .go{padding-right:44px}
+.mode.banner .go{padding-right:64px}
+/* По-висок правоъгълник, за да се вижда целият надпис START HERE; съдържанието е центрирано по височина */
+.mode.banner{min-height:92px;align-content:center}
+/* Лентата START HERE: по-дълга и по-навътре от лентите GAME 1, GAME 2 */
+.mode.banner .corner{top:20px;right:-48px;padding:3px 52px}
 /* На тесен екран всичко едно под друго */
 @media (max-width:700px){
   /* Една колона */
@@ -118,6 +122,8 @@ main{padding-block:28px 56px}
   .mode.banner > div{grid-template-columns:1fr;justify-items:start}
   /* Без отстъп вдясно */
   .mode.banner .go{padding-right:0}
+  /* Място вдясно за лентата START HERE */
+  .mode.banner > div{padding-right:64px}
 }
 /* Стил за карта на игра */
 .mode{position:relative;overflow:hidden;text-align:left;border-radius:14px;padding:22px;min-height:170px;display:grid;align-content:space-between;gap:16px;border:1px solid var(--tint-b);background:linear-gradient(160deg,var(--tint) 0%,var(--panel) 75%);transition:transform .15s,border-color .15s}
@@ -141,6 +147,8 @@ main{padding-block:28px 56px}
 .t-purple{--tint:rgba(37,99,235,.34);--tint-b:rgba(37,99,235,.45);--tint-s:#60A5FA}
 /* Стил за розовия цвят на карта */
 .t-red{--tint:rgba(190,18,60,.26);--tint-b:rgba(190,18,60,.4);--tint-s:#FDA4AF}
+/* Лилавият цвят на картата (Position Quiz) */
+.t-violet{--tint:rgba(168,85,247,.26);--tint-b:rgba(168,85,247,.45);--tint-s:#D8B4FE}
 /* Стил за четирите числа */
 .stripnums{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:880px;width:100%;margin:0 auto}
 /* Стил за карта с число */
@@ -1544,14 +1552,24 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .gp-counts b{font-family:var(--f-display);font-size:26px;font-weight:900;line-height:1}
 /* Полето за опит и бутоните на един ред */
 .gp-input{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+/* Обвивката на полето: тук се отваря списъкът с подсказки */
+.gp-field{position:relative;min-width:0}
+/* Списъкът с подсказки под полето */
+.gp-suggest{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:8;max-height:320px;overflow:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.5);padding:4px;display:grid}
+/* Един ред в списъка */
+.gp-opt{text-align:left;padding:9px 12px;border-radius:8px;font-size:15px}
+/* Ред при посочване или маркиран със стрелките */
+.gp-opt:hover,.gp-opt.on{background:rgba(20,184,166,.22);color:#fff}
 /* Полето за име */
-.gp-input input{padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);background:#0B0F19;color:var(--ink);font:inherit;font-size:16px;min-width:0}
+.gp-input input{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line-2);background:#0B0F19;color:var(--ink);font:inherit;font-size:16px;min-width:0}
 /* Полето при фокус */
 .gp-input input:focus{outline:2px solid #14B8A6;outline-offset:1px}
 /* Съобщението под полето */
 .gp-msg{color:#FCA5A5;font-size:14px}
 /* Краят на играта: текст и бутон */
 .gp-end{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;border-radius:12px;background:#0B0F19;border:1px solid var(--line)}
+.gp-out{border-color:rgba(34,211,238,.45)}
+.gp-endbtns{display:flex;gap:8px;flex-wrap:wrap}
 /* Таблицата с опитите */
 .gp-table{width:100%;border-collapse:separate;border-spacing:0 6px;font-size:13px}
 /* Заглавията на колоните */
@@ -1599,7 +1617,7 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
   /* Полето на цял ред, бутоните под него */
   .gp-input{grid-template-columns:1fr 1fr}
   /* Полето заема двете колони */
-  .gp-input input{grid-column:1 / -1}
+  .gp-field{grid-column:1 / -1}
 }
 /* Без анимации за хора, които са ги изключили в системата */
 @media (prefers-reduced-motion:reduce){
