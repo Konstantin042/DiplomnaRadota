@@ -8,13 +8,8 @@
     @* Заглавие и бутон за правилата *@
     <div class="ghead"><div><div class="label">Game 6 · Players</div><h2>Guess the Player</h2></div><button type="button" class="iconbtn" data-help="guess" aria-label="How to play">?</button></div>
 
-    @* Списъкът с имената за подсказване докато пишеш (браузърът го показва под полето) *@
-    <datalist id="gpNames">
-        @for (var i = 0; i < Game.Count; i++)
-        {
-            <option value="@Game.Label(i)"></option>
-        }
-    </datalist>
+    @* Всички имена като JSON: JavaScript показва под полето всеки играч, който започва с написаните букви *@
+    <script id="gpNames" type="application/json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Game.Labels()))</script>
 
     @* Таблото (подменя се без презареждане) *@
     <div id="groot">
@@ -33,17 +28,18 @@
 @* Текстът за прозореца "How to play" *@
 <template id="help-guess">
     <h3>How to play Guess the Player</h3>
-    <p>Find the mystery NBA star in 8 guesses.</p>
+    <p>Find the mystery NBA player in 8 guesses.</p>
     <h4>Each guess</h4>
     <ul>
-        <li>Type any player's name and pick him from the list.</li>
+        <li>Start typing: every player whose first or last name begins with those letters appears in a list. Pick one.</li>
         <li>Green: the same team, conference, position or decade, or a stat within 1.</li>
         <li>Yellow: close. Same conference, a shared position, the next decade, or a stat a few points away.</li>
         <li>↑ means the mystery player's number (or decade) is higher, ↓ means lower.</li>
     </ul>
     <h4>The mystery player</h4>
     <ul>
-        <li>Always a star with at least 18 points per game.</li>
+        <li>Always a famous player: an all-time great or one of today's biggest stars.</li>
+        <li>Out of guesses? Press Keep guessing for 4 more tries with the same player, or Show answer.</li>
         <li>He is shown with his best team and decade.</li>
     </ul>
     <div class="foot"><b>Can you find him in fewer than 8?</b><button type="button" class="btn" data-close>Let's play</button></div>

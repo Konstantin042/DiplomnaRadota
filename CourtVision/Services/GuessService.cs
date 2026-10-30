@@ -1,4 +1,4 @@
-// Логиката на Guess the Player: таен играч, 8 опита и подсказки за отбор, конференция, позиция, десетилетие и статистики
+// Логиката на Guess the Player: известен таен играч, 8 опита (и още, ако искаш) и подсказки за отбор, конференция, позиция, десетилетие и статистики
 using CourtVision.Models; // Нашите модели
 
 namespace CourtVision.Services; // Пространство от имена за услугите
@@ -9,12 +9,20 @@ public record GuessClue(string State, string Arrow);
 // Услугата за Guess the Player
 public class GuessService
 {
-    // Колко опита има играчът
+    // Колко опита има играчът в началото
     public const int MaxGuesses = 8;
-    // Тайните играчи са само звезди (поне 18 точки на мач в най-добрия им отбор и десетилетие)
-    private const double MysteryMinPpg = 18;
+    // Колко опита се добавят при "Keep guessing"
+    public const int ExtraGuesses = 4;
+    // Днешните играчи стават тайни само ако са звезди (средна оценка поне 7.5 от 10)
+    private const double FamousCurrentGrade = 7.5;
     // Опит може да е всеки играч с поне 8 точки на мач
     private const double GuessMinPpg = 8;
+    // От 60-те години остават само най-известните играчи (останалите са твърде непознати)
+    private static readonly HashSet<string> Famous60s = new()
+    {
+        "Wilt Chamberlain", "Bill Russell", "Oscar Robertson", "Jerry West", // Четирите най-големи звезди на десетилетието
+        "Elgin Baylor", "Rick Barry", "Willis Reed", "Bob Pettit",           // И още четири легенди от Залата на славата
+    };
 
     // Всички играчи (по един ред за всеки човек: отборът и десетилетието с най-много точки)
     private readonly List<PoolPlayer> _players;
@@ -31,10 +39,18 @@ public class GuessService
             .GroupBy(p => p.Id)                                      // Групираме по човек
             .Select(g => g.OrderByDescending(p => p.Ppg).First())    // Най-добрият му ред
             .Where(p => p.Ppg >= GuessMinPpg)                        // Само играчи с поне 8 точки
+            .Where(p => p.Decade != "60" || Famous60s.Contains(p.Name)) // От 60-те само най-известните
             .OrderBy(p => p.Name, StringComparer.Ordinal)            // Подредени по име
             .ToList();
-        // Звездите, които могат да са тайни
-        _mysteries = Enumerable.Range(0, _players.Count).Where(i => _players[i].Ppg >= MysteryMinPpg).ToList();
+        // Известните играчи: всички от All-Time списъка на Build-a-Player и най-добрите днешни играчи
+        var famous = data.BuildPlayers
+            .Where(b => b.Mode == "a" || (b.Mode == "c" && b.AverageGrade >= FamousCurrentGrade)) // All-Time или днешна звезда
+            .Select(b => DataService.NormalizeName(b.Name))                                     // Името без ударения и интервали
+            .ToHashSet();
+        // Тайните играчи са само известни играчи (плюс легендите от 60-те)
+        _mysteries = Enumerable.Range(0, _players.Count)
+            .Where(i => famous.Contains(DataService.NormalizeName(_players[i].Name)) || Famous60s.Contains(_players[i].Name))
+            .ToList();
         // Речник за търсене по етикет (етикетът е уникален)
         _byName = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < _players.Count; i++) _byName[Label(i)] = i;
@@ -45,6 +61,9 @@ public class GuessService
 
     // Броят на всички играчи (за списъка с имена)
     public int Count => _players.Count;
+
+    // Всички етикети (за подсказките докато пишеш)
+    public List<string> Labels() => Enumerable.Range(0, _players.Count).Select(Label).ToList();
 
     // Етикетът за списъка с имена: само името, а при еднакви имена и отборът с десетилетието
     public string Label(int index)
@@ -62,15 +81,15 @@ public class GuessService
     {
         // Случаен таен играч от звездите
         s.Mystery = _mysteries[Random.Shared.Next(_mysteries.Count)];
-        // Изчистваме опитите и съобщението
-        s.Guesses.Clear(); s.Won = false; s.Over = false; s.Message = "";
+        // Изчистваме опитите, съобщението и броя опити
+        s.Guesses.Clear(); s.Won = false; s.Over = false; s.OutOfGuesses = false; s.Message = ""; s.Limit = MaxGuesses;
     }
 
     // Опит: името, което е написал играчът
     public void Guess(GuessState s, string? name)
     {
-        // Ако играта е свършила, нищо не правим
-        if (s.Over || s.Mystery < 0) return;
+        // Ако играта е свършила или опитите са свършили, нищо не правим
+        if (s.Over || s.OutOfGuesses || s.Mystery < 0) return;
         // Търсим играча по етикет
         if (string.IsNullOrWhiteSpace(name) || !_byName.TryGetValue(name.Trim(), out var index))
         {
@@ -85,8 +104,17 @@ public class GuessService
         s.Message = "";
         // Познали ли сме
         if (index == s.Mystery) { s.Won = true; s.Over = true; s.Played++; s.Wins++; return; }
-        // Свършили ли са опитите
-        if (s.Guesses.Count >= MaxGuesses) { s.Over = true; s.Played++; }
+        // Свършили ли са опитите: отговорът остава скрит, играчът избира дали да продължи
+        if (s.Guesses.Count >= s.Limit) s.OutOfGuesses = true;
+    }
+
+    // "Keep guessing": още 4 опита за същия таен играч
+    public void More(GuessState s)
+    {
+        // Само когато опитите са свършили
+        if (s.Over || !s.OutOfGuesses) return;
+        // Добавяме опити и продължаваме
+        s.Limit += ExtraGuesses; s.OutOfGuesses = false; s.Message = "";
     }
 
     // Отказ: показва отговора
@@ -95,7 +123,7 @@ public class GuessService
         // Само ако играта още тече
         if (s.Over || s.Mystery < 0) return;
         // Край без победа
-        s.Over = true; s.Played++; s.Message = "";
+        s.Over = true; s.OutOfGuesses = false; s.Played++; s.Message = "";
     }
 
     // ---------- Подсказки ----------
