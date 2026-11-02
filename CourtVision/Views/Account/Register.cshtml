@@ -1,0 +1,46 @@
+@* Страницата за регистрация *@
+@model RegisterModel
+@{
+    ViewData["Title"] = "Sign up"; // Заглавие в раздела
+}
+<section class="view auth">
+    <div class="auth-card">
+        @* Заглавие и обяснение *@
+        <div class="label">Account</div>
+        <h2>Create an account</h2>
+        <p class="auth-sub">Only a username and a password. Your games are saved in the database under your name, and you can play without an account too.</p>
+
+        @* Формулярът (Tag Helper-ът добавя скрития код против фалшиви заявки) *@
+        <form asp-controller="Account" asp-action="Register" method="post" class="auth-form" novalidate>
+            @* Общите грешки, например "Username is already taken." *@
+            <div asp-validation-summary="ModelOnly" class="auth-errors"></div>
+            @* Къде да се върнем след регистрацията *@
+            <input type="hidden" asp-for="ReturnUrl" />
+            @* Потребителско име *@
+            <label class="field">
+                <span>Username</span>
+                <input asp-for="UserName" autocomplete="username" autofocus />
+                <small>3 to 20 letters, numbers, dots, dashes or underscores.</small>
+                <span asp-validation-for="UserName" class="field-err"></span>
+            </label>
+            @* Парола *@
+            <label class="field">
+                <span>Password</span>
+                <input asp-for="Password" autocomplete="new-password" />
+                <small>At least 6 characters.</small>
+                <span asp-validation-for="Password" class="field-err"></span>
+            </label>
+            @* Повторение на паролата *@
+            <label class="field">
+                <span>Repeat password</span>
+                <input asp-for="ConfirmPassword" autocomplete="new-password" />
+                <span asp-validation-for="ConfirmPassword" class="field-err"></span>
+            </label>
+            @* Бутонът за регистрация *@
+            <button type="submit" class="btn wide">Sign up</button>
+        </form>
+
+        @* Връзка към входа *@
+        <p class="auth-alt">Already have an account? <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl">Log in</a></p>
+    </div>
+</section>

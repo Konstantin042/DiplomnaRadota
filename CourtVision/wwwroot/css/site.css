@@ -50,6 +50,8 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 h1,h2,h3,h4{margin:0;line-height:1;text-wrap:balance}
 /* Стил за абзаците */
 p{margin:0}
+/* Стил за всички връзки: без подчертаване и в цвета на текста около тях (менюто и картите са връзки) */
+a{color:inherit;text-decoration:none}
 /* Стил за всички бутони */
 button{font:inherit;color:inherit;cursor:pointer;background:none;border:0}
 /* Стил за всички бутони, при фокус от клавиатурата */
@@ -69,7 +71,9 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;background:rg
 /* Стил за топката в логото в малкото лого в менюто */
 .mini-logo .ball{width:30px;height:30px}
 /* Стил за линковете в менюто */
-.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1;justify-content:flex-end}
+.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;min-width:0;flex:1}
+/* Връзките са вдясно (автоматичен отстъп отляво); на тесен екран отстъпът изчезва и лентата се превърта от началото */
+.tabs > :first-child{margin-left:auto}
 /* Стил за линковете в менюто, скритата лента за превъртане */
 .tabs::-webkit-scrollbar{display:none}
 /* Стил за линк в менюто */
@@ -1619,6 +1623,144 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
   /* Полето заема двете колони */
   .gp-field{grid-column:1 / -1}
 }
+/* ---------- Профил, вход и класации (данните са в базата) ---------- */
+/* Мястото вдясно в горното меню: класации и профил */
+.acct{display:flex;align-items:center;gap:6px;flex:none}
+/* Квадратните бутони: класации и изход */
+.acct-btn,.acct-out button{display:grid;place-items:center;width:34px;height:34px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel);color:var(--muted)}
+/* Иконите в тях */
+.acct-btn svg,.acct-out button svg{width:18px;height:18px}
+/* При посочване с мишката */
+.acct-btn:hover,.acct-out button:hover{color:var(--ink)}
+/* Бутонът на класациите, когато сме на страницата им */
+.acct-btn[aria-current="true"]{color:#FACC15;border-color:rgba(250,204,21,.5)}
+/* Формулярът за изход няма отстъпи */
+.acct-out{margin:0}
+/* Влезлият потребител: кръгче с първата буква и името */
+.acct-user{display:flex;align-items:center;gap:8px;padding:3px 12px 3px 3px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);font-weight:600;font-size:13px;max-width:170px}
+/* Кръгчето с първата буква */
+.acct-user b{display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(180deg,var(--orange-2),var(--orange));color:#fff;font-family:var(--f-display);font-size:16px;flex:none}
+/* Дългите имена се съкращават с три точки */
+.acct-user span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* Когато сме на страницата Profile */
+.acct-user[aria-current="true"]{border-color:var(--amber)}
+/* Бутонът "Log in" за гости */
+.acct-login{padding:7px 14px;border-radius:9px;background:linear-gradient(180deg,var(--orange-2),var(--orange));color:#fff;font-weight:700;font-size:13px;white-space:nowrap}
+/* При по-тесен екран менюто се сгъстява, за да се събере с бутоните вдясно */
+@media (max-width:1240px){
+  /* По-малки отстъпи на връзките в менюто */
+  .tab{padding:7px 9px}
+  /* Без надписа до логото (топката остава) */
+  .mini-logo .cap{display:none}
+}
+/* На телефон в профила остава само кръгчето */
+@media (max-width:700px){
+  /* Без името */
+  .acct-user span{display:none}
+  /* Само кръгчето */
+  .acct-user{padding:3px}
+}
+
+/* Страниците за вход и регистрация: картата е в средата */
+.auth{justify-items:center}
+/* Картата с формуляра */
+.auth-card{width:min(440px,100%);margin-top:20px;padding:26px 24px;border-radius:16px;border:1px solid var(--line-2);background:linear-gradient(160deg,rgba(37,99,235,.14),var(--panel) 60%);display:grid;gap:10px}
+/* Заглавието */
+.auth-card h2{font-family:var(--f-display);text-transform:uppercase;font-weight:900;font-size:40px;letter-spacing:.02em}
+/* Обяснението под заглавието */
+.auth-sub{color:var(--muted)}
+/* Полетата едно под друго */
+.auth-form{display:grid;gap:14px;margin-top:8px}
+/* Едно поле: надпис, поле за писане, подсказка и грешка */
+.field{display:grid;gap:6px}
+/* Надписът над полето */
+.field > span:first-child{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+/* Полето за писане */
+.field input{font:inherit;color:var(--ink);background:#0B0F19;border:1px solid var(--line-2);border-radius:10px;padding:12px 14px;width:100%}
+/* Полето, когато пишем в него */
+.field input:focus{outline:none;border-color:var(--amber);box-shadow:0 0 0 3px rgba(96,165,250,.25)}
+/* Подсказката под полето */
+.field small{color:var(--dim);font-size:12px}
+/* Грешката под полето (ASP.NET слага текста тук) */
+.field-err{color:#FCA5A5;font-size:13px}
+/* Без грешка: не заема място */
+.field-err:empty{display:none}
+/* Полето с грешка получава червена рамка (класът го слага ASP.NET) */
+.input-validation-error{border-color:var(--loss)!important}
+/* Общите грешки над полетата */
+.auth-errors ul{margin:0;padding:10px 14px 10px 30px;border-radius:10px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.45);color:#FCA5A5;font-size:14px}
+/* Когато няма общи грешки, кутията се скрива */
+.validation-summary-valid{display:none}
+/* Отметката "Remember me" */
+.check{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
+/* Самото квадратче */
+.check input{width:18px;height:18px;accent-color:var(--orange)}
+/* Връзката под формуляра */
+.auth-alt{color:var(--muted);font-size:14px;text-align:center}
+/* Самата връзка */
+.auth-alt a{color:var(--amber);font-weight:600}
+
+/* Класациите: по една карта за всяка игра */
+.lb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+/* Една карта */
+.lb-card{border:1px solid var(--line);background:var(--panel);border-radius:14px;padding:16px 18px;display:grid;gap:8px;align-content:start}
+/* Името на играта */
+.lb-card h3{font-family:var(--f-display);text-transform:uppercase;font-weight:900;font-size:24px;letter-spacing:.03em}
+/* Какво означава резултатът */
+.lb-unit{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* Текст, когато още няма резултати */
+.lb-empty{color:var(--dim);font-size:14px;padding:8px 0}
+/* Списъкът с местата */
+.lb-list{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+/* Един ред: място, име, резултат, брой игри */
+.lb-list li{display:grid;grid-template-columns:26px minmax(0,1fr) auto 66px;align-items:center;gap:10px;padding:7px 10px;border-radius:9px;background:#0B0F19;border:1px solid transparent}
+/* Мястото */
+.lb-list li b{color:var(--muted);font-size:13px}
+/* Името (дългите се съкращават) */
+.lb-list li span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600}
+/* Резултатът */
+.lb-list li em{font-style:normal;font-weight:700;font-size:16px}
+/* Броят игри */
+.lb-list li small{color:var(--dim);font-size:12px;text-align:right}
+/* Първото място: златно */
+.lb-list li.top{border-color:rgba(250,204,21,.35)}
+/* Номерът на първото място */
+.lb-list li.top b{color:#FACC15}
+/* Редът на текущия посетител */
+.lb-list li.you{border-color:var(--amber);background:rgba(96,165,250,.1)}
+/* На телефон: една колона и без броя игри */
+@media (max-width:480px){
+  /* Една карта на ред */
+  .lb-grid{grid-template-columns:1fr}
+  /* Три колони в реда */
+  .lb-list li{grid-template-columns:24px minmax(0,1fr) auto}
+  /* Без броя игри */
+  .lb-list li small{display:none}
+}
+
+/* Профилът: карта с най-добрия резултат за всяка игра */
+.pf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+/* Една карта */
+.pf-card{border:1px solid var(--line-2);background:linear-gradient(160deg,rgba(37,99,235,.12),var(--panel) 70%);border-radius:14px;padding:14px 16px;display:grid;gap:2px;align-content:start}
+/* Името на играта */
+.pf-card small{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* Най-добрият резултат */
+.pf-card b{font-size:34px;line-height:1.15}
+/* Какво означава числото */
+.pf-card span{color:#C9CFDC;font-size:13px}
+/* Брой игри и място в класацията */
+.pf-card em{font-style:normal;color:var(--dim);font-size:12px}
+/* Игра, която още не е играна, е по-бледа */
+.pf-card.empty{opacity:.55}
+/* Таблицата с последните игри */
+.pf-table{width:100%;border-collapse:collapse;font-size:14px}
+/* Заглавните клетки */
+.pf-table th{text-align:left;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
+/* Клетките */
+.pf-table td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+/* Описанието може да се пренася на нов ред */
+.pf-table td:nth-child(3){white-space:normal;color:#C9CFDC;min-width:180px}
+
 /* Без анимации за хора, които са ги изключили в системата */
 @media (prefers-reduced-motion:reduce){
   /* Спираме всички анимации и преходи */

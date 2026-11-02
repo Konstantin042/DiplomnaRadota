@@ -12,9 +12,15 @@ public class SeasonController : Controller
     private const string Key = "season";
     // Логиката на сезона
     private readonly SeasonService _season;
+    // Резултатите в базата (таблица GameResults)
+    private readonly ResultService _results;
 
-    // Конструктор: получава услугата
-    public SeasonController(SeasonService season) => _season = season;
+    // Конструктор: получава услугите
+    public SeasonController(SeasonService season, ResultService results)
+    {
+        _season = season;   // Сезонът
+        _results = results; // Резултатите
+    }
 
     // GET /Season – показва текущата стъпка на сезона
     public IActionResult Index()
@@ -49,6 +55,10 @@ public class SeasonController : Controller
         var s = _season.Start(build, team);
         // Записваме го в сесията
         HttpContext.Session.SetObject(Key, s);
+        // Победите на нашия отбор в редовния сезон
+        var wins = s.Wins.GetValueOrDefault(s.Team);
+        // Записваме сезона в базата: резултатът е броят победи
+        _results.Save(HttpContext, "build", wins, $"{s.Team} · OVR {s.Overall} · {wins}-{82 - wins} · {SeasonService.Outcome(s)}");
         // Показваме страницата на сезона
         return RedirectToAction(nameof(Index));
     }
