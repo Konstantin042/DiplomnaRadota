@@ -16,15 +16,18 @@ public class SalaryController : Controller
     private readonly SalaryService _game;
     // Симулацията на сезона
     private readonly SeasonService _season;
-    // Класацията
+    // Класацията (таблица SalaryScores)
     private readonly SalaryLeaderboard _board;
+    // Резултатите в базата (таблица GameResults)
+    private readonly ResultService _results;
 
     // Конструктор: получава услугите
-    public SalaryController(SalaryService game, SeasonService season, SalaryLeaderboard board)
+    public SalaryController(SalaryService game, SeasonService season, SalaryLeaderboard board, ResultService results)
     {
-        _game = game;     // Играта
-        _season = season; // Сезонът
-        _board = board;   // Класацията
+        _game = game;       // Играта
+        _season = season;   // Сезонът
+        _board = board;     // Класацията
+        _results = results; // Резултатите
     }
 
     // Чете състоянието и се грижи текущият ден да съществува
@@ -173,8 +176,10 @@ public class SalaryController : Controller
         d.Mode = "";
         // Записваме, за да има сесията идентификатор
         HttpContext.Session.SetObject(Key, s);
-        // Добавяме билда в класацията
-        _board.Add(d.Key, HttpContext.Session.Id, result, d.Budget);
+        // Добавяме билда в класацията на деня (таблица SalaryScores)
+        _board.Add(d.Key, HttpContext, result, d.Budget);
+        // Записваме изиграната игра (таблица GameResults)
+        _results.Save(HttpContext, "salary", result.Overall, $"OVR {result.Overall} · ${result.Spent}M of ${d.Budget}M");
         // Пускаме сезона
         return ShowSeason(d);
     }

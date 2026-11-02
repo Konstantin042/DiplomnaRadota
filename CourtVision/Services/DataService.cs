@@ -1,12 +1,14 @@
-// Зарежда всички данни от JSON файловете в папка Data при стартиране
-using System.Globalization; // За нормализиране на имена (махане на ударения)
-using System.Text;           // За работа с низове (StringBuilder, нормализация)
-using System.Text.Json;      // За четене на JSON
-using CourtVision.Models;    // Нашите модели на данни
+// Зарежда всички данни при стартиране: играчите и отборите от базата данни, индексите на снимките от JSON
+using System.Globalization;      // За нормализиране на имена (махане на ударения)
+using System.Text;                // За работа с низове (StringBuilder, нормализация)
+using System.Text.Json;           // За четене на JSON файловете със снимките
+using CourtVision.Database;       // Базата данни (AppDbContext и таблиците)
+using CourtVision.Models;         // Нашите модели на данни
+using Microsoft.EntityFrameworkCore; // AsNoTracking и Include за заявките към базата
 
 namespace CourtVision.Services; // Пространство от имена за услугите
 
-// Услуга, която държи всички данни в паметта
+// Услуга, която държи всички данни в паметта (чете ги от базата веднъж, после игрите са бързи)
 public class DataService
 {
     // Съставите за 82-0: ключ "ОТБОР|десетилетие" → списък с играчи
@@ -24,23 +26,23 @@ public class DataService
     // Нормализирано име → идентификатор (за играчи, за които знаем само името)
     public IReadOnlyDictionary<string, string> NameToId { get; }
 
-    // Конструктор: изпълнява се веднъж при стартиране на приложението
-    public DataService(IWebHostEnvironment env)
+    // Конструктор: изпълнява се веднъж, при първото използване на услугата
+    public DataService(IServiceScopeFactory scopes, IWebHostEnvironment env)
     {
-        // Пътят до папката с данни в проекта
-        var dir = Path.Combine(env.ContentRootPath, "Data");
-        // Зареждаме съставите за 82-0
-        Pools = LoadPools(Path.Combine(dir, "pools.json"));
+        // Създаваме временен обхват, за да вземем връзка с базата (тя живее само в него)
+        using var scope = scopes.CreateScope();
+        // Връзката с базата данни
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        // Съставите: таблица RosterPlayers, групирана по отбор и десетилетие
+        Pools = LoadPools(db);
         // Запомняме ключовете в списък
         PoolKeys = Pools.Keys.ToList();
-        // Зареждаме играчите за Build-a-Player
-        BuildPlayers = LoadBuildPlayers(Path.Combine(dir, "build-players.json"));
-        // Настройка: имената на свойствата в JSON не зависят от главни/малки букви
-        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-        // Пътят до файла с играчите за куиза
-        var quizFile = Path.Combine(dir, "quiz-players.json");
-        // Зареждаме играчите за куиза (празен списък, ако файлът липсва)
-        QuizPlayers = File.Exists(quizFile) ? JsonSerializer.Deserialize<List<QuizPlayer>>(File.ReadAllText(quizFile), options) ?? new() : new();
+        // Играчите за Build-a-Player: таблици RatedPlayers и PlayerGrades
+        BuildPlayers = LoadBuildPlayers(db);
+        // Играчите за куиза: таблица QuizEntries
+        QuizPlayers = LoadQuizPlayers(db);
+        // Пътят до папката с индексите на снимките
+        var dir = Path.Combine(env.ContentRootPath, "Data");
         // Зареждаме индекса на NBA снимките
         NbaPhotos = LoadPhotos(Path.Combine(dir, "photos-nba.json"));
         // Зареждаме индекса на резервните снимки
@@ -55,81 +57,77 @@ public class DataService
         NameToId = names;
     }
 
-    // Чете pools.json: {"BOS|60": [[име, id, "SF/SG", ppg, rpg, apg, spg, bpg], ...]}
-    private static Dictionary<string, List<PoolPlayer>> LoadPools(string path)
+    // Чете таблица RosterPlayers и я превръща в речник "ОТБОР|десетилетие" → играчи
+    private static Dictionary<string, List<PoolPlayer>> LoadPools(AppDbContext db)
     {
-        // Ако файлът липсва (играта още не е добавена), връщаме празен речник
-        if (!File.Exists(path)) return new();
-        // Отваряме JSON документа
-        using var doc = JsonDocument.Parse(File.ReadAllText(path));
+        // Всички редове, подредени както са записани (AsNoTracking: само четем, не променяме)
+        var rows = db.RosterPlayers.AsNoTracking().OrderBy(r => r.SortOrder).ToList();
         // Резултатът: празен речник
         var result = new Dictionary<string, List<PoolPlayer>>();
-        // Обхождаме всеки състав (свойство на главния обект)
-        foreach (var pool in doc.RootElement.EnumerateObject())
+        // Обхождаме всеки ред
+        foreach (var r in rows)
         {
-            // Разделяме ключа на отбор и десетилетие
-            var parts = pool.Name.Split('|');
-            // Списък за играчите в този състав
-            var players = new List<PoolPlayer>();
-            // Обхождаме всеки ред (един играч)
-            foreach (var row in pool.Value.EnumerateArray())
+            // Ключът на състава
+            var key = r.TeamAbbr + "|" + r.Decade;
+            // Ако съставът още го няма, създаваме празен списък
+            if (!result.TryGetValue(key, out var list)) result[key] = list = new List<PoolPlayer>();
+            // Превръщаме реда от базата в модела, който използват игрите
+            list.Add(new PoolPlayer
             {
-                // Създаваме играча от стойностите в реда
-                players.Add(new PoolPlayer
-                {
-                    Name = row[0].GetString() ?? "",                        // Име
-                    Id = row[1].GetString() ?? "",                          // Идентификатор
-                    Positions = (row[2].GetString() ?? "PG").Split('/').ToList(), // Позиции
-                    Team = parts[0],                                        // Отбор от ключа
-                    Decade = parts[1],                                      // Десетилетие от ключа
-                    Ppg = row[3].GetDouble(),                               // Точки
-                    Rpg = row[4].GetDouble(),                               // Борби
-                    Apg = row[5].GetDouble(),                               // Асистенции
-                    Spg = row[6].ValueKind == JsonValueKind.Null ? null : row[6].GetDouble(), // Кражби или null
-                    Bpg = row[7].ValueKind == JsonValueKind.Null ? null : row[7].GetDouble(), // Блокади или null
-                });
-            }
-            // Добавяме състава в резултата
-            result[pool.Name] = players;
+                Name = r.Name,                                   // Име
+                Id = r.PlayerCode,                               // Идентификатор
+                Positions = r.Positions.Split('/').ToList(),     // Позиции
+                Team = r.TeamAbbr,                               // Отбор
+                Decade = r.Decade,                               // Десетилетие
+                Ppg = r.Ppg,                                     // Точки
+                Rpg = r.Rpg,                                     // Борби
+                Apg = r.Apg,                                     // Асистенции
+                Spg = r.Spg,                                     // Кражби или null
+                Bpg = r.Bpg,                                     // Блокади или null
+            });
         }
         // Връщаме всички състави
         return result;
     }
 
-    // Чете build-players.json: [[режим, група, име, отбор, години, ръст, тегло, id, новобранец, [оценки], [статистики]], ...]
-    private static List<BuildPlayer> LoadBuildPlayers(string path)
+    // Чете таблиците RatedPlayers и PlayerGrades и ги превръща в играчи за Build-a-Player
+    private static List<BuildPlayer> LoadBuildPlayers(AppDbContext db)
     {
-        // Ако файлът липсва, връщаме празен списък
-        if (!File.Exists(path)) return new();
-        // Отваряме JSON документа
-        using var doc = JsonDocument.Parse(File.ReadAllText(path));
-        // Списък за резултата
-        var list = new List<BuildPlayer>();
-        // Брояч за поредния номер
-        var index = 0;
-        // Обхождаме всеки ред
-        foreach (var row in doc.RootElement.EnumerateArray())
+        // Играчите заедно с оценките им (Include прави JOIN с таблицата PlayerGrades)
+        var rows = db.RatedPlayers.AsNoTracking().Include(p => p.Grades).OrderBy(p => p.SortOrder).ToList();
+        // Превръщаме всеки ред в модела; номерът в списъка е и ключът на играча
+        return rows.Select((p, index) => new BuildPlayer
         {
-            // Създаваме играча
-            list.Add(new BuildPlayer
-            {
-                Index = index++,                                                     // Пореден номер
-                Mode = row[0].GetString() ?? "",                                     // Режим
-                Group = row[1].GetString() ?? "",                                    // Група
-                Name = row[2].GetString() ?? "",                                     // Име
-                Team = row[3].GetString() ?? "",                                     // Отбор
-                Years = row[4].GetString() ?? "",                                    // Години
-                Height = row[5].GetInt32(),                                          // Ръст
-                Weight = row[6].GetInt32(),                                          // Тегло
-                Id = row[7].GetString() ?? "",                                       // Идентификатор
-                Rookie = row[8].GetInt32() == 1,                                     // Новобранец ли е
-                Grades = row[9].EnumerateArray().Select(g => g.GetInt32()).ToArray(),     // 10 оценки
-                RealStats = row[10].EnumerateArray().Select(v => v.GetDouble()).ToArray(), // Реални статистики
-            });
-        }
-        // Връщаме списъка
-        return list;
+            Index = index,                                                       // Пореден номер
+            Mode = p.Mode,                                                       // Режим
+            Group = p.Group,                                                     // Група
+            Name = p.Name,                                                       // Име
+            Team = p.TeamAbbr,                                                   // Отбор
+            Years = p.Years,                                                     // Години
+            Height = p.Height,                                                   // Ръст
+            Weight = p.Weight,                                                   // Тегло
+            Id = p.PlayerCode,                                                   // Идентификатор
+            Rookie = p.Rookie,                                                   // Новобранец ли е
+            Grades = p.Grades.OrderBy(g => g.Slot).Select(g => g.Value).ToArray(), // 10-те оценки по ред
+            RealStats = p.Ppg == null                                            // Без мачове: празен масив
+                ? Array.Empty<double>()
+                : new[] { p.Ppg.Value, p.Rpg ?? 0, p.Apg ?? 0, p.Spg ?? 0, p.Bpg ?? 0 }, // Иначе петте статистики
+        }).ToList();
     }
+
+    // Чете таблица QuizEntries и я превръща в играчи за куиза
+    private static List<QuizPlayer> LoadQuizPlayers(AppDbContext db) =>
+        db.QuizEntries.AsNoTracking().OrderBy(q => q.Id).ToList()   // Всички редове по реда на записване
+            .Select(q => new QuizPlayer
+            {
+                Name = q.Name,                                                        // Име
+                Positions = q.Positions.Split('/').ToList(),                          // Позиции
+                Team = q.TeamAbbr,                                                    // Отбор
+                Decade = q.Decade,                                                    // Десетилетие
+                Overall = q.Overall,                                                  // Обща оценка
+                Skills = new[] { q.JumpShot, q.Handles, q.Finishing, q.Defense, q.Size }, // 5-те умения
+                Stats = new[] { q.Ppg, q.Rpg, q.Apg, q.Spg, q.Bpg },                  // 5-те статистики
+            }).ToList();
 
     // Чете индекс на снимки: {"ключ": [номер на изображение, позиция в него]}
     private static Dictionary<string, int[]> LoadPhotos(string path) =>

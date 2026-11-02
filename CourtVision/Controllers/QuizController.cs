@@ -12,9 +12,15 @@ public class QuizController : Controller
     private const string Key = "quiz";
     // Логиката на куиза
     private readonly QuizService _quiz;
+    // Резултатите в базата (таблица GameResults)
+    private readonly ResultService _results;
 
-    // Конструктор: получава услугата
-    public QuizController(QuizService quiz) => _quiz = quiz;
+    // Конструктор: получава услугите
+    public QuizController(QuizService quiz, ResultService results)
+    {
+        _quiz = quiz;       // Куизът
+        _results = results; // Резултатите
+    }
 
     // Чете състоянието; ако куизът не е започнал, го започва
     private QuizState Load()
@@ -62,9 +68,15 @@ public class QuizController : Controller
     [HttpPost]
     public IActionResult Next()
     {
-        // Зареждаме, минаваме нататък и връщаме картата
+        // Зареждаме и минаваме нататък
         var s = Load();
+        // Рундът преди това
+        var before = s.Round;
         _quiz.Next(s);
+        // Току-що свърши последният рунд: записваме резултата в базата
+        if (before < QuizService.Rounds && s.Round == QuizService.Rounds)
+            _results.Save(HttpContext, "quiz", s.Score, $"{s.Score} of {QuizService.Rounds} correct");
+        // Връщаме картата
         return Card(s);
     }
 

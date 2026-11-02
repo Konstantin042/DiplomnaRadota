@@ -12,6 +12,21 @@
     <RootNamespace>CourtVision</RootNamespace>
   </PropertyGroup>
 
+  <!-- Външни библиотеки (NuGet пакети) за базата данни и потребителите -->
+  <ItemGroup>
+    <!-- Entity Framework Core за SQL Server: работа с базата чрез C# класове -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <!-- Инструменти за Package Manager Console (Add-Migration, Update-Database) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+      <!-- Нужни са само по време на разработка, не влизат в готовото приложение -->
+      <PrivateAssets>all</PrivateAssets>
+      <!-- Кои части на пакета се използват -->
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <!-- ASP.NET Core Identity с таблици в базата: регистрация, вход и пароли -->
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
+  </ItemGroup>
+
   <!-- Файловете с данни се копират при компилиране до изходната папка -->
   <ItemGroup>
     <!-- Всички JSON файлове от папката Data отиват до изпълнимия файл -->

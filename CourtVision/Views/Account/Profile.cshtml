@@ -1,0 +1,72 @@
+@* Профилът на влезлия потребител: най-добрите резултати и последните игри от базата *@
+@model ProfileModel
+@{
+    ViewData["Title"] = Model.UserName; // Заглавие в раздела
+}
+<section class="view">
+    @* Заглавие: името и общият брой игри *@
+    <div class="ghead">
+        <div>
+            <div class="label">Your profile</div>
+            <h2>@Model.UserName</h2>
+            <p>@Model.TotalPlayed @(Model.TotalPlayed == 1 ? "game" : "games") saved in the database.</p>
+        </div>
+        <a class="btn sec" asp-controller="Results" asp-action="Index">Leaderboards</a>
+    </div>
+
+    @* Карта за всяка игра: най-добър резултат, брой игри и място в класацията *@
+    <div class="pf-grid">
+        @foreach (var game in ResultService.Games)
+        {
+            // Данните за тази игра (ако е играл)
+            var has = Model.Bests.TryGetValue(game.Key, out var best);
+            // Мястото в класацията като текст (празно, ако го няма в първите 100)
+            var rankText = Model.Ranks.GetValueOrDefault(game.Key) is int rank ? $"· #{rank} on the leaderboard" : "";
+            <div class="pf-card @(has ? "" : "empty")">
+                <small>@game.Name</small>
+                @if (has && best != null)
+                {
+                    @* Най-добрият резултат *@
+                    <b class="mono">@best.Best</b>
+                    <span>best · @game.ScoreLabel</span>
+                    @* Брой игри и място *@
+                    <em>@best.Played played @rankText</em>
+                }
+                else
+                {
+                    @* Още не е играл *@
+                    <b class="mono">–</b>
+                    <span>not played yet</span>
+                }
+            </div>
+        }
+    </div>
+
+    @* Последните игри *@
+    <div class="lb-card">
+        <h3>Recent games</h3>
+        @if (Model.Recent.Count == 0)
+        {
+            <p class="lb-empty">No games yet. Pick a game from the menu: every game you finish is saved here.</p>
+        }
+        else
+        {
+            <div class="tscroll">
+                <table class="pf-table">
+                    <thead><tr><th>Game</th><th>Score</th><th>Details</th><th>When</th></tr></thead>
+                    <tbody>
+                        @foreach (var r in Model.Recent)
+                        {
+                            <tr>
+                                <td>@ResultService.Info(r.Game).Name</td>
+                                <td class="mono">@r.Score</td>
+                                <td>@r.Details</td>
+                                <td class="mono">@r.PlayedAt.ToLocalTime().ToString("dd MMM, HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</section>

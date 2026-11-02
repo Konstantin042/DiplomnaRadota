@@ -104,3 +104,14 @@ document.addEventListener("submit", async e => {
         location.reload();
     }
 });
+
+// На тесен екран менюто горе се превърта: показваме връзката към текущата страница
+(() => {
+    // Лентата с връзките и активната връзка
+    const tabs = document.querySelector(".tabs");
+    const current = tabs && tabs.querySelector('[aria-current="true"]');
+    // Ако няма активна връзка или всичко се събира, не правим нищо
+    if (!current || tabs.scrollWidth <= tabs.clientWidth) return;
+    // Превъртаме лентата така, че активната връзка да е в средата
+    tabs.scrollLeft = current.offsetLeft - (tabs.clientWidth - current.offsetWidth) / 2;
+})();

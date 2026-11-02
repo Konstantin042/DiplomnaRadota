@@ -12,9 +12,15 @@ public class HigherLowerController : Controller
     private const string Key = "higherlower";
     // Логиката на играта
     private readonly HigherLowerService _game;
+    // Резултатите в базата (таблица GameResults)
+    private readonly ResultService _results;
 
-    // Конструктор: получава услугата
-    public HigherLowerController(HigherLowerService game) => _game = game;
+    // Конструктор: получава услугите
+    public HigherLowerController(HigherLowerService game, ResultService results)
+    {
+        _game = game;       // Играта
+        _results = results; // Резултатите
+    }
 
     // Чете състоянието от сесията (в началото режимът е "" – менюто)
     private HigherLowerState Load() => HttpContext.Session.GetObject<HigherLowerState>(Key);
@@ -61,9 +67,15 @@ public class HigherLowerController : Controller
     [HttpPost]
     public IActionResult Guess(string dir)
     {
-        // Зареждаме, проверяваме отговора и връщаме картата
+        // Зареждаме и проверяваме отговора
         var s = Load();
+        // Дали играта е свършила преди този отговор
+        var wasOver = s.Over;
         _game.Guess(s, dir);
+        // Грешен отговор: серията свършва и я записваме в базата
+        if (!wasOver && s.Over)
+            _results.Save(HttpContext, "hilo", s.Score, $"Streak of {s.Score} · {(s.Mode == "c" ? "Current" : "All-Time")}");
+        // Връщаме картата
         return Card(s);
     }
 

@@ -12,9 +12,27 @@ public class GuessController : Controller
     private const string Key = "guess";
     // Логиката на играта
     private readonly GuessService _game;
+    // Резултатите в базата (таблица GameResults)
+    private readonly ResultService _results;
 
-    // Конструктор: получава услугата
-    public GuessController(GuessService game) => _game = game;
+    // Конструктор: получава услугите
+    public GuessController(GuessService game, ResultService results)
+    {
+        _game = game;       // Играта
+        _results = results; // Резултатите
+    }
+
+    // Записва играта в базата, ако току-що е свършила (wasOver е състоянието преди действието)
+    private void SaveIfFinished(GuessState s, bool wasOver)
+    {
+        // Записваме само веднъж: в момента, в който играта свършва
+        if (wasOver || !s.Over) return;
+        // Тайният играч
+        var name = _game.Player(s.Mystery).Name;
+        // Победа: резултатът е броят опити; загуба: 0
+        _results.Save(HttpContext, "guess", s.Won ? s.Guesses.Count : 0,
+            s.Won ? $"{name} in {s.Guesses.Count} guesses" : $"{name} · not found");
+    }
 
     // Чете състоянието; ако няма игра, започва нова
     private GuessState Load()
@@ -51,9 +69,13 @@ public class GuessController : Controller
     [HttpPost]
     public IActionResult Try(string name)
     {
-        // Зареждаме, проверяваме опита и връщаме таблото
+        // Зареждаме и проверяваме опита
         var s = Load();
+        var wasOver = s.Over;
         _game.Guess(s, name);
+        // Ако играта свърши (познали сме), я записваме
+        SaveIfFinished(s, wasOver);
+        // Връщаме таблото
         return Board(s);
     }
 
@@ -61,9 +83,13 @@ public class GuessController : Controller
     [HttpPost]
     public IActionResult GiveUp()
     {
-        // Зареждаме, отказваме се и връщаме таблото
+        // Зареждаме и се отказваме
         var s = Load();
+        var wasOver = s.Over;
         _game.GiveUp(s);
+        // Записваме загубата
+        SaveIfFinished(s, wasOver);
+        // Връщаме таблото
         return Board(s);
     }
 

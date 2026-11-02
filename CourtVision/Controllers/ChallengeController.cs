@@ -12,9 +12,15 @@ public class ChallengeController : Controller
     private const string Key = "challenge";
     // Логиката на играта
     private readonly ChallengeService _game;
+    // Резултатите в базата (таблица GameResults)
+    private readonly ResultService _results;
 
-    // Конструктор: ASP.NET Core ни подава услугата автоматично
-    public ChallengeController(ChallengeService game) => _game = game;
+    // Конструктор: ASP.NET Core ни подава услугите автоматично
+    public ChallengeController(ChallengeService game, ResultService results)
+    {
+        _game = game;       // Играта
+        _results = results; // Резултатите
+    }
 
     // Чете състоянието от сесията
     private ChallengeState Load() => HttpContext.Session.GetObject<ChallengeState>(Key);
@@ -78,7 +84,15 @@ public class ChallengeController : Controller
         // Зареждаме играта
         var s = Load();
         // Симулираме само ако всички 8 места са попълнени
-        if (s.IsComplete) _game.Simulate(s);
+        if (s.IsComplete)
+        {
+            // 82-та мача
+            var games = _game.Simulate(s);
+            // Броят победи
+            var wins = games.Count(won => won);
+            // Записваме сезона в базата: резултатът е броят победи
+            _results.Save(HttpContext, "challenge", wins, $"{wins}-{82 - wins} · {ChallengeService.Verdict(wins).Title}");
+        }
         // Връщаме таблото
         return Board(s);
     }
