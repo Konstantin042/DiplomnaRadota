@@ -96,8 +96,6 @@ main{padding-block:28px 56px}
 .logo .ball{width:120px;height:120px;filter:drop-shadow(0 10px 30px rgba(225,29,46,.35))}
 /* Стил за лентата с надписа */
 .ribbon{margin-top:-30px;background:#1D4ED8;border:2px solid #1E3A8A;color:#fff;font-family:var(--f-display);font-weight:900;font-size:38px;letter-spacing:.04em;padding:0 18px;line-height:1.1;border-radius:4px;box-shadow:0 6px 0 #172554;position:relative}
-/* Стил за малкия текст в лентата с надписа */
-.ribbon small{display:block;font-family:var(--f-mono);font-size:10px;letter-spacing:.2em;text-align:center;border-top:1px solid rgba(255,255,255,.35);line-height:1.6}
 /* Стил за горната част на началната страница */
 .home-head{display:grid;justify-items:center;text-align:center;gap:14px;padding-top:8px}
 /* Стил за абзаците в горната част на началната страница */
@@ -1646,11 +1644,11 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .acct-user[aria-current="true"]{border-color:var(--amber)}
 /* Бутонът "Log in" за гости */
 .acct-login{padding:7px 14px;border-radius:9px;background:linear-gradient(180deg,var(--orange-2),var(--orange));color:#fff;font-weight:700;font-size:13px;white-space:nowrap}
-/* При по-тесен екран менюто се сгъстява, за да се събере с бутоните вдясно */
+/* По-малки отстъпи на връзките в менюто, за да се съберат с бутоните вдясно */
+.tabs .tab{padding:7px 9px}
+/* При по-тесен екран без надписа до логото (топката остава) */
 @media (max-width:1240px){
-  /* По-малки отстъпи на връзките в менюто */
-  .tab{padding:7px 9px}
-  /* Без надписа до логото (топката остава) */
+  /* Скриваме надписа */
   .mini-logo .cap{display:none}
 }
 /* На телефон в профила остава само кръгчето */
