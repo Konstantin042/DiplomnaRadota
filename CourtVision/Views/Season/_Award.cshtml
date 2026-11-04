@@ -2,14 +2,11 @@
 @model AwardBox
 @inject PhotoService Photos
 @{
-    // Наградата
     var a = Model.Winner;
 }
 <div class="sp-award @(a.IsYou ? "you" : "")">
-    @* Името на наградата *@
     <small>@Model.Label</small>
     <div>
-        @* Снимка: "YOU" за нашия играч или истинската снимка *@
         @if (a.IsYou)
         {
             <div class="ph" style="--pc:var(--orange)"><span>YOU</span></div>
@@ -18,7 +15,6 @@
         {
             @Photos.Face(a.Name, a.Id, "PG")
         }
-        @* Име, отбор и статистики *@
         <div><b>@a.Name</b><span><span class="tb-badge" style="--tc:@Teams.Get(a.Team).Color">@a.Team</span> @a.Line</span></div>
     </div>
 </div>

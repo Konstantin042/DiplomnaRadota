@@ -3,34 +3,23 @@
 @inject BuildService Game
 @inject PhotoService Photos
 @{
-    // Атрибутите на групата (Guard или Big)
     var attrs = Grades.For(Model.Group);
-    // Броят попълнени атрибути
     var filled = Model.Taken.Count;
-    // Завъртаният играч (или null)
     var cur = Model.Current is int ci ? Game.Player(ci) : null;
-    // Цвят на рамката на снимките
     var pc = Model.Group == "g" ? "PG" : "C";
-    // OVR до момента
     var ovr = BuildService.Overall(Model);
-    // Свободните играчи по отбори (за бутона за респин на играч)
     var mates = Model.Team != null && Game.FreeByTeam(Model).TryGetValue(Model.Team, out var list) ? list.Count : 0;
-    // Обиколката на кръга за OVR и колко от нея да е запълнена
     var circle = 2 * Math.PI * 54;
     var offset = circle * (1 - (ovr ?? 0) / 99.0 * (Model.Done ? 1 : Math.Max(.08, filled / 10.0)));
-    // Позициите на етикетите в арената за всеки таб (в проценти)
     var tagSpots = new Dictionary<string, (int, int)[]>
     {
-        ["skills"] = new[] { (30, 30), (70, 30), (30, 52), (70, 52), (50, 74) },  // 5 умения
-        ["physical"] = new[] { (50, 14), (30, 72), (70, 72) },                    // 3 физически
-        ["mental"] = new[] { (30, 30), (70, 30) },                                // 2 ментални
+        ["skills"] = new[] { (30, 30), (70, 30), (30, 52), (70, 52), (50, 74) },
+        ["physical"] = new[] { (50, 14), (30, 72), (70, 72) },
+        ["mental"] = new[] { (30, 30), (70, 30) },
     };
-    // Номерата на атрибутите в отворения таб
     var tabAttrs = Enumerable.Range(0, 10).Where(i => Grades.TabOf(i) == Model.Tab).ToList();
 }
-@* Един формуляр за целия екран *@
 <form id="bform" method="post" data-ajax="#broot">
-    @* Горната лента: режим, табове и Reset *@
     <div class="bp-top">
         <button type="submit" class="bp-mode" formaction="/Build/Menu" aria-label="Change mode"><small>@(Model.Group == "g" ? "PG · SG · SF" : "PF · C")</small><b>@(Model.Group == "g" ? "Guard" : "Big")</b><span>@(Model.Mode == "a" ? "All-Time" : "Current")</span>▾</button>
         <div class="bp-tabs" role="tablist">
@@ -43,23 +32,18 @@
     </div>
 
     <div class="bp-grid">
-        @* Лявата колона *@
         <div class="bp-left">
-            @* Ръст и тегло (от играча, от когото е копиран Size) *@
             @{
-                // Атрибутът Size е на позиция 7
                 var sizePlayer = Model.Taken.TryGetValue(7, out var sz) ? Game.Player(sz.PlayerIndex) : null;
             }
             <div class="bp-htwt"><div><small>HT</small><b>@(sizePlayer?.HeightText ?? "--")</b></div><div><small>WT</small><b>@(sizePlayer != null ? sizePlayer.Weight + " lb" : "--")</b></div></div>
 
-            @* Двата барабана: отбор и играч *@
             <div class="bp-reels" id="bpReels">
                 <div class="bp-reel">
                     <div class="bp-rh">TEAM</div>
                     @{ var reelTeams = BuildService.ReelTeams(cur != null ? Model.Team : null); }
                     @for (var k = 0; k < 5; k++)
                     {
-                        // Средният ред е текущият, крайните са бледи
                         var cls = k == 2 ? "mid" : (k == 0 || k == 4) ? "far" : "";
                         <div class="bp-cell @cls" data-reel-team><b>@(cur != null ? reelTeams[k] : "–")</b><small>@(cur != null ? Teams.Get(reelTeams[k]).Nickname : "")</small></div>
                     }
@@ -69,7 +53,6 @@
                     @{ var reelPlayers = Game.ReelPlayers(Model); }
                     @for (var k = 0; k < 5; k++)
                     {
-                        // Играчът в реда (или празно)
                         var rp = reelPlayers[k];
                         var cls = k == 2 ? "mid" : (k == 0 || k == 4) ? "far" : "";
                         <div class="bp-cell @cls" data-reel-player><b>@(rp?.Name.Split(' ')[0] ?? "–")</b><small>@(rp != null ? string.Join(" ", rp.Name.Split(' ').Skip(1)) : "")</small></div>
@@ -79,12 +62,10 @@
 
             @if (Model.Done)
             {
-                @* Готов билд: нов билд *@
                 <button type="submit" class="bp-spin" formaction="/Build/Reset">Build again</button>
             }
             else if (cur != null)
             {
-                @* Има завъртан играч: двата респина *@
                 <div class="bp-respins">
                     <button type="submit" class="bp-rs" formaction="/Build/Spin" name="kind" value="team" data-spin disabled="@(Model.TeamRespins <= 0)">Respin team <i>@Model.TeamRespins</i></button>
                     <button type="submit" class="bp-rs" formaction="/Build/Spin" name="kind" value="player" data-spin disabled="@(Model.PlayerRespins <= 0 || mates < 2)">Respin player <i>@Model.PlayerRespins</i></button>
@@ -92,26 +73,23 @@
             }
             else
             {
-                @* Няма завъртан играч: бутон Spin *@
                 <button type="submit" class="bp-spin" formaction="/Build/Spin" name="kind" value="all" data-spin>Spin</button>
                 <p class="bp-help">Spin to select an attribute for your build.</p>
             }
 
             @if (cur != null)
             {
-                @* Картата на завъртания играч *@
                 <div class="bp-card">
                     @Photos.Face(cur.Name, cur.Id, pc)
                     <div><b>@cur.Name</b><span>@Teams.Get(cur.Team).Name</span><small>@(cur.Mode == "a" ? cur.Years : cur.Rookie ? "Rookie · no NBA games yet" : "2025–26 season")</small></div>
                 </div>
-                @* Оценките му, групирани по табове; натискане копира оценката *@
                 foreach (var (key, label) in Grades.Tabs)
                 {
                     <div class="bp-sec">@label</div>
                     for (var i = 0; i < 10; i++)
                     {
-                        if (Grades.TabOf(i) != key) { continue; } // Само атрибутите от този таб
-                        var g = cur.Grades[i]; // Оценката на играча
+                        if (Grades.TabOf(i) != key) { continue; }
+                        var g = cur.Grades[i];
                         <button type="submit" class="bp-attr" formaction="/Build/Take" name="attribute" value="@i" style="--gc:@Grades.Color(g)" disabled="@Model.Taken.ContainsKey(i)">
                             <span>@attrs[i].Label</span><span class="gr" style="--gc:@Grades.Color(g)">@Grades.Letters[g]</span>
                         </button>
@@ -121,25 +99,21 @@
             }
         </div>
 
-        @* Арената с етикетите на отворения таб *@
         <div class="bp-arena">
             <div class="bp-floor"></div>
-            @* Силуетът на играча *@
             <svg class="fig" viewBox="0 0 120 300" aria-hidden="true">
                 <defs><linearGradient id="fg" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#1E2A44" /><stop offset="1" stop-color="#0B1020" /></linearGradient></defs>
                 <g fill="url(#fg)" stroke="rgba(96,165,250,.6)" stroke-width="1.2">
-                    <circle cx="60" cy="26" r="17" />                                          @* Глава *@
-                    <path d="M34 52q26-10 52 0l10 70-12 4-6-46-4 50H46l-4-50-6 46-12-4z" />     @* Тяло и ръце *@
-                    <path d="M42 130h36l4 90-4 66H66l-4-80-4 80H44l-4-66z" />                   @* Крака *@
-                    <path d="M42 284h16v10H36zM66 284h16l6 10H66z" fill="#E11D2E" />             @* Обувки *@
+                    <circle cx="60" cy="26" r="17" />
+                    <path d="M34 52q26-10 52 0l10 70-12 4-6-46-4 50H46l-4-50-6 46-12-4z" />
+                    <path d="M42 130h36l4 90-4 66H66l-4-80-4 80H44l-4-66z" />
+                    <path d="M42 284h16v10H36zM66 284h16l6 10H66z" fill="#E11D2E" />
                 </g>
             </svg>
             @for (var k = 0; k < tabAttrs.Count; k++)
             {
-                // Номерът на атрибута и къде стои етикетът
                 var i = tabAttrs[k];
                 var (left, top) = tagSpots[Model.Tab][k];
-                // Попълнен ли е
                 Model.Taken.TryGetValue(i, out var t);
                 var tp = t != null ? Game.Player(t.PlayerIndex) : null;
                 <div class="bp-tag @(t != null ? "filled" : "")" style="left:@left%;top:@top%;@(t != null ? $"--gc:{Grades.Color(t.Value)}" : "")">
@@ -154,16 +128,12 @@
             }
         </div>
 
-        @* Дясната колона: OVR и списъкът с атрибутите *@
         <div class="bp-right">
             <div class="ovr">
-                @* Кръгът за OVR *@
                 <svg viewBox="0 0 140 140"><circle class="ring-bg" cx="70" cy="70" r="54" /><circle class="ring-fg" cx="70" cy="70" r="54" stroke-dasharray="@circle.ToString("0.##")" stroke-dashoffset="@offset.ToString("0.##")" /><text class="ovr-l" x="70" y="48" text-anchor="middle">OVR</text><text class="ovr-n" x="70" y="88" text-anchor="middle">@(ovr?.ToString() ?? "–")</text></svg>
                 @if (Model.Done)
                 {
-                    @* Тип на играча *@
                     <div class="bp-arch">@BuildService.Archetype(Model)</div>
-                    @* Бутон за сезона: отваря прозореца за избор на отбор *@
                     <button type="button" class="bp-sim" data-open-picker>Simulate season</button>
                 }
                 else
@@ -174,19 +144,17 @@
             </div>
             @if (Model.Done)
             {
-                @* Готов билд: списък със снимки *@
                 <div class="bp-done-list">
                     @for (var i = 0; i < 10; i++)
                     {
-                        var t = Model.Taken[i];          // Копираният атрибут
-                        var p = Game.Player(t.PlayerIndex); // От кой играч
+                        var t = Model.Taken[i];
+                        var p = Game.Player(t.PlayerIndex);
                         <div class="bp-dl">@Photos.Face(p.Name, p.Id, pc)<div><small>@attrs[i].Label</small><b>@p.Name</b></div><span class="gr" style="--gc:@Grades.Color(t.Value)">@Grades.Letters[t.Value]</span></div>
                     }
                 </div>
             }
             else
             {
-                @* Списък с всички 10 атрибута и попълнените оценки *@
                 <div class="statlist">
                     @for (var i = 0; i < 10; i++)
                     {
@@ -201,27 +169,21 @@
 
 @if (Model.Done)
 {
-    // Отборите на играчите, от които сме копирали (за таба Pick)
     var myTeams = Model.Taken.Values.Select(t => Game.Player(t.PlayerIndex).Team).Distinct().Where(t => Teams.All.Any(x => x.Abbr == t)).ToList();
-    @* Прозорецът за избор на отбор: Spin (случаен) или Pick (от нашите отбори) *@
     <div class="modal" id="tpModal" hidden>
         <div class="dlg tpm" role="dialog" aria-modal="true" aria-label="Simulate season">
             <div class="tpm-eye">Simulate season</div>
             <h3 class="tpm-h" data-tp-title>Spin your team</h3>
-            @* Табовете Spin и Pick (сменят се в браузъра) *@
             <div class="tpm-tabs"><button type="button" class="on" data-tp="spin">Spin</button><button type="button" data-tp="pick">Pick</button></div>
-            @* Таб Spin: барабан с всички отбори *@
             <div data-tp-panel="spin">
                 <div class="tpm-reel" id="tpReel" data-teams="@(string.Join(",", Teams.All.Select(x => x.Abbr)))" data-names="@(string.Join(",", Teams.All.Select(x => x.Nickname)))">
                     <span class="tpm-lbl">TEAM</span>
                     @for (var k = -2; k <= 2; k++)
                     {
-                        // Пет реда: средният е избраният
                         var team = Teams.All[(k + Teams.All.Count) % Teams.All.Count];
                         <div class="tpm-row @(k == 0 ? "mid" : Math.Abs(k) == 2 ? "far" : "")"><b>@team.Abbr</b><small>@team.Nickname</small></div>
                     }
                 </div>
-                @* Резултат от завъртането и бутон за старт (обикновен формуляр към /Season/Start) *@
                 <form method="post" action="/Season/Start" data-tp-result hidden>
                     <input type="hidden" name="team" value="">
                     <p class="tpm-res" data-tp-text></p>
@@ -229,20 +191,17 @@
                 </form>
                 <button type="button" class="bp-spin" id="tpSpin">Spin</button>
             </div>
-            @* Таб Pick: търсачка и отборите на нашите играчи *@
             <div data-tp-panel="pick" hidden>
                 <div class="tpm-sub">Available for your build: teams of the players you copied</div>
                 <input id="tpSearch" class="tpm-search" placeholder="Search teams…" aria-label="Search teams" autocomplete="off">
                 <form method="post" action="/Season/Start" class="tpm-grid">
                     @foreach (var abbr in myTeams)
                     {
-                        // Пълната информация за отбора
                         var team = Teams.Get(abbr);
                         <button type="submit" class="tpm-team" name="team" value="@abbr" data-search="@($"{abbr} {team.Name}".ToLowerInvariant())" style="--tc:@team.Color"><span class="tb-badge big" style="--tc:@team.Color">@abbr</span><small>@team.Nickname</small></button>
                     }
                 </form>
             </div>
-            @* Бутон за затваряне *@
             <button type="button" class="tpm-close" data-tp-close aria-label="Close">✕</button>
         </div>
     </div>

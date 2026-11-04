@@ -1,5 +1,5 @@
 // Петте позиции в баскетбола и обясненията за тях
-namespace CourtVision.Models; // Пространство от имена за моделите
+namespace CourtVision.Models;
 
 // Описание на една позиция
 public record PositionInfo(string Code, string Name, string Height, string Description);
@@ -7,10 +7,8 @@ public record PositionInfo(string Code, string Name, string Height, string Descr
 // Статичен клас с всички позиции
 public static class Positions
 {
-    // Позициите в реда, в който се показват (от гард до център)
     public static readonly string[] Order = { "PG", "SG", "SF", "PF", "C" };
 
-    // Пълната информация за всяка позиция
     public static readonly IReadOnlyDictionary<string, PositionInfo> Info = new Dictionary<string, PositionInfo>
     {
         // Разпределител: организира играта
@@ -28,10 +26,10 @@ public static class Positions
     // Координати на всяка позиция върху игрището (в проценти: ляво, горе)
     public static readonly IReadOnlyDictionary<string, (int Left, int Top)> Spot = new Dictionary<string, (int, int)>
     {
-        ["C"] = (35, 16),  // Центърът е до коша, вляво
-        ["PF"] = (65, 16), // Тежкото крило е до коша, вдясно
-        ["SF"] = (13, 62), // Лекото крило е на левия фланг
-        ["SG"] = (87, 62), // Гард-стрелецът е на десния фланг
-        ["PG"] = (50, 72), // Разпределителят е отгоре по средата
+        ["C"] = (35, 16),
+        ["PF"] = (65, 16),
+        ["SF"] = (13, 62),
+        ["SG"] = (87, 62),
+        ["PG"] = (50, 72),
     };
 }

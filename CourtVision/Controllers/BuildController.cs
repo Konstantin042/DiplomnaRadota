@@ -1,19 +1,16 @@
 // Контролер за Build-a-Player
-using CourtVision.Models;          // Моделите (BuildState)
-using CourtVision.Services;        // Услугите
-using Microsoft.AspNetCore.Mvc;    // Базовите класове за MVC
+using CourtVision.Models;
+using CourtVision.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace CourtVision.Controllers; // Пространство от имена за контролерите
+namespace CourtVision.Controllers;
 
 // Контролерът Build (адреси /Build/...)
 public class BuildController : Controller
 {
-    // Ключът в сесията
     public const string Key = "build";
-    // Логиката на играта
     private readonly BuildService _game;
 
-    // Конструктор: получава услугата
     public BuildController(BuildService game) => _game = game;
 
     // Чете състоянието от сесията
@@ -24,11 +21,8 @@ public class BuildController : Controller
     // Връща частичния изглед (менюто или играта) или пренасочва към страницата
     private IActionResult Screen(BuildState s)
     {
-        // Записваме промените
         Save(s);
-        // За JavaScript връщаме само съдържанието
         if (Request.IsAjax()) return PartialView(s.Mode == "" ? "_Menu" : "_Game", s);
-        // Иначе цялата страница
         return RedirectToAction(nameof(Index));
     }
 
@@ -39,7 +33,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Group(string group)
     {
-        // Зареждаме и сменяме групата (само "g" или "b")
         var s = Load();
         s.Group = group == "b" ? "b" : "g";
         return Screen(s);
@@ -49,7 +42,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Start(string mode)
     {
-        // Зареждаме и започваме нов билд
         var s = Load();
         _game.Start(s, mode == "c" ? "c" : "a");
         return Screen(s);
@@ -59,7 +51,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Menu()
     {
-        // Режим "" означава меню
         var s = Load();
         s.Mode = "";
         return Screen(s);
@@ -69,7 +60,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Spin(string kind = "all")
     {
-        // Зареждаме, завъртаме и връщаме играта
         var s = Load();
         _game.Spin(s, kind);
         return Screen(s);
@@ -79,7 +69,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Take(int attribute)
     {
-        // Зареждаме, копираме и връщаме играта
         var s = Load();
         _game.Take(s, attribute);
         return Screen(s);
@@ -89,7 +78,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Tab(string tab)
     {
-        // Позволени са само трите таба
         var s = Load();
         if (tab is "skills" or "physical" or "mental") s.Tab = tab;
         return Screen(s);
@@ -99,7 +87,6 @@ public class BuildController : Controller
     [HttpPost]
     public IActionResult Reset()
     {
-        // Започваме отначало със същия режим
         var s = Load();
         _game.Start(s, s.Mode == "" ? "a" : s.Mode);
         return Screen(s);

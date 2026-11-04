@@ -1,7 +1,7 @@
 // Контролер за началната страница, NBA 101 и страницата за грешки
-using Microsoft.AspNetCore.Mvc; // Базовите класове за MVC
+using Microsoft.AspNetCore.Mvc;
 
-namespace CourtVision.Controllers; // Пространство от имена за контролерите
+namespace CourtVision.Controllers;
 
 // Контролерът Home (адреси /Home/...)
 public class HomeController : Controller

@@ -1,35 +1,30 @@
 // Контролер за сезона след Build-a-Player
-using CourtVision.Models;          // Моделите
-using CourtVision.Services;        // Услугите
-using Microsoft.AspNetCore.Mvc;    // Базовите класове за MVC
+using CourtVision.Models;
+using CourtVision.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace CourtVision.Controllers; // Пространство от имена за контролерите
+namespace CourtVision.Controllers;
 
 // Контролерът Season (адреси /Season/...)
 public class SeasonController : Controller
 {
-    // Ключът на сезона в сесията
     private const string Key = "season";
-    // Логиката на сезона
     private readonly SeasonService _season;
-    // Резултатите в базата (таблица GameResults)
     private readonly ResultService _results;
 
-    // Конструктор: получава услугите
     public SeasonController(SeasonService season, ResultService results)
     {
-        _season = season;   // Сезонът
-        _results = results; // Резултатите
+        _season = season;
+        _results = results;
     }
 
     // GET /Season – показва текущата стъпка на сезона
     public IActionResult Index()
     {
-        // Четем сезона от сесията
         var s = HttpContext.Session.GetObjectOrNull<SeasonState>(Key);
-        // Ако няма сезон, връщаме играча в Build-a-Player
         if (s == null) return RedirectToAction("Index", "Build");
-        // Показваме страницата
+        // Сезонът от Salary Cap Game се показва в самата игра (/Salary/Season)
+        if (s.Source == "salary") return RedirectToAction("Season", "Salary");
         return View(s);
     }
 
@@ -37,9 +32,7 @@ public class SeasonController : Controller
     [HttpPost]
     public IActionResult SpinTeam()
     {
-        // Избираме случаен отбор от всички 30
         var team = Teams.All[Random.Shared.Next(Teams.All.Count)];
-        // Връщаме съкращението и името
         return Json(new { abbr = team.Abbr, name = team.Name, conference = team.Conference });
     }
 
@@ -47,19 +40,13 @@ public class SeasonController : Controller
     [HttpPost]
     public IActionResult Start(string team)
     {
-        // Билдът от сесията
         var build = HttpContext.Session.GetObject<BuildState>(BuildController.Key);
-        // Без готов билд или с непознат отбор не може да се започне
         if (!build.Done || Teams.All.All(t => t.Abbr != team)) return RedirectToAction("Index", "Build");
-        // Създаваме целия сезон
         var s = _season.Start(build, team);
-        // Записваме го в сесията
         HttpContext.Session.SetObject(Key, s);
-        // Победите на нашия отбор в редовния сезон
         var wins = s.Wins.GetValueOrDefault(s.Team);
         // Записваме сезона в базата: резултатът е броят победи
         _results.Save(HttpContext, "build", wins, $"{s.Team} · OVR {s.Overall} · {wins}-{82 - wins} · {SeasonService.Outcome(s)}");
-        // Показваме страницата на сезона
         return RedirectToAction(nameof(Index));
     }
 
@@ -67,15 +54,11 @@ public class SeasonController : Controller
     [HttpPost]
     public IActionResult Step(int step)
     {
-        // Четем сезона
         var s = HttpContext.Session.GetObjectOrNull<SeasonState>(Key);
-        // Ако няма, връщаме към билда
         if (s == null) return RedirectToAction("Index", "Build");
-        // Ограничаваме стъпката между 0 и 3
         s.Step = Math.Clamp(step, 0, 3);
-        // Записваме
         HttpContext.Session.SetObject(Key, s);
-        // Показваме страницата
+        if (s.Source == "salary") return RedirectToAction("Season", "Salary");
         return RedirectToAction(nameof(Index));
     }
 }

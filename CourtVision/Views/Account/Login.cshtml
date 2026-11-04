@@ -1,40 +1,31 @@
 @* Страницата за вход *@
 @model LoginModel
 @{
-    ViewData["Title"] = "Log in"; // Заглавие в раздела
+    ViewData["Title"] = "Log in";
 }
 <section class="view auth">
     <div class="auth-card">
-        @* Заглавие и обяснение *@
         <div class="label">Account</div>
         <h2>Log in</h2>
         <p class="auth-sub">Log in to save every game under your name and see your place on the leaderboards.</p>
 
-        @* Формулярът (Tag Helper-ът добавя скрития код против фалшиви заявки) *@
         <form asp-controller="Account" asp-action="Login" method="post" class="auth-form" novalidate>
-            @* Общите грешки, например "Wrong username or password." *@
             <div asp-validation-summary="ModelOnly" class="auth-errors"></div>
-            @* Къде да се върнем след входа *@
             <input type="hidden" asp-for="ReturnUrl" />
-            @* Потребителско име *@
             <label class="field">
                 <span>Username</span>
                 <input asp-for="UserName" autocomplete="username" autofocus />
                 <span asp-validation-for="UserName" class="field-err"></span>
             </label>
-            @* Парола *@
             <label class="field">
                 <span>Password</span>
                 <input asp-for="Password" autocomplete="current-password" />
                 <span asp-validation-for="Password" class="field-err"></span>
             </label>
-            @* Запомни ме *@
             <label class="check"><input asp-for="RememberMe" /> Remember me</label>
-            @* Бутонът за вход *@
             <button type="submit" class="btn wide">Log in</button>
         </form>
 
-        @* Връзка към регистрацията *@
         <p class="auth-alt">New here? <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="@Model.ReturnUrl">Create an account</a></p>
     </div>
 </section>

@@ -1,35 +1,22 @@
 <!-- Файл на проекта: казва на .NET какъв тип е приложението и как да се компилира -->
 <Project Sdk="Microsoft.NET.Sdk.Web">
-  <!-- Основни настройки на проекта -->
   <PropertyGroup>
-    <!-- Използваме .NET 8 (версия с дългосрочна поддръжка) -->
     <TargetFramework>net8.0</TargetFramework>
-    <!-- Включваме проверки за null, за да хващаме грешки още при компилиране -->
     <Nullable>enable</Nullable>
-    <!-- Автоматично добавя най-често използваните using директиви -->
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- Име на пространството от имена по подразбиране -->
     <RootNamespace>CourtVision</RootNamespace>
   </PropertyGroup>
 
-  <!-- Външни библиотеки (NuGet пакети) за базата данни и потребителите -->
   <ItemGroup>
-    <!-- Entity Framework Core за SQL Server: работа с базата чрез C# класове -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
-    <!-- Инструменти за Package Manager Console (Add-Migration, Update-Database) -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
-      <!-- Нужни са само по време на разработка, не влизат в готовото приложение -->
       <PrivateAssets>all</PrivateAssets>
-      <!-- Кои части на пакета се използват -->
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <!-- ASP.NET Core Identity с таблици в базата: регистрация, вход и пароли -->
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
   </ItemGroup>
 
-  <!-- Файловете с данни се копират при компилиране до изходната папка -->
   <ItemGroup>
-    <!-- Всички JSON файлове от папката Data отиват до изпълнимия файл -->
     <None Update="Data\*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 </Project>

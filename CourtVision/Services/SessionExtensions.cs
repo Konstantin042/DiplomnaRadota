@@ -1,7 +1,7 @@
 // Помощни методи за запис и четене на обекти в сесията
-using System.Text.Json; // Библиотеката за превръщане на обекти в JSON и обратно
+using System.Text.Json;
 
-namespace CourtVision.Services; // Пространство от имена за услугите
+namespace CourtVision.Services;
 
 // Статичен клас с разширения за ISession
 public static class SessionExtensions
@@ -13,20 +13,15 @@ public static class SessionExtensions
     // Чете обект от сесията; ако го няма, създава нов с конструктора по подразбиране
     public static T GetObject<T>(this ISession session, string key) where T : new()
     {
-        // Взимаме JSON текста от сесията
         var json = session.GetString(key);
-        // Ако няма записан текст, връщаме нов празен обект
         if (string.IsNullOrEmpty(json)) return new T();
-        // Иначе превръщаме текста обратно в обект (или нов, ако е повреден)
         return JsonSerializer.Deserialize<T>(json) ?? new T();
     }
 
     // Чете обект, но връща null, ако няма такъв (за незадължителни данни)
     public static T? GetObjectOrNull<T>(this ISession session, string key) where T : class
     {
-        // Взимаме JSON текста от сесията
         var json = session.GetString(key);
-        // Връщаме null, ако няма текст, иначе обекта
         return string.IsNullOrEmpty(json) ? null : JsonSerializer.Deserialize<T>(json);
     }
 

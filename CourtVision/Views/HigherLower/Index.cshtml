@@ -1,13 +1,11 @@
 @* Страницата на Higher or Lower *@
 @model HigherLowerState
 @{
-    ViewData["Title"] = "Higher or Lower"; // Заглавие в раздела
+    ViewData["Title"] = "Higher or Lower";
 }
 <section class="view">
-    @* Заглавие и бутон за правилата *@
     <div class="ghead"><div><div class="label">Game 3 · Stats</div><h2>Higher or Lower</h2></div><button type="button" class="iconbtn" data-help="higherlower" aria-label="How to play">?</button></div>
 
-    @* Картата на играта (подменя се без презареждане) *@
     <div id="hroot">
         @if (Model.Mode == "")
         {
@@ -19,7 +17,6 @@
         }
     </div>
 
-    @* Обяснение как е в истинската NBA *@
     <div class="real">
         <h3>In the real NBA</h3>
         <p>Players are compared by <b>per-game averages</b>: the total for a season divided by the games played. PPG means points per game, RPG rebounds per game and APG assists per game. Today 20 PPG makes a player a strong scorer, 10 RPG is a lot for a center and 8 APG is a lot for a point guard.</p>

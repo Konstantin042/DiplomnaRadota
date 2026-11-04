@@ -2,21 +2,17 @@
 @model GuessState
 @inject GuessService Game
 @{
-    ViewData["Title"] = "Guess the Player"; // Заглавие в раздела
+    ViewData["Title"] = "Guess the Player";
 }
 <section class="view">
-    @* Заглавие и бутон за правилата *@
     <div class="ghead"><div><div class="label">Game 6 · Players</div><h2>Guess the Player</h2></div><button type="button" class="iconbtn" data-help="guess" aria-label="How to play">?</button></div>
 
-    @* Всички имена като JSON: JavaScript показва под полето всеки играч, който започва с написаните букви *@
     <script id="gpNames" type="application/json">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(Game.Labels()))</script>
 
-    @* Таблото (подменя се без презареждане) *@
     <div id="groot">
         <partial name="_Board" model="Model" />
     </div>
 
-    @* Обяснение как е в истинската NBA *@
     <div class="real">
         <h3>In the real NBA</h3>
         <p>The league has 30 teams in two conferences: 15 in the East and 15 in the West. Teams play most of their games inside their own conference, and the playoffs are played East against East and West against West until the Finals.</p>
