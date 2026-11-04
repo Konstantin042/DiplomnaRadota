@@ -1,18 +1,15 @@
 @* Страницата на играта 82-0 *@
 @model ChallengeState
 @{
-    ViewData["Title"] = "82-0"; // Заглавие в раздела
+    ViewData["Title"] = "82-0";
 }
 <section class="view">
-    @* Заглавие и бутон за правилата *@
     <div class="ghead"><div><div class="label">Game 1 · Team building</div><h2>Can you go 82-0?</h2></div><button type="button" class="iconbtn" data-help="challenge" aria-label="How to play">?</button></div>
 
-    @* Таблото на играта: съдържанието идва от частичния изглед _Board и се подменя без презареждане *@
     <div id="board">
         <partial name="_Board" model="Model" />
     </div>
 
-    @* Обяснение как е в истинската NBA *@
     <div class="real">
         <h3>In the real NBA</h3>
         <p>Each of the 30 teams plays 82 games in the regular season: 41 at home and 41 away. No team has ever won all 82. The best record is 73 wins and 9 losses, set by the Golden State Warriors in 2015–16.</p>

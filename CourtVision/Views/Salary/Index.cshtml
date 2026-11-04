@@ -1,18 +1,15 @@
 @* Страницата на Salary Cap Game (игра със заплати и таван) *@
 @model SalaryState
 @{
-    ViewData["Title"] = "Salary Cap Game"; // Заглавие в раздела
+    ViewData["Title"] = "Salary Cap Game";
 }
 <section class="view">
-    @* Бутон за правилата (заглавието е в самото табло) *@
     <div class="ghead"><div><div class="label">Game 4 · Salary cap</div><h2>Salary Cap Game</h2></div><button type="button" class="iconbtn" data-help="salary" aria-label="How to play">?</button></div>
 
-    @* Таблото на играта (подменя се без презареждане) *@
     <div id="sroot">
         <partial name="_Board" model="Model" />
     </div>
 
-    @* Обяснение как е в истинската NBA *@
     <div class="real">
         <h3>In the real NBA</h3>
         <p>Every team has a <b>salary cap</b>: a limit on how much it can pay its players in one season. For 2026–27 the cap is about <b>$165 million</b>. Teams that go far above it pay a luxury tax (from about $200 million), and above the "aprons" ($209 million and $222 million) they lose some ways to trade and sign players.</p>

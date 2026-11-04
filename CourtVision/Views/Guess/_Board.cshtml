@@ -4,23 +4,17 @@
 @inject SalaryService Large
 @inject PhotoService Faces
 @{
-    // Тайният играч
     var m = Game.Player(Model.Mystery);
-    // Колко опита остават
     var left = Model.Limit - Model.Guesses.Count;
-    // Голямата снимка на тайния играч (показва се в края)
     var murl = Large.PhotoUrl(m.Name);
-    // Опитите, най-новият най-отгоре
     var rows = Model.Guesses.AsEnumerable().Reverse().ToList();
 }
 <form method="post" data-ajax="#groot" class="gp @(Model.Over ? (Model.Won ? "gp--won" : "gp--lost") : "")" autocomplete="off">
-    @* Горе: тайният играч (или отговорът в края) и броячите *@
     <div class="gp-top">
         <div class="gp-mystery">
             <div class="gp-photo" style="--tc:@(Model.Over ? Teams.Get(m.Team).Color : "#1B2335")">
                 @if (!Model.Over)
                 {
-                    @* Силует с въпросителен знак, докато играта тече *@
                     <span class="gp-q">?</span>
                 }
                 else if (murl != null)
@@ -51,10 +45,8 @@
         </div>
     </div>
 
-    @* Полето за опит (само докато играта тече) *@
     @if (Model.OutOfGuesses)
     {
-        @* Опитите свършиха: продължаваш със същия играч или виждаш отговора *@
         <div class="gp-end gp-out">
             <p><b>Out of guesses.</b> Keep going with the same mystery player, or see the answer.</p>
             <div class="gp-endbtns">
@@ -66,7 +58,6 @@
     else if (!Model.Over)
     {
         <div class="gp-input">
-            @* Полето и падащият списък с подсказки под него *@
             <div class="gp-field">
                 <input id="gpName" name="name" placeholder="Type a player's name…" aria-label="Player name" aria-autocomplete="list" aria-controls="gpSuggest" required />
                 <div class="gp-suggest" id="gpSuggest" role="listbox" hidden></div>
@@ -81,21 +72,18 @@
     }
     else
     {
-        @* Край: резултат и нова игра *@
         <div class="gp-end">
             <p>@(Model.Won ? (Model.Guesses.Count <= GuessService.MaxGuesses ? $"Solved in {Model.Guesses.Count} of {GuessService.MaxGuesses} guesses." : $"Solved in {Model.Guesses.Count} guesses, with extra tries.") : "Here is the answer. Look at the clues below to see how close you were.")</p>
             <button type="submit" class="btn" formaction="/Guess/New">New mystery player</button>
         </div>
     }
 
-    @* Таблицата с опитите и подсказките *@
     <div class="tscroll">
         <table class="gp-table">
             <thead><tr><th>Player</th><th>Team</th><th>Conf</th><th>Pos</th><th>Decade</th><th>PPG</th><th>RPG</th><th>APG</th></tr></thead>
             <tbody>
                 @foreach (var gi in rows)
                 {
-                    // Играчът от опита и подсказките за него
                     var g = Game.Player(gi);
                     var team = GuessService.TeamClue(g, m);
                     var conf = GuessService.ConferenceClue(g, m);
@@ -115,7 +103,6 @@
                         <td class="c @apg.State">@g.Apg.ToString("0.0")<i>@apg.Arrow</i></td>
                     </tr>
                 }
-                @* Празни редове за оставащите опити *@
                 @for (var i = 0; i < left && !Model.Over && !Model.OutOfGuesses; i++)
                 {
                     <tr class="empty"><td colspan="8">Guess @(Model.Guesses.Count + i + 1)</td></tr>
@@ -123,6 +110,5 @@
             </tbody>
         </table>
     </div>
-    @* Обяснение на цветовете *@
     <p class="gp-legend"><span class="hit">Green</span> match · <span class="near">Yellow</span> close (same conference, shared position, next decade, or a few points away) · ↑ ↓ the mystery player is higher or lower</p>
 </form>

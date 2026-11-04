@@ -1,13 +1,11 @@
 @* Страницата на Build-a-Player *@
 @model BuildState
 @{
-    ViewData["Title"] = "Build-a-Player"; // Заглавие в раздела
+    ViewData["Title"] = "Build-a-Player";
 }
 <section class="view">
-    @* Заглавие и бутон за правилата *@
     <div class="ghead"><div><div class="label">Game 2 · Player skills</div><h2>Build-a-Player</h2></div><button type="button" class="iconbtn" data-help="build" aria-label="How to play">?</button></div>
 
-    @* Съдържанието: менюто или самата игра (подменя се без презареждане) *@
     <div id="broot">
         @if (Model.Mode == "")
         {
@@ -19,7 +17,6 @@
         }
     </div>
 
-    @* Обяснение как е в истинската NBA *@
     <div class="real">
         <h3>In the real NBA</h3>
         <p><b>Guards</b> (point guard, shooting guard, small forward) handle the ball, shoot from outside and guard quick players on the perimeter. <b>Bigs</b> (power forward, center) play near the basket: they rebound, protect the rim and finish close shots. That is why the two modes ask for different skills.</p>

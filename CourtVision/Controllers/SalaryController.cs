@@ -1,47 +1,35 @@
 // Контролер за Salary Cap Game (мрежа с цени и таван на заплатите)
-using CourtVision.Models;          // Моделите
-using CourtVision.Services;        // Услугите
-using Microsoft.AspNetCore.Mvc;    // Базовите класове за MVC
+using CourtVision.Models;
+using CourtVision.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace CourtVision.Controllers; // Пространство от имена за контролерите
+namespace CourtVision.Controllers;
 
 // Контролерът Salary (адреси /Salary/...)
 public class SalaryController : Controller
 {
-    // Ключът в сесията
     private const string Key = "salary";
-    // Ключът на сезона в сесията (същият като в SeasonController)
     private const string SeasonKey = "season";
-    // Логиката на играта
     private readonly SalaryService _game;
-    // Симулацията на сезона
     private readonly SeasonService _season;
-    // Класацията (таблица SalaryScores)
     private readonly SalaryLeaderboard _board;
-    // Резултатите в базата (таблица GameResults)
     private readonly ResultService _results;
 
-    // Конструктор: получава услугите
     public SalaryController(SalaryService game, SeasonService season, SalaryLeaderboard board, ResultService results)
     {
-        _game = game;       // Играта
-        _season = season;   // Сезонът
-        _board = board;     // Класацията
-        _results = results; // Резултатите
+        _game = game;
+        _season = season;
+        _board = board;
+        _results = results;
     }
 
     // Чете състоянието и се грижи текущият ден да съществува
     private SalaryState Load()
     {
-        // Състоянието от сесията
         var s = HttpContext.Session.GetObject<SalaryState>(Key);
-        // Позволените дати: последните 10 дни
         var recent = SalaryService.RecentDates().Select(d => d.ToString("yyyy-MM-dd")).ToList();
-        // Ако няма текущ ден или е твърде стар, отваряме днешния
         if (s.Current == "" || (s.Current != "inf" && !recent.Contains(s.Current))) s.Current = SalaryService.TodayKey();
-        // Ако денят още не е създаден, го създаваме
         if (!s.Days.ContainsKey(s.Current)) s.Days[s.Current] = _game.NewDay(s.Current);
-        // Връщаме състоянието
         return s;
     }
 
@@ -51,23 +39,17 @@ public class SalaryController : Controller
     // Записва и връща таблото (за JavaScript) или пренасочва към страницата
     private IActionResult Board(SalaryState s)
     {
-        // Записваме промените
         HttpContext.Session.SetObject(Key, s);
-        // За JavaScript връщаме само таблото
         if (Request.IsAjax()) return PartialView("_Board", s);
-        // Иначе цялата страница
         return RedirectToAction(nameof(Index));
     }
 
     // GET /Salary – страницата на играта
     public IActionResult Index()
     {
-        // Зареждаме и записваме (за да се запомни създаденият ден)
         var s = Load();
-        // Менютата и съобщенията се затварят при ново зареждане
         s.Menu = ""; s.Locked = false; Day(s).Flip.Clear();
         HttpContext.Session.SetObject(Key, s);
-        // Показваме страницата
         return View(s);
     }
 
@@ -75,17 +57,12 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Menu(string menu)
     {
-        // Зареждаме
         var s = Load();
         var d = Day(s);
-        // Изчистваме анимацията и съобщението
         d.Flip.Clear();
         s.Locked = false;
-        // Класацията на деня се отключва чак след като изиграем деня
         if (menu == "board" && d.Key != "inf" && d.Result == null) { s.Locked = true; s.Menu = ""; return Board(s); }
-        // Повторно натискане затваря менюто
         s.Menu = s.Menu == menu ? "" : menu is "power" or "dates" or "board" ? menu : "";
-        // Връщаме таблото
         return Board(s);
     }
 
@@ -93,7 +70,6 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Mode(string mode)
     {
-        // Зареждаме, сменяме режима и затваряме менюто
         var s = Load();
         SalaryService.ToggleMode(Day(s), mode);
         s.Menu = ""; s.Locked = false;
@@ -104,14 +80,10 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Tap(string cell)
     {
-        // Зареждаме
         var s = Load();
         s.Menu = ""; s.Locked = false;
-        // Разделяме колоната и реда
         var parts = (cell ?? "").Split('-');
-        // Ако са две числа, обработваме натискането
         if (parts.Length == 2 && int.TryParse(parts[0], out var col) && int.TryParse(parts[1], out var row)) _game.Tap(Day(s), col, row);
-        // Връщаме таблото
         return Board(s);
     }
 
@@ -119,7 +91,6 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Column(int col)
     {
-        // Зареждаме, разбъркваме и връщаме таблото
         var s = Load();
         SalaryService.ShuffleColumn(Day(s), col);
         return Board(s);
@@ -129,7 +100,6 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Row(int row)
     {
-        // Зареждаме, разбъркваме и връщаме таблото
         var s = Load();
         SalaryService.ShuffleRow(Day(s), row);
         return Board(s);
@@ -139,20 +109,15 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Date(string key)
     {
-        // Зареждаме
         var s = Load();
         s.Menu = ""; s.Locked = false;
-        // Безкрайна игра: винаги нова мрежа
         if (key == "inf") { s.Current = "inf"; s.Days["inf"] = _game.NewDay("inf"); return Board(s); }
-        // Дата: само от последните 10 дни
         if (SalaryService.RecentDates().Any(d => d.ToString("yyyy-MM-dd") == key))
         {
-            // Отваряме деня (създаваме го, ако го няма)
             s.Current = key;
             if (!s.Days.ContainsKey(key)) s.Days[key] = _game.NewDay(key);
             Day(s).Flip.Clear();
         }
-        // Връщаме таблото
         return Board(s);
     }
 
@@ -160,47 +125,39 @@ public class SalaryController : Controller
     [HttpPost]
     public IActionResult Lock()
     {
-        // Зареждаме
         var s = Load();
         var d = Day(s);
-        // Ако денят вече е изигран, само показваме резултата
         if (d.Result != null) return ShowSeason(d);
-        // Трябват 5 избрани играчи в рамките на тавана
         if (!SalaryService.AllPicked(d) || SalaryService.Spent(d) > d.Budget) return RedirectToAction(nameof(Index));
-        // Изчисляваме резултата
         var result = _game.Score(d);
-        // Отборът за сезона
         result.Team = SalaryService.TeamFor(d);
-        // Заключваме деня
         d.Result = result;
         d.Mode = "";
-        // Записваме, за да има сесията идентификатор
         HttpContext.Session.SetObject(Key, s);
-        // Добавяме билда в класацията на деня (таблица SalaryScores)
         _board.Add(d.Key, HttpContext, result, d.Budget);
         // Записваме изиграната игра (таблица GameResults)
         _results.Save(HttpContext, "salary", result.Overall, $"OVR {result.Overall} · ${result.Spent}M of ${d.Budget}M");
-        // Пускаме сезона
         return ShowSeason(d);
     }
 
     // Създава (или отваря отново) сезона за заключения билд и отива на страницата му
     private IActionResult ShowSeason(SalaryDay d)
     {
-        // Сезонът, който вече е в сесията
         var existing = HttpContext.Session.GetObjectOrNull<SeasonState>(SeasonKey);
-        // Ако е от същия ден на Salary, просто го показваме
-        if (existing != null && existing.Source == "salary" && existing.SalaryKey == d.Key) return RedirectToAction("Index", "Season");
-        // Билдът от петте играчи
+        if (existing != null && existing.Source == "salary" && existing.SalaryKey == d.Key) return RedirectToAction(nameof(Season));
         var build = _game.MakeBuild(d);
-        // Нов сезон с отбора от резултата
         var season = _season.Start(build, d.Result!.Team);
-        // Отбелязваме, че идва от Salary
         season.Source = "salary";
         season.SalaryKey = d.Key;
-        // Записваме сезона
         HttpContext.Session.SetObject(SeasonKey, season);
-        // Отиваме на страницата на сезона
-        return RedirectToAction("Index", "Season");
+        return RedirectToAction(nameof(Season));
+    }
+
+    // GET /Salary/Season – сезонът на подписания отбор, вътре в Salary Cap Game (същият изглед като в Build-a-Player)
+    public IActionResult Season()
+    {
+        var s = HttpContext.Session.GetObjectOrNull<SeasonState>(SeasonKey);
+        if (s == null || s.Source != "salary") return RedirectToAction(nameof(Index));
+        return View("~/Views/Season/Index.cshtml", s);
     }
 }

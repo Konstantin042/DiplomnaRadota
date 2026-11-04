@@ -1,14 +1,11 @@
 @* Класациите: първите 10 места във всяка игра (от таблицата GameResults) *@
 @model List<LeaderboardBox>
 @{
-    ViewData["Title"] = "Leaderboards"; // Заглавие в раздела
-    // Името на текущия посетител (за да отбележим неговия ред)
+    ViewData["Title"] = "Leaderboards";
     var me = ResultService.PlayerName(Context);
-    // Влязъл ли е
     var signedIn = User.Identity?.IsAuthenticated == true;
 }
 <section class="view">
-    @* Заглавие *@
     <div class="ghead">
         <div>
             <div class="label">All games</div>
@@ -17,12 +14,10 @@
         </div>
         @if (!signedIn)
         {
-            @* Покана за регистрация *@
             <a class="btn sec" asp-controller="Account" asp-action="Register" asp-route-returnUrl="/Results">Sign up to get your name on the board</a>
         }
     </div>
 
-    @* Една карта за всяка игра *@
     <div class="lb-grid">
         @foreach (var box in Model)
         {
@@ -38,7 +33,6 @@
                     <ol class="lb-list">
                         @for (var i = 0; i < box.Rows.Count; i++)
                         {
-                            // Един ред: място, име, резултат, брой игри
                             var row = box.Rows[i];
                             <li class="@(i == 0 ? "top" : "") @(row.Name == me ? "you" : "")">
                                 <b class="mono">@(i + 1)</b>

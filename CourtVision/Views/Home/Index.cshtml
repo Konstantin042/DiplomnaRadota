@@ -1,56 +1,45 @@
 @* Началната страница: лого, заглавие, картите на игрите и числата за NBA *@
 @{
-    ViewData["Title"] = "Home"; // Заглавие в раздела
+    ViewData["Title"] = "Home";
 }
 <section class="view">
-    @* Горната част с логото и заглавието *@
     <div class="home-head">
-        @* Логото: топка и лента с надпис *@
         <div class="logo"><svg class="ball"><use href="#ball" /></svg><div class="ribbon">COURT VISION</div></div>
-        @* Главното заглавие *@
         <h1>Learn the NBA in 10 minutes</h1>
     </div>
 
-    @* Урокът NBA 101: дълъг правоъгълник над картите с игрите *@
     <a class="mode t-gold banner" asp-controller="Home" asp-action="Nba101">
         <span class="corner">START HERE</span>
         <div><h3>NBA 101</h3><span class="chip">2-minute read</span></div>
         <span class="go">Learn the basics →</span>
     </a>
 
-    @* Картите с игрите *@
     <div class="modes">
-        @* Игра 1: 82-0 *@
         <a class="mode t-orange" asp-controller="Challenge" asp-action="Index">
             <span class="corner">GAME 1</span>
             <div><span class="chip">Team building</span><h3>82-0</h3><p>Spin a team and an era, pick from that full roster using real stats, and fill five starters and three reserves. Then try to win all 82 regular season NBA games.</p></div>
             <span class="go">Start drafting →</span>
         </a>
-        @* Игра 2: Build-a-Player *@
         <a class="mode t-purple" asp-controller="Build" asp-action="Index">
             <span class="corner">GAME 2</span>
             <div><span class="chip">Player skills</span><h3>Build-a-Player</h3><p>Pick Guard or Big and All-Time or Current.<br>Spin real teams and players and copy one of ten attributes and then try to win the NBA championship.</p></div>
             <span class="go">Spin the wheel →</span>
         </a>
-        @* Игра 3: Higher or Lower *@
         <a class="mode t-green" asp-controller="HigherLower" asp-action="Index">
             <span class="corner">GAME 3</span>
             <div><span class="chip">Stats</span><h3>Higher or Lower</h3><p>Two real players, one stat. Does the second one have more or fewer points, rebounds or assists per game? Keep your streak alive.</p></div>
             <span class="go">Start guessing →</span>
         </a>
-        @* Игра 4: Salary Cap Game *@
         <a class="mode t-yellow" asp-controller="Salary" asp-action="Index">
             <span class="corner">GAME 4</span>
             <div><span class="chip">Salary cap</span><h3>Salary Cap Game</h3><p>Sign five real players, one per skill, without going over the cap. Stars cost $50M, role players $10M. Then play a season.</p></div>
             <span class="go">Sign your team →</span>
         </a>
-        @* Игра 5: Position Quiz *@
         <a class="mode t-violet" asp-controller="Quiz" asp-action="Index">
             <span class="corner">GAME 5</span>
             <div><span class="chip">Positions</span><h3>Position Quiz</h3><p>See a player's photo and stats and place him at the right basketball position.</p></div>
             <span class="go">Take the quiz →</span>
         </a>
-        @* Игра 6: Guess the Player *@
         <a class="mode t-cyan" asp-controller="Guess" asp-action="Index">
             <span class="corner">GAME 6</span>
             <div><span class="chip">Players</span><h3>Guess the Player</h3><p>Find the mystery NBA player in 8 guesses. Each guess tells you if the team, position and decade match, and if his stats are higher or lower.</p></div>
@@ -58,11 +47,10 @@
         </a>
     </div>
 
-    @* Четири числа за NBA *@
     <div class="stripnums">
-        <div class="num"><b>30</b><span>teams in the league</span></div>   @* Отбори *@
-        <div class="num"><b>82</b><span>games per season</span></div>      @* Мачове в сезона *@
-        <div class="num"><b>5</b><span>players on court</span></div>       @* Играчи на игрището *@
-        <div class="num"><b>73–9</b><span>best record ever</span></div>    @* Най-добрият баланс *@
+        <div class="num"><b>30</b><span>teams in the league</span></div>
+        <div class="num"><b>82</b><span>games per season</span></div>
+        <div class="num"><b>5</b><span>players on court</span></div>
+        <div class="num"><b>73–9</b><span>best record ever</span></div>
     </div>
 </section>

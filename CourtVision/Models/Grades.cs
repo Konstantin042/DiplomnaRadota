@@ -1,5 +1,5 @@
 // Оценките (F до S) и атрибутите в Build-a-Player
-namespace CourtVision.Models; // Пространство от имена за моделите
+namespace CourtVision.Models;
 
 // Един атрибут: ключ, етикет и кратък етикет
 public record AttributeInfo(string Key, string Label, string Short);
@@ -7,7 +7,6 @@ public record AttributeInfo(string Key, string Label, string Short);
 // Статичен клас с оценките и атрибутите
 public static class Grades
 {
-    // Буквените оценки от 0 до 11
     public static readonly string[] Letters = { "F", "D", "D+", "C-", "C", "C+", "B-", "B", "B+", "A-", "A", "S" };
 
     // Буква за дадено число (числото се ограничава между 0 и 11)
@@ -17,34 +16,32 @@ public static class Grades
     public static string Color(int value) =>
         value >= 11 ? "#A78BFA" : value >= 9 ? "#3B82F6" : value >= 6 ? "#22C55E" : value >= 3 ? "#EAB308" : value >= 1 ? "#F97316" : "#EF4444";
 
-    // Атрибутите на гардовете (5 умения, 3 физически, 2 ментални)
     public static readonly AttributeInfo[] Guard =
     {
-        new("jumpShot", "Jump shot", "SHOT"),                 // Стрелба от разстояние
-        new("finishing", "Finishing", "FINISH"),              // Завършване до коша
-        new("passing", "Passing", "PASS"),                    // Подаване
-        new("handles", "Handles", "HANDLES"),                 // Дрибъл
-        new("perimeterDefense", "Perimeter defense", "DEFENSE"), // Защита далеч от коша
-        new("speed", "Speed", "SPEED"),                       // Бързина
-        new("bounce", "Bounce", "BOUNCE"),                    // Отскок
-        new("size", "Size", "SIZE"),                          // Ръст и сила
-        new("basketballIQ", "Basketball IQ", "IQ"),           // Разбиране на играта
-        new("clutch", "Leadership / clutch", "CLUTCH"),       // Лидерство в важните моменти
+        new("jumpShot", "Jump shot", "SHOT"),
+        new("finishing", "Finishing", "FINISH"),
+        new("passing", "Passing", "PASS"),
+        new("handles", "Handles", "HANDLES"),
+        new("perimeterDefense", "Perimeter defense", "DEFENSE"),
+        new("speed", "Speed", "SPEED"),
+        new("bounce", "Bounce", "BOUNCE"),
+        new("size", "Size", "SIZE"),
+        new("basketballIQ", "Basketball IQ", "IQ"),
+        new("clutch", "Leadership / clutch", "CLUTCH"),
     };
 
-    // Атрибутите на високите играчи (други умения, същите физически и ментални)
     public static readonly AttributeInfo[] Big =
     {
-        new("jumpShot", "Jump shot", "SHOT"),                 // Стрелба от разстояние
-        new("finishing", "Finishing", "FINISH"),              // Завършване до коша
-        new("rebounding", "Rebounding", "REBOUND"),           // Борба под коша
-        new("playmaking", "Playmaking", "PLAYMAKE"),          // Създаване на игра
-        new("interiorDefense", "Interior defense", "RIM D"),  // Защита на коша
-        new("speed", "Speed", "SPEED"),                       // Бързина
-        new("bounce", "Bounce", "BOUNCE"),                    // Отскок
-        new("size", "Size", "SIZE"),                          // Ръст и сила
-        new("basketballIQ", "Basketball IQ", "IQ"),           // Разбиране на играта
-        new("clutch", "Leadership / clutch", "CLUTCH"),       // Лидерство
+        new("jumpShot", "Jump shot", "SHOT"),
+        new("finishing", "Finishing", "FINISH"),
+        new("rebounding", "Rebounding", "REBOUND"),
+        new("playmaking", "Playmaking", "PLAYMAKE"),
+        new("interiorDefense", "Interior defense", "RIM D"),
+        new("speed", "Speed", "SPEED"),
+        new("bounce", "Bounce", "BOUNCE"),
+        new("size", "Size", "SIZE"),
+        new("basketballIQ", "Basketball IQ", "IQ"),
+        new("clutch", "Leadership / clutch", "CLUTCH"),
     };
 
     // Връща атрибутите за дадена група ("g" или "b")

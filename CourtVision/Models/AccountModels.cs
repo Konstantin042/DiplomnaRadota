@@ -1,9 +1,9 @@
 // Моделите на формулярите за регистрация и вход и данните за страницата Profile
-using System.ComponentModel.DataAnnotations; // Атрибути за проверка на полетата (Required, StringLength и др.)
-using CourtVision.Database;                  // GameResult – редовете от таблицата с резултатите
-using CourtVision.Services;                  // LeaderRow – най-добрият резултат в игра
+using System.ComponentModel.DataAnnotations;
+using CourtVision.Database;
+using CourtVision.Services;
 
-namespace CourtVision.Models; // Пространство от имена за моделите
+namespace CourtVision.Models;
 
 // Формулярът за регистрация
 public class RegisterModel
@@ -29,7 +29,6 @@ public class RegisterModel
     [Display(Name = "Repeat password")]
     public string ConfirmPassword { get; set; } = "";
 
-    // Къде да се върнем след регистрацията (например в играта, от която е дошъл)
     public string? ReturnUrl { get; set; }
 }
 
@@ -51,21 +50,15 @@ public class LoginModel
     [Display(Name = "Remember me")]
     public bool RememberMe { get; set; }
 
-    // Къде да се върнем след входа
     public string? ReturnUrl { get; set; }
 }
 
 // Данните за страницата Profile
 public class ProfileModel
 {
-    // Потребителското име
     public string UserName { get; set; } = "";
-    // Най-добрият резултат и броят игри във всяка игра (ключ на играта → ред)
     public Dictionary<string, LeaderRow> Bests { get; set; } = new();
-    // Мястото в класацията на всяка игра (ключ на играта → място или null)
     public Dictionary<string, int?> Ranks { get; set; } = new();
-    // Последните изиграни игри
     public List<GameResult> Recent { get; set; } = new();
-    // Общо изиграни игри
     public int TotalPlayed => Bests.Values.Sum(b => b.Played);
 }

@@ -1,7 +1,7 @@
 // Таблица Teams: 30-те отбора в NBA
-using System.ComponentModel.DataAnnotations; // Атрибути за ключове и дължини на колоните
+using System.ComponentModel.DataAnnotations;
 
-namespace CourtVision.Database; // Пространство от имена за базата данни
+namespace CourtVision.Database;
 
 // Един ред от таблицата Teams
 public class Team
@@ -19,8 +19,6 @@ public class Team
     [Required, MaxLength(4)]
     public string Conference { get; set; } = "";
 
-    // Връзка едно-към-много: играчите от съставите на този отбор
     public List<RosterPlayer> RosterPlayers { get; set; } = new();
-    // Връзка едно-към-много: оценените играчи на този отбор
     public List<RatedPlayer> RatedPlayers { get; set; } = new();
 }

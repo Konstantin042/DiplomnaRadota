@@ -1,25 +1,21 @@
 // Контролер за Higher or Lower
-using CourtVision.Models;          // Моделите
-using CourtVision.Services;        // Услугите
-using Microsoft.AspNetCore.Mvc;    // Базовите класове за MVC
+using CourtVision.Models;
+using CourtVision.Services;
+using Microsoft.AspNetCore.Mvc;
 
-namespace CourtVision.Controllers; // Пространство от имена за контролерите
+namespace CourtVision.Controllers;
 
 // Контролерът HigherLower (адреси /HigherLower/...)
 public class HigherLowerController : Controller
 {
-    // Ключът в сесията
     private const string Key = "higherlower";
-    // Логиката на играта
     private readonly HigherLowerService _game;
-    // Резултатите в базата (таблица GameResults)
     private readonly ResultService _results;
 
-    // Конструктор: получава услугите
     public HigherLowerController(HigherLowerService game, ResultService results)
     {
-        _game = game;       // Играта
-        _results = results; // Резултатите
+        _game = game;
+        _results = results;
     }
 
     // Чете състоянието от сесията (в началото режимът е "" – менюто)
@@ -28,18 +24,14 @@ public class HigherLowerController : Controller
     // Записва и връща картата (за JavaScript) или пренасочва към страницата
     private IActionResult Card(HigherLowerState s)
     {
-        // Записваме
         HttpContext.Session.SetObject(Key, s);
-        // За JavaScript само менюто или картата
         if (Request.IsAjax()) return PartialView(s.Mode == "" ? "_Menu" : "_Card", s);
-        // Иначе цялата страница
         return RedirectToAction(nameof(Index));
     }
 
     // GET /HigherLower – страницата на играта
     public IActionResult Index()
     {
-        // Зареждаме и показваме (менюто или текущата игра)
         return View(Load());
     }
 
@@ -47,7 +39,6 @@ public class HigherLowerController : Controller
     [HttpPost]
     public IActionResult Mode(string mode)
     {
-        // Зареждаме и започваме нова игра в избрания режим
         var s = Load();
         _game.Start(s, mode);
         return Card(s);
@@ -57,7 +48,6 @@ public class HigherLowerController : Controller
     [HttpPost]
     public IActionResult Menu()
     {
-        // Режим "" означава меню (рекордите остават)
         var s = Load();
         s.Mode = "";
         return Card(s);
@@ -67,15 +57,11 @@ public class HigherLowerController : Controller
     [HttpPost]
     public IActionResult Guess(string dir)
     {
-        // Зареждаме и проверяваме отговора
         var s = Load();
-        // Дали играта е свършила преди този отговор
         var wasOver = s.Over;
         _game.Guess(s, dir);
-        // Грешен отговор: серията свършва и я записваме в базата
         if (!wasOver && s.Over)
             _results.Save(HttpContext, "hilo", s.Score, $"Streak of {s.Score} · {(s.Mode == "c" ? "Current" : "All-Time")}");
-        // Връщаме картата
         return Card(s);
     }
 
@@ -83,7 +69,6 @@ public class HigherLowerController : Controller
     [HttpPost]
     public IActionResult Next()
     {
-        // Зареждаме, минаваме нататък и връщаме картата
         var s = Load();
         _game.Next(s);
         return Card(s);
@@ -93,7 +78,6 @@ public class HigherLowerController : Controller
     [HttpPost]
     public IActionResult Restart()
     {
-        // Зареждаме (за да запазим рекорда) и започваме отначало в същия режим
         var s = Load();
         _game.Start(s, s.Mode);
         return Card(s);
