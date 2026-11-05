@@ -21,14 +21,17 @@
 
 ## Как се стартира
 
-1. Инсталирай [Visual Studio 2022](https://visualstudio.microsoft.com/) с работното натоварване **ASP.NET and web development** (в него са .NET 8 SDK и SQL Server Express LocalDB).
+1. Инсталирай [Visual Studio 2022](https://visualstudio.microsoft.com/) с работното натоварване **ASP.NET and web development** (в него е .NET 8 SDK). Не е нужно да се инсталира сървър за база данни.
 2. Отвори `CourtVision.sln`. Visual Studio изтегля сама NuGet пакетите (Entity Framework Core и Identity).
 3. Натисни **F5** (или зеления бутон ▶ CourtVision). Сайтът се отваря на `http://localhost:5080`.
 
-При първото стартиране сайтът сам създава базата данни **CourtVision** в LocalDB и я попълва с отборите
-и играчите от папка `Data` (отнема няколко секунди). Таблиците се виждат във Visual Studio:
-**View → SQL Server Object Explorer → (localdb)\MSSQLLocalDB → Databases → CourtVision → Tables**.
-Адресът на базата е в `appsettings.json` (`ConnectionStrings:DefaultConnection`).
+При първото стартиране сайтът сам създава базата данни – файла **`CourtVision/courtvision.db`** – и я попълва
+с отборите и играчите от папка `Data` (отнема няколко секунди). Името на файла е в `appsettings.json` (`Database:File`).
+Ако изтриеш файла, при следващото пускане базата се създава наново.
+
+Таблиците се разглеждат с безплатната програма [DB Browser for SQLite](https://sqlitebrowser.org/)
+(File → Open Database → `courtvision.db` → Browse Data) или във Visual Studio с разширението
+**SQLite and SQL Server Compact Toolbox** (Extensions → Manage Extensions).
 
 От командния ред (нужен е само .NET 8 SDK):
 
@@ -53,7 +56,7 @@ CourtVision/
 
 ## База данни
 
-SQL Server LocalDB чрез **Entity Framework Core** (code first: таблиците се създават от C# класовете в `Database/Entities`).
+**SQLite** чрез **Entity Framework Core** (code first: таблиците се създават от C# класовете в `Database/Entities`). SQLite е релационна база, която се пази в един файл, затова работи на всеки компютър с Windows 11 без инсталиране на сървър.
 
 | Таблица | Какво пази | Връзки |
 |---|---|---|

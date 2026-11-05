@@ -21,9 +21,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Връзката с базата данни: SQL Server LocalDB, адресът е в appsettings.json ("DefaultConnection")
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Връзката с базата данни: SQLite файл courtvision.db в папката на проекта (името е в appsettings.json)
+var dbFile = Path.Combine(builder.Environment.ContentRootPath, builder.Configuration["Database:File"] ?? "courtvision.db");
+builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlite($"Data Source={dbFile}"));
 // Регистрация и вход: потребителите и паролите се пазят в таблиците AspNetUsers и др.
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 {
