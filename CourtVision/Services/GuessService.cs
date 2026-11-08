@@ -83,6 +83,21 @@ public class GuessService
         if (s.Guesses.Count >= s.Limit) s.OutOfGuesses = true;
     }
 
+    // Бутонът Random: прави един опит с известен играч, който има нещо общо с тайния (отбор или позиция), но не е той
+    public void RandomPlay(GuessState s)
+    {
+        if (s.Mystery < 0) Start(s);
+        if (s.Over || s.OutOfGuesses) return;
+        var m = _players[s.Mystery];
+        var free = _mysteries.Where(i => i != s.Mystery && !s.Guesses.Contains(i)).ToList();
+        var sameTeam = free.Where(i => _players[i].Team == m.Team).ToList();
+        var samePos = free.Where(i => _players[i].MainPosition == m.MainPosition
+            && Teams.Get(_players[i].Team).IsEast == Teams.Get(m.Team).IsEast).ToList();
+        var pick = sameTeam.Count > 0 ? sameTeam : samePos.Count > 0 ? samePos : free;
+        if (pick.Count == 0) return;
+        Guess(s, Label(pick[Random.Shared.Next(pick.Count)]));
+    }
+
     // "Keep guessing": още 4 опита за същия таен играч
     public void More(GuessState s)
     {

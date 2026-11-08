@@ -160,4 +160,14 @@ public class SalaryController : Controller
         if (s == null || s.Source != "salary") return RedirectToAction(nameof(Index));
         return View("~/Views/Season/Index.cshtml", s);
     }
+
+    // POST /Salary/RandomPlay – бутонът Random: случаен отбор под тавана
+    [HttpPost]
+    public IActionResult RandomPlay()
+    {
+        var s = Load();
+        s.Menu = ""; s.Locked = false;
+        _game.RandomPicks(Day(s));
+        return Board(s);
+    }
 }

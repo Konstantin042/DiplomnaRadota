@@ -106,6 +106,17 @@ public class HigherLowerService
         else s.Over = true;
     }
 
+    // Бутонът Random: отговаря на случаен принцип, докато не сбърка (играта свършва)
+    public void RandomPlay(HigherLowerState s)
+    {
+        if (s.Mode == "") Start(s, Random.Shared.Next(2) == 0 ? "c" : "a");
+        for (var guard = 0; guard < 60 && !s.Over; guard++)
+        {
+            if (s.Guess != null && s.Correct) Next(s);
+            Guess(s, Random.Shared.Next(2) == 0 ? "higher" : "lower");
+        }
+    }
+
     // Следващ рунд: десният играч минава вляво, идва нов вдясно и нов показател
     public void Next(HigherLowerState s)
     {

@@ -193,6 +193,10 @@
     <div class="sc-footer">
         <div class="sc-btns">
             <a class="sc-back" asp-controller="Home" asp-action="Index">← Back</a>
+            @if (d.Result == null)
+            {
+                <button type="submit" class="rnd" formaction="/Salary/RandomPlay" title="Pick five random players under the cap">🎲 Random</button>
+            }
             @if (canLock)
             {
                 <button type="submit" class="sc-confirm @(locked ? "view" : "")" formaction="/Salary/Lock" data-full>@cta</button>

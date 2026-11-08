@@ -205,6 +205,33 @@ public class SalaryService
         d.Mode = "";
     }
 
+    // Бутонът Random: проверява всички 3125 комбинации под тавана и взима случайна от петте с най-висок OVR
+    public void RandomPicks(SalaryDay d)
+    {
+        if (d.Result != null) return;
+        var options = new List<(int[] Rows, double Score)>();
+        var rows = new int[Columns.Length];
+        for (var code = 0; code < (int)Math.Pow(Prices.Length, Columns.Length); code++)
+        {
+            var n = code;
+            for (var c = 0; c < Columns.Length; c++) { rows[c] = n % Prices.Length; n /= Prices.Length; }
+            if (rows.Sum(r => Prices[r]) > d.Budget) continue;
+            // същата оценка като при подписване (OVR), а средната оценка в колоната решава при равенство
+            var score = Enumerable.Range(0, Columns.Length).Sum(c =>
+            {
+                var p = Player(d.Grid[c][rows[c]]);
+                return PeakScore(p, Columns[c]) + 0.1 * CatScore(p, Columns[c]);
+            });
+            options.Add(((int[])rows.Clone(), score));
+        }
+        if (options.Count == 0) return;
+        var top = options.OrderByDescending(o => o.Score).Take(5).ToList();
+        var pick = top[Random.Shared.Next(top.Count)].Rows;
+        d.Picks = Enumerable.Range(0, Columns.Length).ToDictionary(c => c, c => pick[c]);
+        d.Mode = "";
+        d.Flip.Clear();
+    }
+
     // Включва/изключва режим разбъркване или скаут
     public static void ToggleMode(SalaryDay d, string mode)
     {

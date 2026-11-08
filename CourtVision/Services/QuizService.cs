@@ -33,6 +33,17 @@ public class QuizService
         if (player.Positions.Contains(position)) s.Score++;
     }
 
+    // Бутонът Random: отговаря със случайна позиция на всички останали рундове
+    public void RandomPlay(QuizState s)
+    {
+        if (s.Order.Count != Rounds) Start(s);
+        while (Current(s) != null)
+        {
+            if (s.Answer == null) Answer(s, Positions.Order[Random.Shared.Next(Positions.Order.Length)]);
+            Next(s);
+        }
+    }
+
     // Минава на следващия рунд
     public void Next(QuizState s)
     {

@@ -74,6 +74,11 @@
         </div>
     </div>
 
+    @if (!answered && !Model.Over)
+    {
+        <button type="submit" class="rnd hl-rnd" formaction="/HigherLower/RandomPlay" title="Answer at random until the first miss">🎲 Random</button>
+    }
+
     @if (answered && Model.Correct)
     {
         <div class="hl-verdict ok">Correct! @r.Name: <b>@rv.ToString("0.0")</b> vs <b>@lv.ToString("0.0")</b> @stat.Short</div>

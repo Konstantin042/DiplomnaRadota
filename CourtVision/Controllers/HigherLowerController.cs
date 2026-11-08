@@ -82,4 +82,16 @@ public class HigherLowerController : Controller
         _game.Start(s, s.Mode);
         return Card(s);
     }
+
+    // POST /HigherLower/RandomPlay – бутонът Random: случайни отговори до първата грешка
+    [HttpPost]
+    public IActionResult RandomPlay()
+    {
+        var s = Load();
+        var wasOver = s.Over;
+        _game.RandomPlay(s);
+        if (!wasOver && s.Over)
+            _results.Save(HttpContext, "hilo", s.Score, $"Streak of {s.Score} · {(s.Mode == "c" ? "Current" : "All-Time")}");
+        return Card(s);
+    }
 }

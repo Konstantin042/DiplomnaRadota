@@ -72,6 +72,33 @@ public class BuildService
         if (!s.Done) s.Tab = Grades.TabOf(attribute);
     }
 
+    // Бутонът Random: за всеки атрибут гледа 8 случайни играча и копира най-високата оценка
+    public void RandomFill(BuildState s)
+    {
+        for (var guard = 0; guard < 20 && !s.Done; guard++)
+        {
+            var free = Pool(s).Where(p => !s.Used.Contains(p.Index)).ToList();
+            if (free.Count == 0) break;
+            var open = Enumerable.Range(0, 10).Where(i => !s.Taken.ContainsKey(i)).ToList();
+            BuildPlayer? best = null;
+            var bestAttr = -1;
+            var bestScore = double.MinValue;
+            for (var look = 0; look < 8; look++)
+            {
+                var player = free[Random.Shared.Next(free.Count)];
+                foreach (var attr in open)
+                {
+                    var score = player.Grades[attr] + Random.Shared.NextDouble() * 0.5;
+                    if (score > bestScore) { best = player; bestAttr = attr; bestScore = score; }
+                }
+            }
+            if (best == null) break;
+            s.Team = best.Team;
+            s.Current = best.Index;
+            Take(s, bestAttr);
+        }
+    }
+
     // Оценките на нашия играч (null за празните атрибути)
     public static int?[] Values(BuildState s) =>
         Enumerable.Range(0, 10).Select(i => s.Taken.TryGetValue(i, out var t) ? t.Value : (int?)null).ToArray();

@@ -110,6 +110,46 @@ public class ChallengeService
                   + (player.Positions.Count > 1 ? " Tap him on the court to move him later." : "");
     }
 
+    // Колко случайни състава гледа бутонът Random за всяко място (повече = по-силен отбор)
+    private const int RandomLooks = 15;
+
+    // Бутонът Random: за всяко място гледа 15 случайни състава и взима най-добрия играч от тях
+    public void RandomFill(ChallengeState s)
+    {
+        s.SelectedSlot = null;
+        for (var guard = 0; guard < 50 && !s.IsComplete; guard++)
+        {
+            var keys = _data.PoolKeys.Where(k => KeyHasOptions(s, k)).ToList();
+            if (keys.Count == 0) break;
+            PoolPlayer? best = null;
+            string? bestSlot = null;
+            var bestGain = double.MinValue;
+            for (var look = 0; look < RandomLooks; look++)
+            {
+                s.CurrentKey = keys[Random.Shared.Next(keys.Count)];
+                foreach (var player in DrawerPlayers(s).Where(p => Fits(s, p)))
+                {
+                    // първо титулярските места, после пейката
+                    var slot = OpenSlots(s).Where(player.CanPlay).OrderBy(x => IsBench(x)).First();
+                    var gain = RandomGain(s, player, slot);
+                    if (gain > bestGain) { best = player; bestSlot = slot; bestGain = gain; }
+                }
+            }
+            if (best == null || bestSlot == null) break;
+            s.CurrentKey = best.Team + "|" + best.Decade;
+            Place(s, best.Id, bestSlot);
+        }
+        s.Message = s.IsComplete ? "Random roster ready. Press Simulate 82 games." : s.Message;
+    }
+
+    // Колко добавя играчът към отбора: резервите се броят 35%, а при титулярите се внимава за над 110 точки
+    private static double RandomGain(ChallengeState s, PoolPlayer p, string slot)
+    {
+        if (IsBench(slot)) return 0.35 * p.Value;
+        var points = Positions.Order.Where(s.Lineup.ContainsKey).Sum(k => s.Lineup[k].Ppg);
+        return p.Value - Math.Max(0, points + p.Ppg - 110) * 0.6;
+    }
+
     // Натискане на място: избира играч за местене или го мести/разменя
     public void SelectSlot(ChallengeState s, string slot)
     {

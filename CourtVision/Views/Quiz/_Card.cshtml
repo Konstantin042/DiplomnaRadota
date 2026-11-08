@@ -59,6 +59,10 @@
                 }
             }
         </div>
+        @if (!answered && p != null)
+        {
+            <button type="submit" class="rnd q-rnd" formaction="/Quiz/RandomPlay" title="Answer the remaining rounds at random">🎲 Random</button>
+        }
         @if (answered && p != null)
         {
             var best = QuizService.BestSkill(p);

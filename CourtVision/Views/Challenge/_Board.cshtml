@@ -22,7 +22,13 @@
                         <i class="@(i < Model.Round ? "on" : "")"></i>
                     }
                 </div>
-                <button type="submit" class="ch-reset" formaction="/Challenge/Reset" aria-label="Start a new draft">↺ Reset</button>
+                <div class="ch-tools">
+                    @if (!done)
+                    {
+                        <button type="submit" class="rnd" formaction="/Challenge/RandomPlay" title="Fill all 8 spots with random players">🎲 Random</button>
+                    }
+                    <button type="submit" class="ch-reset" formaction="/Challenge/Reset" aria-label="Start a new draft">↺ Reset</button>
+                </div>
             </div>
 
             @if (!done)

@@ -91,4 +91,13 @@ public class GuessController : Controller
         _game.Start(s);
         return Board(s);
     }
+
+    // POST /Guess/RandomPlay – бутонът Random: един опит, който помага
+    [HttpPost]
+    public IActionResult RandomPlay()
+    {
+        var s = Load();
+        _game.RandomPlay(s);
+        return Board(s);
+    }
 }

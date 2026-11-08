@@ -139,6 +139,9 @@ main{padding-block:28px 56px}
 .roundbar b{font-weight:800}
 .ch-reset{padding:7px 12px;border-radius:9px;border:1px solid var(--line-2);background:var(--panel-2);color:var(--ink);font-weight:800;font-size:12px}
 .ch-reset:hover{border-color:var(--orange);color:#fff}
+.ch-tools{display:flex;gap:6px}
+.ch-tools button{white-space:nowrap}
+@media (max-width:480px){.roundbar{flex-wrap:wrap}.roundbar .dots5{order:3;width:100%}}
 .dots5{display:flex;gap:6px}
 .dots5 i{width:16px;height:6px;border-radius:3px;background:var(--line-2)}
 .dots5 i.on{background:var(--orange)}
@@ -706,7 +709,9 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .sc-hint{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:10px;font-size:13px;font-weight:700;color:var(--gold-2)}
 .sc-hint button{padding:4px 10px;border-radius:8px;border:1px solid var(--line-2);font-size:12px;color:var(--muted)}
 .sc-footer{display:grid;gap:10px}
-.sc-btns{display:grid;grid-template-columns:auto 1fr;gap:10px}
+.sc-btns{display:flex;gap:10px}
+.sc-btns .sc-confirm{flex:1}
+.sc-btns .rnd{padding:0 14px;border-radius:12px;font-size:14px}
 .sc-back{display:grid;place-items:center;padding:0 18px;border-radius:12px;border:1px solid var(--line-2);color:var(--ink);text-decoration:none;font-weight:700}
 .sc-confirm{padding:15px;border-radius:12px;font-weight:900;font-size:16px;letter-spacing:.02em;color:var(--gold-ink);background:linear-gradient(180deg,#FDE047,#EAB308);border:1px solid #FDE68A;box-shadow:0 6px 18px rgba(234,179,8,.25)}
 .sc-confirm:disabled{background:var(--panel-2);border-color:var(--line);color:var(--dim);box-shadow:none;cursor:not-allowed}
@@ -823,7 +828,8 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .gp-counts div{display:grid;justify-items:center;padding:8px 12px;border-radius:12px;background:#0B0F19;border:1px solid var(--line)}
 .gp-counts small{font-family:var(--f-mono);font-size:9px;letter-spacing:.14em;color:var(--muted)}
 .gp-counts b{font-family:var(--f-display);font-size:26px;font-weight:900;line-height:1}
-.gp-input{display:grid;grid-template-columns:1fr auto auto;gap:8px}
+.gp-input{display:grid;grid-template-columns:1fr auto auto auto;gap:8px}
+.gp-input .rnd{padding:0 14px;border-radius:12px;font-size:14px}
 .gp-field{position:relative;min-width:0}
 .gp-suggest{position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:8;max-height:320px;overflow:auto;background:var(--panel-2);border:1px solid var(--line-2);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.5);padding:4px;display:grid}
 .gp-opt{text-align:left;padding:9px 12px;border-radius:8px;font-size:15px}
@@ -856,7 +862,7 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
   .gp-counts div{flex:1}
   .gp-photo{width:84px}
   .gp-who b{font-size:20px}
-  .gp-input{grid-template-columns:1fr 1fr}
+  .gp-input{grid-template-columns:repeat(3,1fr)}
   .gp-field{grid-column:1 / -1}
 }
 
@@ -935,6 +941,11 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .pf-table th{text-align:left;font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--line)}
 .pf-table td{padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 .pf-table td:nth-child(3){white-space:normal;color:#C9CFDC;min-width:180px}
+
+/* Бутонът Random във всяка игра (за бързо показване) */
+.rnd{padding:7px 12px;border-radius:9px;border:1px dashed rgba(250,204,21,.6);background:rgba(250,204,21,.08);color:#FDE68A;font-weight:800;font-size:12px;white-space:nowrap}
+.rnd:hover{background:rgba(250,204,21,.18);color:#fff}
+.hl-rnd,.q-rnd{display:block;margin:4px auto 0}
 
 /* Без анимации, ако са изключени в системата */
 @media (prefers-reduced-motion:reduce){

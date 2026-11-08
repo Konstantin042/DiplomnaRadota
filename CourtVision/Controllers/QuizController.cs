@@ -71,4 +71,16 @@ public class QuizController : Controller
         _quiz.Start(s);
         return Card(s);
     }
+
+    // POST /Quiz/RandomPlay – бутонът Random: случайни отговори до края на куиза
+    [HttpPost]
+    public IActionResult RandomPlay()
+    {
+        var s = Load();
+        var before = s.Round;
+        _quiz.RandomPlay(s);
+        if (before < QuizService.Rounds && s.Round == QuizService.Rounds)
+            _results.Save(HttpContext, "quiz", s.Score, $"{s.Score} of {QuizService.Rounds} correct");
+        return Card(s);
+    }
 }

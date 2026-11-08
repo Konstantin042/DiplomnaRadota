@@ -91,4 +91,14 @@ public class BuildController : Controller
         _game.Start(s, s.Mode == "" ? "a" : s.Mode);
         return Screen(s);
     }
+
+    // POST /Build/RandomPlay – бутонът Random: попълва всички 10 атрибута на случаен принцип
+    [HttpPost]
+    public IActionResult RandomPlay()
+    {
+        var s = Load();
+        if (s.Mode == "") _game.Start(s, "a");
+        _game.RandomFill(s);
+        return Screen(s);
+    }
 }
