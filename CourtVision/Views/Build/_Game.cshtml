@@ -28,6 +28,10 @@
                 <button type="submit" formaction="/Build/Tab" name="tab" value="@key" role="tab" class="@(Model.Tab == key ? "on" : "")" aria-selected="@(Model.Tab == key ? "true" : "false")">@label</button>
             }
         </div>
+        @if (!Model.Done)
+        {
+            <button type="submit" class="rnd" formaction="/Build/RandomPlay" title="Fill all 10 attributes at random">🎲 Random</button>
+        }
         <button type="submit" class="bp-reset" formaction="/Build/Reset">↺ Reset</button>
     </div>
 

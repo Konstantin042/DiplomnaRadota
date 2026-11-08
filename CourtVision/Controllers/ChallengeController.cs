@@ -80,4 +80,13 @@ public class ChallengeController : Controller
     // POST /Challenge/Reset – нов драфт
     [HttpPost]
     public IActionResult Reset() => Board(new ChallengeState());
+
+    // POST /Challenge/RandomPlay – бутонът Random: случаен състав от 8 играча
+    [HttpPost]
+    public IActionResult RandomPlay()
+    {
+        var s = Load();
+        _game.RandomFill(s);
+        return Board(s);
+    }
 }
