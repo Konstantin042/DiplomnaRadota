@@ -65,7 +65,7 @@ main{padding-block:28px 56px}
 .ball{display:block}
 .logo{display:grid;justify-items:center;gap:0}
 .logo .ball{width:120px;height:120px;filter:drop-shadow(0 10px 30px rgba(225,29,46,.35))}
-.ribbon{margin-top:-30px;background:#1D4ED8;border:2px solid #1E3A8A;color:#fff;font-family:var(--f-display);font-weight:900;font-size:38px;letter-spacing:.04em;padding:0 18px;line-height:1.1;border-radius:4px;box-shadow:0 6px 0 #172554;position:relative}
+.ribbon{margin-top:-30px;background:#E11D2E;border:2px solid #991B1B;color:#fff;font-family:var(--f-display);font-weight:900;font-size:38px;letter-spacing:.04em;padding:0 18px;line-height:1.1;border-radius:4px;box-shadow:0 6px 0 #7F1D1D;position:relative}
 
 /* Начална страница */
 .home-head{display:grid;justify-items:center;text-align:center;gap:14px;padding-top:8px}
