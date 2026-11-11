@@ -1,5 +1,6 @@
 // Попълва базата данни при първо стартиране: прехвърля отборите и играчите от JSON файловете в таблиците
 using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
 
 namespace CourtVision.Database;
 
@@ -11,6 +12,7 @@ public static class DbSeeder
     {
         db.ChangeTracker.AutoDetectChangesEnabled = false;
         if (!db.Teams.Any()) SeedTeams(db);
+        FillTeamDetails(db, Path.Combine(dataDir, "teams.json"));
         if (!db.RosterPlayers.Any()) SeedRosters(db, Path.Combine(dataDir, "pools.json"));
         if (!db.RatedPlayers.Any()) SeedRatedPlayers(db, Path.Combine(dataDir, "build-players.json"));
         if (!db.QuizEntries.Any()) SeedQuiz(db, Path.Combine(dataDir, "quiz-players.json"));
@@ -24,6 +26,63 @@ public static class DbSeeder
             db.Teams.Add(new Team { Abbr = t.Abbr, Name = t.Name, Color = t.Color, Conference = t.Conference });
         // Записваме в базата
         db.SaveChanges();
+    }
+
+    // Попълва града, залата, титлите и историята на отборите от teams.json.
+    // Ако базата е създадена от по-стара версия, първо добавя новите колони (без да трие потребителите и резултатите)
+    private static void FillTeamDetails(AppDbContext db, string path)
+    {
+        if (!File.Exists(path)) return;
+        AddMissingTeamColumns(db);
+        if (!db.Teams.Any(t => t.Arena == "")) return;
+
+        using var doc = JsonDocument.Parse(File.ReadAllText(path));
+        var teams = db.Teams.ToDictionary(t => t.Abbr);
+        foreach (var row in doc.RootElement.EnumerateArray())
+        {
+            if (!teams.TryGetValue(row.GetProperty("abbr").GetString() ?? "", out var team)) continue;
+            team.City = row.GetProperty("city").GetString() ?? "";
+            team.Arena = row.GetProperty("arena").GetString() ?? "";
+            team.Division = row.GetProperty("division").GetString() ?? "";
+            team.JoinedYear = row.GetProperty("joined").GetInt32();
+            team.Titles = string.Join(",", row.GetProperty("titles").EnumerateArray().Select(y => y.GetInt32()));
+            team.Legends = string.Join("|", row.GetProperty("legends").EnumerateArray().Select(n => n.GetString()));
+            team.History = row.GetProperty("history").GetString() ?? "";
+            db.Entry(team).State = EntityState.Modified;
+        }
+        db.SaveChanges();
+    }
+
+    // EnsureCreated не променя вече съществуваща база, затова новите колони се добавят с ALTER TABLE
+    private static void AddMissingTeamColumns(AppDbContext db)
+    {
+        var connection = db.Database.GetDbConnection();
+        connection.Open();
+        var existing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using (var cmd = connection.CreateCommand())
+        {
+            cmd.CommandText = "PRAGMA table_info('Teams')";
+            using var reader = cmd.ExecuteReader();
+            while (reader.Read()) existing.Add(reader.GetString(1));
+        }
+        var columns = new Dictionary<string, string>
+        {
+            ["Division"] = "TEXT NOT NULL DEFAULT ''",
+            ["City"] = "TEXT NOT NULL DEFAULT ''",
+            ["Arena"] = "TEXT NOT NULL DEFAULT ''",
+            ["JoinedYear"] = "INTEGER NOT NULL DEFAULT 0",
+            ["Titles"] = "TEXT NOT NULL DEFAULT ''",
+            ["Legends"] = "TEXT NOT NULL DEFAULT ''",
+            ["History"] = "TEXT NOT NULL DEFAULT ''",
+        };
+        foreach (var (name, type) in columns)
+        {
+            if (existing.Contains(name)) continue;
+            using var cmd = connection.CreateCommand();
+            cmd.CommandText = $"ALTER TABLE Teams ADD COLUMN {name} {type}";
+            cmd.ExecuteNonQuery();
+        }
+        connection.Close();
     }
 
     // Чете pools.json: {"BOS|60": [[име, id, "SF/SG", ppg, rpg, apg, spg, bpg], ...]} и записва RosterPlayers

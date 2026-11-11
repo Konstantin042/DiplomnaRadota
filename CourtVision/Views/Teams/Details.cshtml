@@ -1,0 +1,68 @@
+@* Страницата на един отбор *@
+@model TeamPage
+@inject PhotoService Faces
+@{
+    var t = Model.Team;
+    ViewData["Title"] = t.Name;
+    string Era(string d) => (string.Compare(d, "50", StringComparison.Ordinal) >= 0 ? "19" : "20") + d + "s";
+}
+<section class="view">
+    <a class="btn sec tm-back" asp-action="Index">← All teams</a>
+
+    <div class="tm-hero" style="--tc:@t.Color">
+        <span class="tm-badge big" style="--tc:@t.Color" aria-hidden="true">@t.Abbr</span>
+        <div>
+            <div class="label">@(t.Conference)ern Conference · @t.Division division</div>
+            <h2>@t.Name</h2>
+            <p>@t.City · @t.Arena</p>
+        </div>
+    </div>
+
+    <div class="tm-facts">
+        <div class="tm-fact"><small>CONFERENCE</small><b>@t.Conference</b></div>
+        <div class="tm-fact"><small>DIVISION</small><b>@t.Division</b></div>
+        <div class="tm-fact"><small>HOME ARENA</small><b>@t.Arena</b></div>
+        <div class="tm-fact"><small>IN THE NBA SINCE</small><b>@t.JoinedYear</b></div>
+        <div class="tm-fact"><small>CHAMPIONSHIPS</small><b>@t.TitleYears.Count</b></div>
+    </div>
+
+    <div class="tm-box">
+        <h3>History</h3>
+        <p>@t.History</p>
+        @if (t.TitleYears.Count > 0)
+        {
+            <h3>Title years</h3>
+            <div class="tm-rings">
+                @foreach (var year in t.TitleYears)
+                {
+                    <span>🏆 @year</span>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="muted">No NBA championship yet.</p>
+        }
+        <h3>Legends</h3>
+        <div class="tm-legends">
+            @foreach (var name in t.LegendNames)
+            {
+                <span>@name</span>
+            }
+        </div>
+    </div>
+
+    <div class="tm-box">
+        <h3>Top scorers in our data</h3>
+        <p class="muted">@Model.PlayerCount players from this team are in the site's data. These are the ones with the most points per game, with the decade of their best season here.</p>
+        <div class="tm-players">
+            @foreach (var p in Model.TopScorers)
+            {
+                <div class="tm-pl">
+                    @Faces.Face(p.Name, p.Code, p.Position)
+                    <div><b>@p.Name</b><small>@Era(p.Decade) · @p.Ppg.ToString("0.0") PPG · @p.Rpg.ToString("0.0") RPG · @p.Apg.ToString("0.0") APG</small></div>
+                </div>
+            }
+        </div>
+    </div>
+</section>

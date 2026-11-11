@@ -1,0 +1,37 @@
+@* Страницата с всички 30 отбора *@
+@model List<CourtVision.Database.Team>
+@{
+    ViewData["Title"] = "Teams";
+    var divisions = new Dictionary<string, string[]>
+    {
+        ["East"] = new[] { "Atlantic", "Central", "Southeast" },
+        ["West"] = new[] { "Northwest", "Pacific", "Southwest" },
+    };
+}
+<section class="view">
+    <div class="ghead"><div><div class="label">League · Teams</div><h2>The 30 NBA teams</h2><p>15 teams in the East and 15 in the West, each split into three divisions of five. Click a team to learn about it.</p></div></div>
+
+    <div class="tm-conf">
+        @foreach (var (conference, divs) in divisions)
+        {
+            <div class="tm-col @conference.ToLower()">
+                <h3>@(conference)ern Conference</h3>
+                @foreach (var division in divs)
+                {
+                    <div class="tm-div">
+                        <h4>@division division</h4>
+                        <div class="tm-grid">
+                            @foreach (var t in Model.Where(t => t.Division == division))
+                            {
+                                <a class="tm-card" asp-action="Details" asp-route-id="@t.Abbr.ToLower()" style="--tc:@t.Color" title="Open @t.Name">
+                                    <span class="tm-badge" style="--tc:@t.Color" aria-hidden="true">@t.Abbr</span>
+                                    <span><b>@t.Name</b><small>@t.City</small></span>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
