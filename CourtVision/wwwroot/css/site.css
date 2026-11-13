@@ -993,3 +993,27 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .tm-card{text-decoration:none}
 .tm-pl small{color:var(--muted);font-size:12px}
 @media (max-width:760px){.tm-conf{grid-template-columns:1fr}.tm-badge.big{--sz:84px}}
+
+/* Страницата за сезона 73–9 */
+.rc-facts{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.rc-facts .num span{display:block}
+.rc-players{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+.rc-pl{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--panel-2)}
+.rc-pl .ph{width:56px;height:56px;flex:none}
+.rc-pl p{margin:4px 0 0;color:#D3D8E3;font-size:14px}
+.rc-time{list-style:none;margin:0;padding:0 0 0 18px;border-left:3px solid #1D428A;display:grid;gap:14px}
+.rc-time li{position:relative;display:grid;gap:2px}
+.rc-time li::before{content:"";position:absolute;left:-26px;top:4px;width:13px;height:13px;border-radius:50%;background:#FDB927;border:3px solid #1D428A}
+.rc-time b{font-family:var(--f-mono);font-size:12px;letter-spacing:.1em;color:#FDB927}
+.rc-time span{color:#D3D8E3}
+.rc-chart{display:grid;gap:8px}
+.rc-row{display:grid;grid-template-columns:200px 1fr 96px;gap:12px;align-items:center}
+.rc-name b{display:block;font-size:14px}.rc-name small{color:var(--muted);font-size:12px}
+.rc-bar{height:18px;border-radius:6px;background:var(--panel-2);overflow:hidden}
+.rc-bar i{display:block;height:100%;background:var(--tc);border-radius:6px}
+.rc-row.me .rc-bar i{background:linear-gradient(90deg,#1D428A,#FDB927)}
+.rc-row.me .rc-name b,.rc-row.me .rc-wl{color:#FDB927}
+.rc-wl{font-family:var(--f-display);font-weight:900;font-size:20px;text-align:right;white-space:nowrap}
+.rc-twist{border-color:rgba(239,68,68,.45);background:linear-gradient(160deg,rgba(239,68,68,.1),var(--panel) 60%)}
+.rc-twist p{color:#D3D8E3}
+@media (max-width:760px){.rc-facts{grid-template-columns:repeat(2,1fr)}.rc-row{grid-template-columns:110px 1fr 84px}}
