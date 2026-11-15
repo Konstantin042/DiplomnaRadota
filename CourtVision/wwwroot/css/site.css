@@ -1017,3 +1017,62 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .rc-twist{border-color:rgba(239,68,68,.45);background:linear-gradient(160deg,rgba(239,68,68,.1),var(--panel) 60%)}
 .rc-twist p{color:#D3D8E3}
 @media (max-width:760px){.rc-facts{grid-template-columns:repeat(2,1fr)}.rc-row{grid-template-columns:110px 1fr 84px}}
+
+/* Зъбното колело и менюто с настройки */
+.set-wrap{position:relative;flex:none}
+.gear{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;border:1px solid var(--line-2);background:var(--panel);color:var(--muted);cursor:pointer;transition:color .15s,border-color .15s}
+.gear svg{width:20px;height:20px;transition:transform .4s}
+.gear:hover,.gear[aria-expanded="true"]{color:var(--ink);border-color:var(--orange-2)}
+.gear:hover svg,.gear[aria-expanded="true"] svg{transform:rotate(60deg)}
+.set-menu{position:absolute;top:calc(100% + 10px);left:0;width:280px;max-width:calc(100vw - 24px);z-index:30;padding:14px;border-radius:14px;border:1px solid var(--line-2);background:var(--panel-2);box-shadow:0 18px 40px rgba(0,0,0,.55);display:grid;gap:4px}
+.set-menu h4{margin:0 0 6px;font-family:var(--f-mono);font-size:11px;letter-spacing:.18em;color:var(--muted)}
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 2px;border-bottom:1px solid var(--line)}
+.set-row span{font-size:14px;font-weight:600}
+.set-row small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.sw{flex:none;position:relative;width:42px;height:24px;border-radius:999px;border:1px solid var(--line-2);background:var(--panel);cursor:pointer;padding:0}
+.sw::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--muted);transition:transform .15s,background .15s}
+.sw[aria-checked="true"]{background:var(--orange);border-color:var(--orange)}
+.sw[aria-checked="true"]::after{transform:translateX(18px);background:#fff}
+.seg{flex:none;display:flex;border:1px solid var(--line-2);border-radius:9px;overflow:hidden}
+.seg button{padding:5px 10px;font-size:12px;font-weight:700;color:var(--muted);background:var(--panel);border:0;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--orange);color:#fff}
+.set-reset{margin-top:8px;justify-self:start;font-size:12px;font-weight:700;color:var(--muted);background:none;border:0;padding:4px 0;text-decoration:underline;cursor:pointer}
+.set-reset:hover{color:var(--ink)}
+html.no-motion *{animation:none!important;transition:none!important}
+html.no-photos .ph .face,html.no-photos .ph img,html.no-photos .gp-photo img{display:none!important}
+::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){z-index:2}
+
+/* Светла тема (включва се от зъбното колело) */
+html.light{color-scheme:light;--bg:#F2F4F8;--panel:#FFFFFF;--panel-2:#EDF0F5;--line:#D8DEE9;--line-2:#C3CCDB;--ink:#0F172A;--muted:#566079;--dim:#8A93A8;--amber:#2563EB}
+html.light body{background:radial-gradient(700px 380px at 15% -120px,rgba(37,99,235,.14),transparent 70%),radial-gradient(700px 380px at 85% -120px,rgba(225,29,46,.10),transparent 70%),repeating-linear-gradient(135deg,transparent 0 46px,rgba(15,23,42,.035) 46px 47px),repeating-linear-gradient(45deg,transparent 0 46px,rgba(15,23,42,.035) 46px 47px),var(--bg);background-attachment:fixed}
+html.light body::before{background:var(--bg)}
+html.light header{background:rgba(255,255,255,.9)}
+html.light .scoreboard,html.light .sc{background:var(--panel)}
+html.light .gp-input input{background:#fff;color:var(--ink)}
+html.light .ph{background:radial-gradient(circle at 50% 35%,color-mix(in srgb,var(--pc) 22%,#fff),#E6EAF1)}
+html.light .ph .face{background-color:#E6EAF1}
+html.light .set-menu{box-shadow:0 18px 40px rgba(15,23,42,.18)}
+
+html.light :where(.stats5 div,.bp-tabs button,.bp-htwt,.bp-reel,.bp-card,.bp-attr,.gr,.bp-arena,.tpm-tabs,.tpm-reel,.tpm-search,.tpm-team,.tpm-team:hover,.ss-stats div,.ss-games span,.ss-path span,.sp-team,.sp-live,.sp-log div,.sp-m,.sp-sum div,.vreel,.skrow,.arena,.qbar .t,.sc-circle,.sc-payroll,.sc-card,.sc-name,.sc-result div,.gp-counts div,.gp-end,.gp-table td,.hl-mode,.hl-score,.hl-card){background:var(--panel-2)}
+html.light .mode p,html.light .real p,html.light .real li,html.light .rc-pl p,html.light .rc-time span,html.light .rc-twist p,html.light .bpm-card p,html.light .ss-award span,html.light .ss-seed,html.light .sp-note,html.light .dlg p,html.light .dlg li,html.light .hl-pick p{color:#334155}
+html.light .tm-rings span,html.light .rnd{color:#A16207}
+html.light .bp-cell.mid small,html.light .bp-card span,html.light .sp-tr.us b,html.light .sp-sq i.l,html.light .sp-mid .lv,html.light .sp-m .us b,html.light .gp-msg,html.light .hl-btn.down,html.light .hl-over h3{color:#BE123C}
+html.light .sp-sq i.w,html.light .gp-legend .hit,html.light .hl-mode b,html.light .hl-pick-f em,html.light .hl-btn.up,html.light .hl-verdict.ok{color:#15803D}
+html.light .prow-main:hover:not(:disabled) b,html.light .sp-logb,html.light .hl-pick.at .hl-pick-f em{color:#1D4ED8}
+html.light .gp-q,html.light .gp-who small{color:#0F766E}
+html.light .t-orange{--tint-s:#BE123C}html.light .t-gold{--tint-s:#0369A1}html.light .t-purple{--tint-s:#1D4ED8}html.light .t-red{--tint-s:#BE123C}
+html.light .t-yellow{--tint-s:#A16207}html.light .t-violet{--tint-s:#7E22CE}html.light .t-cyan{--tint-s:#0F766E}html.light .t-green{--tint-s:#15803D}
+html.light .chip{background:rgba(255,255,255,.65)}
+html.light .bpm-tag{color:#BE123C}
+html.light .sc{--gold:#CA8A04;--gold-2:#A16207}
+html.light .sc-col{color:color-mix(in srgb,var(--cc) 70%,#000)}
+html.light .sc-price{color:#A16207}
+html.light .rc-time b,html.light .rc-row.me .rc-name b,html.light .rc-row.me .rc-wl{color:#B45309}
+html.light .real h3{color:#1D4ED8}
+html.light .gp-table td.hit{color:#14532D}html.light .gp-table td.near{color:#713F12}
+html.light .bp-tag .tb,html.light .tag .tb{background:rgba(255,255,255,.94)}
+html.light .field input{background:#fff;color:var(--ink)}
+html.light :where(.lb-list li){background:var(--panel-2)}
+html.light .field-err,html.light .auth-errors ul{color:#BE123C}
+html.light .pf-card span,html.light .pf-table td:nth-child(3){color:#334155}
