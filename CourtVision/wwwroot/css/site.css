@@ -1039,9 +1039,20 @@ a.sp-cta{display:block;text-align:center;text-decoration:none}
 .set-reset{margin-top:8px;justify-self:start;font-size:12px;font-weight:700;color:var(--muted);background:none;border:0;padding:4px 0;text-decoration:underline;cursor:pointer}
 .set-reset:hover{color:var(--ink)}
 html.no-motion *{animation:none!important;transition:none!important}
-html.no-photos .ph .face,html.no-photos .ph img,html.no-photos .gp-photo img{display:none!important}
 ::view-transition-old(root),::view-transition-new(root){animation:none;mix-blend-mode:normal}
 ::view-transition-new(root){z-index:2}
+
+/* Сегашният състав на страницата на отбора */
+.tm-roster{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.tm-rp{border-radius:12px;border:1px solid var(--line);background:var(--panel-2);overflow:hidden}
+.tm-rp-photo{position:relative;aspect-ratio:260/190;background:linear-gradient(160deg,color-mix(in srgb,var(--tc) 55%,transparent),color-mix(in srgb,var(--tc) 15%,var(--panel-2)));display:grid;place-items:center}
+.tm-rp-photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:top}
+.tm-rp-init{font-family:var(--f-display);font-weight:900;font-size:34px;color:rgba(255,255,255,.85)}
+.tm-rp-num{position:absolute;left:8px;top:6px;font-family:var(--f-display);font-weight:900;font-size:18px;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.6)}
+.tm-rp-info{padding:8px 10px}
+.tm-rp-info b{display:block;font-size:14px;line-height:1.2}
+.tm-rp-info small{color:var(--muted);font-size:12px}
+@media (max-width:520px){.tm-roster{grid-template-columns:repeat(2,1fr)}}
 
 /* Светла тема (включва се от зъбното колело) */
 html.light{color-scheme:light;--bg:#F2F4F8;--panel:#FFFFFF;--panel-2:#EDF0F5;--line:#D8DEE9;--line-2:#C3CCDB;--ink:#0F172A;--muted:#566079;--dim:#8A93A8;--amber:#2563EB}

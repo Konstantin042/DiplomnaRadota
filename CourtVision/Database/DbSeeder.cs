@@ -16,6 +16,7 @@ public static class DbSeeder
         if (!db.RosterPlayers.Any()) SeedRosters(db, Path.Combine(dataDir, "pools.json"));
         if (!db.RatedPlayers.Any()) SeedRatedPlayers(db, Path.Combine(dataDir, "build-players.json"));
         if (!db.QuizEntries.Any()) SeedQuiz(db, Path.Combine(dataDir, "quiz-players.json"));
+        SeedCurrentPlayers(db, Path.Combine(dataDir, "current-rosters.json"));
         db.ChangeTracker.AutoDetectChangesEnabled = true;
     }
 
@@ -49,6 +50,39 @@ public static class DbSeeder
             team.Legends = string.Join("|", row.GetProperty("legends").EnumerateArray().Select(n => n.GetString()));
             team.History = row.GetProperty("history").GetString() ?? "";
             db.Entry(team).State = EntityState.Modified;
+        }
+        db.SaveChanges();
+    }
+
+    // Записва сегашните състави (CurrentPlayers). Ако базата е от по-стара версия, първо създава таблицата
+    private static void SeedCurrentPlayers(AppDbContext db, string path)
+    {
+        if (!File.Exists(path)) return;
+        db.Database.ExecuteSqlRaw(@"CREATE TABLE IF NOT EXISTS ""CurrentPlayers"" (
+            ""NbaId"" INTEGER NOT NULL CONSTRAINT ""PK_CurrentPlayers"" PRIMARY KEY,
+            ""TeamAbbr"" TEXT NOT NULL,
+            ""Name"" TEXT NOT NULL,
+            ""Jersey"" TEXT NOT NULL,
+            ""Position"" TEXT NOT NULL,
+            ""Height"" TEXT NOT NULL,
+            ""Age"" INTEGER NOT NULL,
+            CONSTRAINT ""FK_CurrentPlayers_Teams_TeamAbbr"" FOREIGN KEY (""TeamAbbr"") REFERENCES ""Teams"" (""Abbr"") ON DELETE CASCADE)");
+        db.Database.ExecuteSqlRaw(@"CREATE INDEX IF NOT EXISTS ""IX_CurrentPlayers_TeamAbbr"" ON ""CurrentPlayers"" (""TeamAbbr"")");
+        if (db.CurrentPlayers.Any()) return;
+
+        using var doc = JsonDocument.Parse(File.ReadAllText(path));
+        foreach (var row in doc.RootElement.EnumerateArray())
+        {
+            db.CurrentPlayers.Add(new CurrentPlayer
+            {
+                NbaId = row.GetProperty("nbaId").GetInt32(),
+                TeamAbbr = row.GetProperty("team").GetString() ?? "",
+                Name = row.GetProperty("name").GetString() ?? "",
+                Jersey = row.GetProperty("num").GetString() ?? "",
+                Position = row.GetProperty("pos").GetString() ?? "",
+                Height = row.GetProperty("height").GetString() ?? "",
+                Age = row.GetProperty("age").GetInt32(),
+            });
         }
         db.SaveChanges();
     }

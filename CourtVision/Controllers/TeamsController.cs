@@ -37,6 +37,9 @@ public class TeamsController : Controller
         var top = best.Take(8)
             .Select(r => new TeamScorer(r.Name, r.PlayerCode, r.Positions.Split('/')[0], r.Decade, r.Ppg, r.Rpg, r.Apg))
             .ToList();
-        return View(new TeamPage(team, best.Count, top));
+        // Сегашният състав от CurrentPlayers, подреден по номер на фланелката
+        var roster = _db.CurrentPlayers.AsNoTracking().Where(p => p.TeamAbbr == abbr).ToList()
+            .OrderBy(p => p.Jersey == "" ? 999 : int.Parse(p.Jersey)).ThenBy(p => p.Jersey.Length).ToList();
+        return View(new TeamPage(team, best.Count, top, roster));
     }
 }

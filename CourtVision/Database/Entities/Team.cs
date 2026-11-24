@@ -46,4 +46,5 @@ public class Team
 
     public List<RosterPlayer> RosterPlayers { get; set; } = new();
     public List<RatedPlayer> RatedPlayers { get; set; } = new();
+    public List<CurrentPlayer> CurrentPlayers { get; set; } = new();
 }

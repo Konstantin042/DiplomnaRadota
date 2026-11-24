@@ -11,11 +11,10 @@ window.CV = {
 // Изчакване за дадени милисекунди (връща Promise)
 CV.sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-// Настройките от зъбното колело (тема, анимации, снимки, "How to play"), пазят се в localStorage
+// Настройките от зъбното колело (тема, анимации, "How to play"), пазят се в localStorage
 const SETTINGS_KEY = "cv-settings";
 const defaultSettings = () => ({
     motion: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
-    photos: true,
     help: true,
     light: false,
 });
@@ -28,7 +27,6 @@ try {
 function applySettings() {
     const root = document.documentElement;
     root.classList.toggle("no-motion", !SET.motion);
-    root.classList.toggle("no-photos", !SET.photos);
     root.classList.toggle("light", !!SET.light);
     document.querySelectorAll("#setMenu .sw").forEach(b => b.setAttribute("aria-checked", String(!!SET[b.dataset.set])));
     document.querySelectorAll("#setMenu [data-theme]").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.theme === "1") === !!SET.light)));

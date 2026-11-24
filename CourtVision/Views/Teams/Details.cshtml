@@ -52,6 +52,31 @@
         </div>
     </div>
 
+    @* Сегашният състав: снимките идват директно от сайта на NBA по ID-то на играча; ако снимката не се зареди, се показват инициалите *@
+    @if (Model.Roster.Count > 0)
+    {
+        <div class="tm-box">
+            <h3>Current roster · 2026–27</h3>
+            <p class="muted">@Model.Roster.Count players. Photos and roster from NBA.com.</p>
+            <div class="tm-roster">
+                @foreach (var p in Model.Roster)
+                {
+                    <div class="tm-rp" style="--tc:@t.Color">
+                        <div class="tm-rp-photo">
+                            <span class="tm-rp-init" hidden>@(string.Concat(p.Name.Split(' ').Take(2).Select(w => w[0])))</span>
+                            <img src="@p.PhotoUrl" alt="@p.Name" loading="lazy" onerror="this.previousElementSibling.hidden = false; this.remove()">
+                            <b class="tm-rp-num">@(p.Jersey == "" ? "–" : "#" + p.Jersey)</b>
+                        </div>
+                        <div class="tm-rp-info">
+                            <b>@p.Name</b>
+                            <small>@p.Position · @p.HeightMeters · @p.Age y/o</small>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
     <div class="tm-box">
         <h3>Top scorers in our data</h3>
         <p class="muted">@Model.PlayerCount players from this team are in the site's data. These are the ones with the most points per game, with the decade of their best season here.</p>
