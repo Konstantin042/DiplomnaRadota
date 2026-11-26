@@ -14,7 +14,12 @@ public class BuildController : Controller
     public BuildController(BuildService game) => _game = game;
 
     // Чете състоянието от сесията
-    private BuildState Load() => HttpContext.Session.GetObject<BuildState>(Key);
+    private BuildState Load()
+    {
+        var s = HttpContext.Session.GetObject<BuildState>(Key);
+        s.HideInjured = InjuryService.HideFor(Request);
+        return s;
+    }
     // Записва състоянието
     private void Save(BuildState s) => HttpContext.Session.SetObject(Key, s);
 

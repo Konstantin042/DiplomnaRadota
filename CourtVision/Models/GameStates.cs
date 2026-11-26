@@ -25,6 +25,8 @@ public class TakenAttribute
 // Състояние на Build-a-Player
 public class BuildState
 {
+    // Дали да се пропускат контузените играчи (от настройката "Hide injured players"; задава се при всяка заявка)
+    public bool HideInjured { get; set; }
     public string Mode { get; set; } = "";
     public string Group { get; set; } = "g";
     public string Tab { get; set; } = "skills";
@@ -219,6 +221,8 @@ public class SalaryEntry
 // Състояние на Higher or Lower
 public class HigherLowerState
 {
+    // Дали да се пропускат контузените играчи (от настройката "Hide injured players"; задава се при всяка заявка)
+    public bool HideInjured { get; set; }
     public string Mode { get; set; } = "";
     public int Left { get; set; } = -1;
     public int Right { get; set; } = -1;

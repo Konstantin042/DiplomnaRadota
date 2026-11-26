@@ -22,8 +22,11 @@ public class HigherLowerService
     private readonly List<PoolPlayer> _current;
 
     // Конструктор: събира играчите за двата режима
-    public HigherLowerService(DataService data)
+    private readonly InjuryService _injuries;
+
+    public HigherLowerService(DataService data, InjuryService injuries)
     {
+        _injuries = injuries;
         _allTime = data.Pools.Values.SelectMany(list => list).Where(p => p.Ppg >= 4).ToList();
         _current = data.BuildPlayers
             .Where(b => b.Mode == "c" && !b.Rookie && b.RealStats.Length == 5 && b.RealStats[0] >= 4)
@@ -66,8 +69,24 @@ public class HigherLowerService
     private static string RandomStat() => Random.Shared.NextDouble() < .5 ? "ppg" : Random.Shared.NextDouble() < .5 ? "rpg" : "apg";
 
     // Избира нов играч за дясната страна: друг човек и с достатъчна разлика в показателя
-    private int PickRight(string mode, int left, string stat)
+    // Контузен играч, който трябва да се пропусне (само в Current и само при включена настройка)
+    private bool Skip(HigherLowerState s, int i) => s.HideInjured && s.Mode == "c" && _injuries.IsOut(_current[i].Name);
+
+    // Случаен играч, който не е контузен
+    private int RandomPlayer(HigherLowerState s)
     {
+        var count = Pool(s.Mode).Count;
+        for (var tries = 0; tries < 200; tries++)
+        {
+            var i = Random.Shared.Next(count);
+            if (!Skip(s, i)) return i;
+        }
+        return Random.Shared.Next(count);
+    }
+
+    private int PickRight(HigherLowerState s, int left, string stat)
+    {
+        var mode = s.Mode;
         var players = Pool(mode);
         var l = players[left];
         var lv = Value(l, stat);
@@ -75,7 +94,7 @@ public class HigherLowerService
         {
             var i = Random.Shared.Next(players.Count);
             var p = players[i];
-            if (p.Id != l.Id && Math.Abs(Value(p, stat) - lv) >= MinGap) return i;
+            if (p.Id != l.Id && Math.Abs(Value(p, stat) - lv) >= MinGap && !Skip(s, i)) return i;
         }
         return (left + 1) % players.Count;
     }
@@ -86,8 +105,8 @@ public class HigherLowerService
         s.Mode = mode == "c" ? "c" : "a";
         s.Score = 0; s.Guess = null; s.Correct = false; s.Over = false;
         s.Stat = RandomStat();
-        s.Left = Random.Shared.Next(Pool(s.Mode).Count);
-        s.Right = PickRight(s.Mode, s.Left, s.Stat);
+        s.Left = RandomPlayer(s);
+        s.Right = PickRight(s, s.Left, s.Stat);
     }
 
     // Отговор: "higher" (вторият има повече или равно) или "lower" (по-малко или равно)
@@ -123,7 +142,7 @@ public class HigherLowerService
         if (s.Mode == "" || s.Guess == null || !s.Correct) return;
         s.Left = s.Right;
         s.Stat = RandomStat();
-        s.Right = PickRight(s.Mode, s.Left, s.Stat);
+        s.Right = PickRight(s, s.Left, s.Stat);
         s.Guess = null; s.Correct = false;
     }
 }

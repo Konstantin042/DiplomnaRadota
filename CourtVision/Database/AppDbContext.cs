@@ -19,6 +19,7 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
     public DbSet<GameResult> GameResults => Set<GameResult>();
     public DbSet<SalaryScore> SalaryScores => Set<SalaryScore>();
     public DbSet<CurrentPlayer> CurrentPlayers => Set<CurrentPlayer>();
+    public DbSet<InjuredPlayer> InjuredPlayers => Set<InjuredPlayer>();
 
     // Настройва връзките, индексите и поведението при изтриване
     protected override void OnModelCreating(ModelBuilder builder)
@@ -71,6 +72,9 @@ public class AppDbContext : IdentityDbContext<IdentityUser>
             .OnDelete(DeleteBehavior.SetNull);
         // Индекс за класацията на деня
         builder.Entity<SalaryScore>().HasIndex(s => s.DayKey);
+
+        // Търсенето на контузен играч става по нормализираното име
+        builder.Entity<InjuredPlayer>().HasIndex(i => i.NormName);
 
         // CurrentPlayers.TeamAbbr → Teams.Abbr (сегашният състав на отбора)
         builder.Entity<CurrentPlayer>()

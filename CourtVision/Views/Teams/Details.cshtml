@@ -1,9 +1,11 @@
 @* Страницата на един отбор *@
 @model TeamPage
 @inject PhotoService Faces
+@inject InjuryService Injuries
 @{
     var t = Model.Team;
     ViewData["Title"] = t.Name;
+    var hideInjured = InjuryService.HideFor(Context.Request);
     string Era(string d) => (string.Compare(d, "50", StringComparison.Ordinal) >= 0 ? "19" : "20") + d + "s";
 }
 <section class="view">
@@ -57,15 +59,20 @@
     {
         <div class="tm-box">
             <h3>Current roster · 2026–27</h3>
-            <p class="muted">@Model.Roster.Count players. Photos and roster from NBA.com.</p>
+            <p class="muted">@Model.Roster.Count players. Photos and roster from NBA.com.
+                Injuries from ESPN, updated <span id="injUpdated">@(Injuries.UpdatedAt?.ToLocalTime().ToString("HH:mm") ?? "–")</span>@(hideInjured ? ", injured players (OUT) are hidden" : "").</p>
             <div class="tm-roster">
                 @foreach (var p in Model.Roster)
                 {
-                    <div class="tm-rp" style="--tc:@t.Color">
+                    var injury = Injuries.Find(p.Name);
+                    var hidden = hideInjured && InjuryService.IsOut(injury);
+                    @* data-inj: името за проверка на контузиите на живо (site.js го обновява всяка минута) *@
+                    <div class="tm-rp@(hidden ? " inj-hidden" : "")" style="--tc:@t.Color" data-inj="@InjuryService.Normalize(p.Name)">
                         <div class="tm-rp-photo">
                             <span class="tm-rp-init" hidden>@(string.Concat(p.Name.Split(' ').Take(2).Select(w => w[0])))</span>
                             <img src="@p.PhotoUrl" alt="@p.Name" loading="lazy" onerror="this.previousElementSibling.hidden = false; this.remove()">
                             <b class="tm-rp-num">@(p.Jersey == "" ? "–" : "#" + p.Jersey)</b>
+                            <span class="tm-rp-inj@(InjuryService.IsOut(injury) ? " out" : "")" title="@(injury?.Detail)" @(injury == null ? "hidden" : "")>@(InjuryService.IsOut(injury) ? "OUT" : injury?.Status)</span>
                         </div>
                         <div class="tm-rp-info">
                             <b>@p.Name</b>

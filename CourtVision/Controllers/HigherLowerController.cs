@@ -19,7 +19,12 @@ public class HigherLowerController : Controller
     }
 
     // Чете състоянието от сесията (в началото режимът е "" – менюто)
-    private HigherLowerState Load() => HttpContext.Session.GetObject<HigherLowerState>(Key);
+    private HigherLowerState Load()
+    {
+        var s = HttpContext.Session.GetObject<HigherLowerState>(Key);
+        s.HideInjured = InjuryService.HideFor(Request);
+        return s;
+    }
 
     // Записва и връща картата (за JavaScript) или пренасочва към страницата
     private IActionResult Card(HigherLowerState s)

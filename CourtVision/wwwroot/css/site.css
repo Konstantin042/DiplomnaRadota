@@ -1054,6 +1054,20 @@ html.no-motion *{animation:none!important;transition:none!important}
 .tm-rp-info small{color:var(--muted);font-size:12px}
 @media (max-width:520px){.tm-roster{grid-template-columns:repeat(2,1fr)}}
 
+/* Контузените играчи на страницата на отбора */
+.tm-rp-inj{position:absolute;right:6px;top:6px;padding:2px 7px;border-radius:999px;background:#F59E0B;color:#111;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.tm-rp-inj.out{background:#DC2626;color:#fff}
+.tm-rp.inj-hidden{display:none}
+
+/* Малкият YouTube плейър за музиката */
+.music-card{position:fixed;right:16px;bottom:16px;z-index:40;width:min(356px,calc(100vw - 24px));border-radius:14px;overflow:hidden;border:1px solid var(--line-2);background:var(--panel-2);box-shadow:0 12px 30px rgba(0,0,0,.45)}
+.music-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 8px 6px 12px;font-size:13px;font-weight:700}
+.music-head button{width:26px;height:26px;border-radius:8px;border:0;background:transparent;color:var(--muted);font-size:20px;line-height:1;cursor:pointer}
+.music-head button:hover{color:var(--ink);background:var(--panel)}
+.music-video{aspect-ratio:16/9;min-height:200px;background:#000}
+.music-video iframe,.music-video #ytPlayer{width:100%;height:100%;display:block}
+.music-fallback{display:block;padding:8px 12px;font-size:13px;color:var(--amber)}
+
 /* Светла тема (включва се от зъбното колело) */
 html.light{color-scheme:light;--bg:#F2F4F8;--panel:#FFFFFF;--panel-2:#EDF0F5;--line:#D8DEE9;--line-2:#C3CCDB;--ink:#0F172A;--muted:#566079;--dim:#8A93A8;--amber:#2563EB}
 html.light body{background:radial-gradient(700px 380px at 15% -120px,rgba(37,99,235,.14),transparent 70%),radial-gradient(700px 380px at 85% -120px,rgba(225,29,46,.10),transparent 70%),repeating-linear-gradient(135deg,transparent 0 46px,rgba(15,23,42,.035) 46px 47px),repeating-linear-gradient(45deg,transparent 0 46px,rgba(15,23,42,.035) 46px 47px),var(--bg);background-attachment:fixed}

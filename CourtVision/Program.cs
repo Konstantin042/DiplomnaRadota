@@ -56,6 +56,11 @@ builder.Services.AddSingleton<HigherLowerService>();
 builder.Services.AddSingleton<GuessService>();
 builder.Services.AddSingleton<QuizService>();
 
+// Контузените играчи: доклад от ESPN, обновява се на всеки 10 минути във фонов режим
+builder.Services.AddHttpClient("espn", c => c.Timeout = TimeSpan.FromSeconds(20));
+builder.Services.AddSingleton<InjuryService>();
+builder.Services.AddHostedService<InjuryRefresher>();
+
 var app = builder.Build();
 
 // Създаваме базата (ако я няма) и я попълваме с отборите и играчите от папка Data
@@ -66,6 +71,8 @@ using (var scope = app.Services.CreateScope())
     db.Database.EnsureCreated();
     // Попълва празните таблици от JSON файловете (само първия път)
     DbSeeder.Seed(db, Path.Combine(app.Environment.ContentRootPath, "Data"));
+    // Последният запазен доклад за контузиите, докато дойде новият
+    app.Services.GetRequiredService<InjuryService>().LoadFromDb(db);
 }
 
 if (!app.Environment.IsDevelopment())

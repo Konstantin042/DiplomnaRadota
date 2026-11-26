@@ -16,6 +16,8 @@ const SETTINGS_KEY = "cv-settings";
 const defaultSettings = () => ({
     motion: !window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     help: true,
+    music: false,
+    hideInjured: false,
     light: false,
 });
 let SET = defaultSettings();
@@ -80,13 +82,22 @@ document.getElementById("setBtn").addEventListener("click", e => {
 
 document.getElementById("setMenu").addEventListener("click", e => {
     const toggle = e.target.closest(".sw");
-    if (toggle) { SET[toggle.dataset.set] = !SET[toggle.dataset.set]; saveSettings(); return; }
+    if (toggle) {
+        SET[toggle.dataset.set] = !SET[toggle.dataset.set];
+        saveSettings();
+        if (toggle.dataset.set === "music") SET.music ? startMusic() : stopMusic();
+        // Сървърът разбира настройката от бисквитка; страницата се презарежда, за да се махнат/върнат играчите
+        if (toggle.dataset.set === "hideInjured") { syncInjuryCookie(); location.reload(); }
+        return;
+    }
     const theme = e.target.closest("[data-theme]");
     if (theme) { changeTheme(theme.dataset.theme === "1"); return; }
     if (e.target.closest("#setReset")) {
         SET = defaultSettings();
         try { localStorage.removeItem(SETTINGS_KEY); } catch (err) { }
         applySettings();
+        stopMusic();
+        if (document.cookie.includes("cv-hide-injured=1")) { syncInjuryCookie(); location.reload(); }
     }
 });
 
@@ -95,6 +106,63 @@ document.addEventListener("click", e => { if (!e.target.closest(".set-wrap")) op
 document.addEventListener("keydown", e => { if (e.key === "Escape") openSettings(false); });
 
 applySettings();
+
+// Музиката на фона: официалното видео на "Outstanding" (The Gap Band) от YouTube в малък плейър долу вдясно
+const MUSIC_VIDEO = "xBcpaB8lq44";
+const musicCard = document.getElementById("musicCard");
+let ytPlayer = null;
+
+// Зарежда YouTube IFrame API само когато музиката е включена
+function startMusic() {
+    musicCard.hidden = false;
+    if (ytPlayer) { ytPlayer.playVideo(); return; }
+    if (window.YT && window.YT.Player) { createPlayer(); return; }
+    window.onYouTubeIframeAPIReady = createPlayer;
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    tag.onerror = () => document.getElementById("musicFallback").hidden = false;
+    document.head.appendChild(tag);
+}
+
+function createPlayer() {
+    ytPlayer = new YT.Player("ytPlayer", {
+        videoId: MUSIC_VIDEO,
+        width: "100%",
+        height: "100%",
+        playerVars: { start: Math.floor(Number(sessionStorage.getItem("cv-music-time") || 0)), rel: 0, playsinline: 1 },
+        events: {
+            onReady: e => {
+                e.target.setVolume(40);
+                // Ако потребителят не е спрял песента, тя продължава и на новата страница
+                if (sessionStorage.getItem("cv-music-paused") !== "1") e.target.playVideo();
+            },
+            onStateChange: e => {
+                if (e.data === YT.PlayerState.PLAYING) sessionStorage.setItem("cv-music-paused", "0");
+                if (e.data === YT.PlayerState.PAUSED) sessionStorage.setItem("cv-music-paused", "1");
+                if (e.data === YT.PlayerState.ENDED) e.target.playVideo();
+            },
+            // Ако видеото не може да се вгради, остава линк към YouTube
+            onError: () => document.getElementById("musicFallback").hidden = false,
+        },
+    });
+}
+
+function stopMusic() {
+    if (ytPlayer && ytPlayer.pauseVideo) ytPlayer.pauseVideo();
+    musicCard.hidden = true;
+}
+
+document.getElementById("musicClose").addEventListener("click", () => {
+    SET.music = false;
+    saveSettings();
+    stopMusic();
+});
+
+// При смяна на страницата песента продължава от същото място
+window.addEventListener("pagehide", () => {
+    if (ytPlayer && ytPlayer.getCurrentTime) sessionStorage.setItem("cv-music-time", String(ytPlayer.getCurrentTime()));
+});
+if (SET.music) startMusic();
 
 // Отваря прозореца "How to play" с текста от <template id="help-...">
 CV.openHelp = name => {
@@ -166,3 +234,32 @@ document.addEventListener("submit", async e => {
     if (!current || tabs.scrollWidth <= tabs.clientWidth) return;
     tabs.scrollLeft = current.offsetLeft - (tabs.clientWidth - current.offsetWidth) / 2;
 })();
+
+// "Hide injured players": настройката се праща на сървъра като бисквитка
+function syncInjuryCookie() {
+    document.cookie = "cv-hide-injured=" + (SET.hideInjured ? "1" : "0") + "; path=/; max-age=31536000; SameSite=Lax";
+}
+syncInjuryCookie();
+
+// На страницата на отбора контузиите се проверяват всяка минута, без да се презарежда
+if (document.querySelector(".tm-rp[data-inj]")) {
+    const refreshInjuries = async () => {
+        try {
+            const data = await (await fetch("/Injuries/Json", { cache: "no-store" })).json();
+            const byName = new Map(data.players.map(p => [p.name, p]));
+            document.querySelectorAll(".tm-rp[data-inj]").forEach(card => {
+                const injury = byName.get(card.dataset.inj);
+                const out = !!injury && injury.status.toLowerCase().startsWith("out");
+                const badge = card.querySelector(".tm-rp-inj");
+                badge.hidden = !injury;
+                badge.classList.toggle("out", out);
+                badge.textContent = out ? "OUT" : injury ? injury.status : "";
+                badge.title = injury ? injury.detail : "";
+                card.classList.toggle("inj-hidden", SET.hideInjured && out);
+            });
+            if (data.updated) document.getElementById("injUpdated").textContent =
+                new Date(data.updated + (data.updated.endsWith("Z") ? "" : "Z")).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+        } catch (err) { /* без интернет остават последните данни */ }
+    };
+    setInterval(refreshInjuries, 60000);
+}

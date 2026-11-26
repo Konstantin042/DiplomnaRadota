@@ -1,4 +1,4 @@
-// Логиката на Guess the Player: известен таен играч, 8 опита (и още, ако искаш) и подсказки за отбор, конференция, позиция, десетилетие и статистики
+// Логиката на Guess the Player: само известни играчи (от 2000 г. насам и Залата на славата от 90-те), известен таен играч, 8 опита (и още, ако искаш) и подсказки за отбор, конференция, позиция, десетилетие и статистики
 using CourtVision.Models;
 
 namespace CourtVision.Services;
@@ -13,35 +13,88 @@ public class GuessService
     public const int ExtraGuesses = 4;
     private const double FamousCurrentGrade = 7.5;
     private const double GuessMinPpg = 8;
-    private static readonly HashSet<string> Famous60s = new()
+    private const double KnownPpg = 15;
+    // От 90-те влизат само членовете на Залата на славата, които са играли тогава
+    private static readonly HashSet<string> HallOfFame90s = new[]
     {
-        "Wilt Chamberlain", "Bill Russell", "Oscar Robertson", "Jerry West",
-        "Elgin Baylor", "Rick Barry", "Willis Reed", "Bob Pettit",
-    };
+        "Michael Jordan", "Scottie Pippen", "Dennis Rodman", "Hakeem Olajuwon", "David Robinson",
+        "Patrick Ewing", "Karl Malone", "John Stockton", "Charles Barkley", "Shaquille O'Neal",
+        "Reggie Miller", "Gary Payton", "Clyde Drexler", "Alonzo Mourning", "Dikembe Mutombo",
+        "Chris Mullin", "Mitch Richmond", "Tim Hardaway", "Grant Hill", "Jason Kidd",
+        "Steve Nash", "Kevin Garnett", "Kobe Bryant", "Tim Duncan", "Allen Iverson",
+        "Ray Allen", "Paul Pierce", "Vince Carter", "Dirk Nowitzki", "Chris Webber",
+        "Ben Wallace", "Tracy McGrady", "Chauncey Billups", "Arvydas Sabonis", "Toni Kukoč",
+        "Vlade Divac", "Šarūnas Marčiulionis", "Dražen Petrović", "Dominique Wilkins", "Joe Dumars",
+        "Isiah Thomas", "Magic Johnson", "Larry Bird",
+    }.Select(DataService.NormalizeName).ToHashSet();
 
     private readonly List<PoolPlayer> _players;
     private readonly List<int> _mysteries;
     private readonly Dictionary<string, int> _byName;
 
-    // Конструктор: събира играчите от съставите на 82-0
+    // Конструктор: само играчи, които хората познават - от 2000 г. насам и членове на Залата на славата от 90-те
     public GuessService(DataService data)
     {
-        _players = data.Pools.Values.SelectMany(list => list)
-            .GroupBy(p => p.Id)
-            .Select(g => g.OrderByDescending(p => p.Ppg).First())
-            .Where(p => p.Ppg >= GuessMinPpg)
-            .Where(p => p.Decade != "60" || Famous60s.Contains(p.Name))
-            .OrderBy(p => p.Name, StringComparer.Ordinal)
-            .ToList();
         var famous = data.BuildPlayers
             .Where(b => b.Mode == "a" || (b.Mode == "c" && b.AverageGrade >= FamousCurrentGrade))
             .Select(b => DataService.NormalizeName(b.Name))
+            .Concat(HallOfFame90s)
             .ToHashSet();
+        var lastSeason = data.BuildPlayers
+            .Where(b => b.Mode == "c" && b.RealStats.Length == 5)
+            .GroupBy(b => DataService.CurrentKey(b.Name))
+            .ToDictionary(g => g.Key, g => g.First());
+        _players = data.Pools.Values.SelectMany(list => list)
+            .GroupBy(p => p.Id)
+            .Select(g => Eligible(g.ToList()))
+            .Where(lines => lines.Count > 0)
+            .Where(lines =>
+            {
+                var top = lines.Max(p => p.Ppg);
+                return top >= GuessMinPpg && (top >= KnownPpg || famous.Contains(DataService.NormalizeName(lines[0].Name)));
+            })
+            .Select(lines => Pick(lines, data.CurrentTeams, lastSeason))
+            .OrderBy(p => p.Name, StringComparer.Ordinal)
+            .ToList();
+        // Тайният играч е винаги от известните
         _mysteries = Enumerable.Range(0, _players.Count)
-            .Where(i => famous.Contains(DataService.NormalizeName(_players[i].Name)) || Famous60s.Contains(_players[i].Name))
+            .Where(i => famous.Contains(DataService.NormalizeName(_players[i].Name)))
             .ToList();
         _byName = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < _players.Count; i++) _byName[Label(i)] = i;
+    }
+
+    private static bool IsModern(string decade) => decade is "00" or "10" or "20";
+
+    // Кои редове (отбор + десетилетие) на играча влизат в играта: от 2000 г. насам,
+    // а за членовете на Залата на славата и 90-те. Играч, чийто най-добър сезон е преди 2000 г., отпада
+    private static List<PoolPlayer> Eligible(List<PoolPlayer> lines)
+    {
+        if (HallOfFame90s.Contains(DataService.NormalizeName(lines[0].Name)))
+            return lines.Where(p => p.Decade == "90" || IsModern(p.Decade)).ToList();
+        var top = lines.OrderByDescending(p => p.Ppg).First();
+        return IsModern(top.Decade) ? lines.Where(p => IsModern(p.Decade)).ToList() : new List<PoolPlayer>();
+    }
+
+    // Кой ред да показваме за играча: бившите играчи - с най-добрия си сезон;
+    // сегашните (в състав за 2026–27) - с отбора, в който са сега, и статистиките от миналия сезон
+    private static PoolPlayer Pick(List<PoolPlayer> lines, IReadOnlyDictionary<string, string> currentTeams, Dictionary<string, BuildPlayer> lastSeason)
+    {
+        var best = lines.OrderByDescending(p => p.Ppg).First();
+        var recent = lines.Where(p => p.Decade == "20").OrderByDescending(p => p.Ppg).FirstOrDefault();
+        var key = DataService.CurrentKey(best.Name);
+        if (recent == null || !currentTeams.TryGetValue(key, out var team)) return best;
+        var now = new PoolPlayer
+        {
+            Name = best.Name, Id = best.Id, Positions = recent.Positions, Team = team, Decade = "20",
+            Ppg = recent.Ppg, Rpg = recent.Rpg, Apg = recent.Apg, Spg = recent.Spg, Bpg = recent.Bpg,
+        };
+        if (lastSeason.TryGetValue(key, out var b))
+        {
+            now.Ppg = b.RealStats[0]; now.Rpg = b.RealStats[1]; now.Apg = b.RealStats[2];
+            now.Spg = b.RealStats[3]; now.Bpg = b.RealStats[4];
+        }
+        return now;
     }
 
     // Играч по номер

@@ -17,6 +17,13 @@ public static class DbSeeder
         if (!db.RatedPlayers.Any()) SeedRatedPlayers(db, Path.Combine(dataDir, "build-players.json"));
         if (!db.QuizEntries.Any()) SeedQuiz(db, Path.Combine(dataDir, "quiz-players.json"));
         SeedCurrentPlayers(db, Path.Combine(dataDir, "current-rosters.json"));
+        SyncCurrentTeams(db);
+        // Таблицата за контузените (ако базата е от по-стара версия); попълва се от InjuryRefresher
+        db.Database.ExecuteSqlRaw(@"CREATE TABLE IF NOT EXISTS ""InjuredPlayers"" (
+            ""Id"" INTEGER NOT NULL CONSTRAINT ""PK_InjuredPlayers"" PRIMARY KEY AUTOINCREMENT,
+            ""PlayerName"" TEXT NOT NULL, ""NormName"" TEXT NOT NULL, ""TeamName"" TEXT NOT NULL,
+            ""Status"" TEXT NOT NULL, ""Detail"" TEXT NOT NULL, ""UpdatedAt"" TEXT NOT NULL)");
+        db.Database.ExecuteSqlRaw(@"CREATE INDEX IF NOT EXISTS ""IX_InjuredPlayers_NormName"" ON ""InjuredPlayers"" (""NormName"")");
         db.ChangeTracker.AutoDetectChangesEnabled = true;
     }
 
@@ -85,6 +92,23 @@ public static class DbSeeder
             });
         }
         db.SaveChanges();
+    }
+
+    // Играчите от режим Current в Build-a-Player минават в отбора, в който са в съставите за 2026–27
+    private static void SyncCurrentTeams(AppDbContext db)
+    {
+        var teams = new Dictionary<string, string>();
+        foreach (var c in db.CurrentPlayers.AsNoTracking().ToList())
+            teams.TryAdd(CourtVision.Services.DataService.CurrentKey(c.Name), c.TeamAbbr);
+        var changed = false;
+        foreach (var p in db.RatedPlayers.Where(p => p.Mode == "c").ToList())
+        {
+            if (!teams.TryGetValue(CourtVision.Services.DataService.CurrentKey(p.Name), out var team) || team == p.TeamAbbr) continue;
+            p.TeamAbbr = team;
+            db.Entry(p).State = EntityState.Modified;
+            changed = true;
+        }
+        if (changed) db.SaveChanges();
     }
 
     // EnsureCreated не променя вече съществуваща база, затова новите колони се добавят с ALTER TABLE

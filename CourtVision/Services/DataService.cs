@@ -18,6 +18,8 @@ public class DataService
     public IReadOnlyDictionary<string, int[]> NbaPhotos { get; }
     public IReadOnlyDictionary<string, int[]> BbrefPhotos { get; }
     public IReadOnlyDictionary<string, string> NameToId { get; }
+    // Сегашният отбор (сезон 2026–27) на всеки играч от съставите: ключ CurrentKey(име) → съкращение на отбора
+    public IReadOnlyDictionary<string, string> CurrentTeams { get; }
 
     // Конструктор: изпълнява се веднъж, при първото използване на услугата
     public DataService(IServiceScopeFactory scopes, IWebHostEnvironment env)
@@ -29,6 +31,10 @@ public class DataService
         PoolKeys = Pools.Keys.ToList();
         BuildPlayers = LoadBuildPlayers(db);
         QuizPlayers = LoadQuizPlayers(db);
+        var current = new Dictionary<string, string>();
+        foreach (var c in db.CurrentPlayers.AsNoTracking().ToList())
+            current.TryAdd(CurrentKey(c.Name), c.TeamAbbr);
+        CurrentTeams = current;
         var dir = Path.Combine(env.ContentRootPath, "Data");
         NbaPhotos = LoadPhotos(Path.Combine(dir, "photos-nba.json"));
         BbrefPhotos = LoadPhotos(Path.Combine(dir, "photos-bbref.json"));
@@ -120,5 +126,14 @@ public class DataService
             if (lower >= 'a' && lower <= 'z') sb.Append(lower);
         }
         return sb.ToString();
+    }
+
+    // Ключ за сравнение на имена от различни източници: без Jr./Sr./II/III/IV ("Jimmy Butler III" = "Jimmy Butler")
+    public static string CurrentKey(string name)
+    {
+        var suffixes = new[] { "jr", "sr", "ii", "iii", "iv" };
+        var words = name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Where(w => !suffixes.Contains(w.Trim('.', ',').ToLowerInvariant()));
+        return NormalizeName(string.Join(" ", words));
     }
 }

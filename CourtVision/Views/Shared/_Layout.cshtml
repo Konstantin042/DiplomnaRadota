@@ -41,6 +41,8 @@
               <div class="set-row"><span>Theme<small>Switches with a slow wave</small></span><div class="seg" role="group" aria-label="Theme"><button data-theme="0">Dark</button><button data-theme="1">Light</button></div></div>
               <div class="set-row"><span>Animations<small>Spinning reels and moving effects</small></span><button class="sw" role="switch" data-set="motion" aria-label="Animations"></button></div>
               <div class="set-row"><span>"How to play" pop-up<small>Shows the rules when a game opens</small></span><button class="sw" role="switch" data-set="help" aria-label="How to play pop-up"></button></div>
+              <div class="set-row"><span>Hide injured players<small>Current players · live from ESPN</small></span><button class="sw" role="switch" data-set="hideInjured" aria-label="Hide injured players"></button></div>
+              <div class="set-row"><span>Music<small>"Outstanding" by The Gap Band (YouTube)</small></span><button class="sw" role="switch" data-set="music" aria-label="Music"></button></div>
               <button class="set-reset" id="setReset">Reset to default</button>
             </div>
             </div>
@@ -82,6 +84,13 @@
     <main class="wrap">
         @RenderBody()
     </main>
+
+    @* Малкият YouTube плейър долу вдясно (вижда се, когато Music е включено) *@
+    <div class="music-card" id="musicCard" hidden>
+        <div class="music-head"><span>&#9835; Outstanding · The Gap Band</span><button id="musicClose" aria-label="Turn music off" title="Turn music off">&times;</button></div>
+        <div class="music-video"><div id="ytPlayer"></div></div>
+        <a class="music-fallback" id="musicFallback" href="https://www.youtube.com/watch?v=xBcpaB8lq44" target="_blank" rel="noopener" hidden>Can't play here. Open on YouTube &rarr;</a>
+    </div>
 
     <div class="modal" id="modal" hidden>
         <div class="dlg" role="dialog" aria-modal="true" id="dlg"></div>

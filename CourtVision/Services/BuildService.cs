@@ -8,11 +8,19 @@ public class BuildService
 {
     private readonly DataService _data;
 
-    public BuildService(DataService data) => _data = data;
+    private readonly InjuryService _injuries;
+
+    public BuildService(DataService data, InjuryService injuries)
+    {
+        _data = data;
+        _injuries = injuries;
+    }
 
     // Всички играчи за избрания режим и група
+    // В режим Current при включена настройка контузените ("Out") не участват
     public List<BuildPlayer> Pool(BuildState s) =>
-        _data.BuildPlayers.Where(p => p.Mode == s.Mode && p.Group == s.Group).ToList();
+        _data.BuildPlayers.Where(p => p.Mode == s.Mode && p.Group == s.Group)
+            .Where(p => !(s.HideInjured && s.Mode == "c" && _injuries.IsOut(p.Name))).ToList();
 
     // Брой играчи за даден режим и група (за началния екран)
     public int Count(string mode, string group) =>
